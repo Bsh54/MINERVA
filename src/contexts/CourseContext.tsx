@@ -47,7 +47,7 @@ interface CourseContextType {
   loadExplanation: (topicId: string) => Promise<void>;
   markTopicComplete: (topicId: string) => void;
   markModuleComplete: (moduleId: string) => void;
-  saveQuizScore: (targetId: string, score: number) => void;
+  saveQuizScore: (targetId: string, targetType: string, score: number) => void;
 }
 
 const CourseContext = createContext<CourseContextType | undefined>(undefined);
@@ -138,11 +138,12 @@ export function CourseProvider({
     });
   };
 
-  const saveQuizScore = (targetId: string, score: number) => {
+  const saveQuizScore = (targetId: string, targetType: string, score: number) => {
+    const key = targetType === 'module' ? `module-${targetId}` : targetId;
     setProgress(prev => {
       const newProgress = {
         ...prev,
-        quizScores: { ...prev.quizScores, [targetId]: score }
+        quizScores: { ...prev.quizScores, [key]: score }
       };
       saveProgress(newProgress);
       return newProgress;
