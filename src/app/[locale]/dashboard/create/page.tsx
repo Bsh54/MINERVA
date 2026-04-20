@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useState } from 'react';
-import { generateCourseAction } from '@/app/actions/generate';
 
 interface Module {
   id: number;
@@ -43,17 +42,21 @@ export default function CreateCoursePage() {
     }, 150);
 
     try {
-      const result = await generateCourseAction(textInput);
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textInput })
+      });
 
       clearInterval(interval);
 
-      if (result.error || !result.success) {
-         setErrorMsg(result.error || tc('errorGen'));
-         setUploadState('error');
-         return;
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || tc('errorGen'));
       }
 
-      setCoursePlan(result.data);
+      const data = await res.json();
+      setCoursePlan(data);
       setProgress(100);
 
       setTimeout(() => setUploadState('result'), 400);
@@ -149,7 +152,6 @@ export default function CreateCoursePage() {
               </button>
             </div>
 
-            {/* Aperçu du plan (Données réelles) */}
             <div className="bg-stem-50/50 rounded-3xl p-8 border border-stem-100">
                <h4 className="font-extrabold text-xl text-stem-900 mb-6 flex items-center gap-2">
                  <FileText className="w-5 h-5 text-stem-500" /> {tc('coursePlan')} ({tc('modulesCount', { count: coursePlan.modules.length })})
