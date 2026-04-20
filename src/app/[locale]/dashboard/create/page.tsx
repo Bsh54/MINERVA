@@ -1,16 +1,21 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle, CheckSquare, Square } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useState } from 'react';
 import { generateCourseFromText } from '@/app/actions/ai';
 
+interface Topic {
+  id: string;
+  title: string;
+}
+
 interface Module {
   id: number;
   title: string;
-  description: string;
   estimatedMinutes: number;
+  topics: Topic[];
 }
 
 interface CoursePlan {
@@ -22,11 +27,14 @@ interface CoursePlan {
 export default function CreateCoursePage() {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('CreateCourse');
+
   const [uploadState, setUploadState] = useState<'idle' | 'loading' | 'result' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
   const [textInput, setTextInput] = useState('');
   const [coursePlan, setCoursePlan] = useState<CoursePlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
 
   const startGeneration = async () => {
     if (!textInput.trim() || textInput.length < 20) {
@@ -44,16 +52,28 @@ export default function CreateCoursePage() {
 
     try {
       const res = await generateCourseFromText(textInput);
-
       clearInterval(interval);
 
       if (!res.success || !res.data) {
         throw new Error(res.error || tc('errorGen'));
       }
 
-      setCoursePlan(res.data as CoursePlan);
-      setProgress(100);
+      const plan = res.data as CoursePlan;
+      setCoursePlan(plan);
 
+      const allTopicIds = new Set<string>();
+      if (plan.modules) {
+        plan.modules.forEach(mod => {
+          if (mod.topics) {
+            mod.topics.forEach(topic => {
+              allTopicIds.add(topic.id.toString());
+            });
+          }
+        });
+      }
+      setSelectedTopics(allTopicIds);
+
+      setProgress(100);
       setTimeout(() => setUploadState('result'), 400);
 
     } catch (error: any) {
@@ -61,6 +81,45 @@ export default function CreateCoursePage() {
       setErrorMsg(error.message || tc('errorGen'));
       setUploadState('error');
     }
+  };
+
+  const toggleTopic = (topicId: string) => {
+    const newSelected = new Set(selectedTopics);
+    if (newSelected.has(topicId)) {
+      newSelected.delete(topicId);
+    } else {
+      newSelected.add(topicId);
+    }
+    setSelectedTopics(newSelected);
+  };
+
+  const toggleModule = (mod: Module) => {
+    if (!mod.topics) return;
+    const moduleTopicIds = mod.topics.map(t => t.id.toString());
+    const allSelected = moduleTopicIds.every(id => selectedTopics.has(id));
+
+    const newSelected = new Set(selectedTopics);
+    if (allSelected) {
+      moduleTopicIds.forEach(id => newSelected.delete(id));
+    } else {
+      moduleTopicIds.forEach(id => newSelected.add(id));
+    }
+    setSelectedTopics(newSelected);
+  };
+
+  const selectAll = () => {
+    if (!coursePlan || !coursePlan.modules) return;
+    const allTopicIds = new Set<string>();
+    coursePlan.modules.forEach(mod => {
+      if (mod.topics) {
+        mod.topics.forEach(t => allTopicIds.add(t.id.toString()));
+      }
+    });
+    setSelectedTopics(allTopicIds);
+  };
+
+  const deselectAll = () => {
+    setSelectedTopics(new Set());
   };
 
   return (
@@ -76,13 +135,11 @@ export default function CreateCoursePage() {
         <p className="text-stem-600 text-lg font-medium">{tc('subtitle')}</p>
       </header>
 
-      {/* Zone Principale */}
       <div className="bg-white p-8 md:p-12 rounded-3xl shadow-soft border border-gray-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
         {uploadState === 'idle' || uploadState === 'error' ? (
           <div className="relative z-10 flex flex-col items-center">
-
             <div className="w-full mb-6">
               <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('pasteLabel')}</label>
               <textarea
@@ -142,34 +199,73 @@ export default function CreateCoursePage() {
                 <h3 className="text-3xl md:text-4xl font-extrabold text-stem-900 mb-3 font-display">{coursePlan.courseTitle}</h3>
                 <p className="text-stem-600 font-medium text-lg leading-relaxed">{coursePlan.summary}</p>
               </div>
-              <button className="btn-3d bg-accent-500 hover:bg-orange-500 text-white font-extrabold py-4 px-8 rounded-2xl shadow-button flex items-center justify-center gap-3 w-full md:w-auto text-lg flex-shrink-0">
-                <Play className="w-6 h-6 fill-white" /> {tc('startBtn')}
-              </button>
             </div>
 
-            <div className="bg-stem-50/50 rounded-3xl p-8 border border-stem-100">
-               <h4 className="font-extrabold text-xl text-stem-900 mb-6 flex items-center gap-2">
-                 <FileText className="w-5 h-5 text-stem-500" /> {tc('coursePlan')} ({tc('modulesCount', { count: coursePlan.modules.length })})
-               </h4>
-               <ul className="space-y-4">
-                 {coursePlan.modules.map((mod, index) => (
-                   <li key={mod.id} className="flex flex-col sm:flex-row sm:items-center gap-4 bg-white p-5 rounded-2xl border border-stem-100 shadow-sm hover:shadow-md transition-shadow">
-                     <div className="w-10 h-10 rounded-xl bg-stem-100 text-stem-800 flex items-center justify-center text-sm font-extrabold flex-shrink-0">
-                       {index + 1}
+            <div className="bg-stem-50/50 rounded-3xl p-6 md:p-8 border border-stem-100 mb-8">
+               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4 border-b border-stem-100 pb-6">
+                 <h4 className="font-extrabold text-xl text-stem-900 flex items-center gap-2">
+                   <FileText className="w-5 h-5 text-stem-500" /> {tc('selectTopics')}
+                 </h4>
+                 <div className="flex gap-3">
+                   <button onClick={selectAll} className="text-xs font-bold text-stem-600 hover:text-stem-900 px-3 py-1.5 bg-white border border-stem-200 rounded-lg hover:bg-stem-50 transition-colors">
+                     {tc('selectAll')}
+                   </button>
+                   <button onClick={deselectAll} className="text-xs font-bold text-stem-600 hover:text-stem-900 px-3 py-1.5 bg-white border border-stem-200 rounded-lg hover:bg-stem-50 transition-colors">
+                     {tc('deselectAll')}
+                   </button>
+                 </div>
+               </div>
+
+               <div className="space-y-6">
+                 {coursePlan.modules?.map((mod, index) => {
+                   const moduleTopicIds = mod.topics?.map(t => t.id.toString()) || [];
+                   const selectedCount = moduleTopicIds.filter(id => selectedTopics.has(id)).length;
+                   const isAllSelected = selectedCount === moduleTopicIds.length && moduleTopicIds.length > 0;
+                   const isPartial = selectedCount > 0 && !isAllSelected;
+
+                   return (
+                     <div key={mod.id || index} className="bg-white rounded-2xl border border-stem-200 shadow-sm overflow-hidden">
+                       <div
+                         onClick={() => toggleModule(mod)}
+                         className="flex items-center gap-4 p-4 md:p-5 bg-stem-50/50 hover:bg-stem-50 cursor-pointer transition-colors border-b border-stem-100"
+                       >
+                         <div className="text-stem-600 flex-shrink-0">
+                           {isAllSelected ? <CheckSquare className="w-6 h-6 text-stem-600 fill-stem-100" /> :
+                            isPartial ? <div className="w-6 h-6 rounded border-2 border-stem-600 bg-stem-100 flex items-center justify-center"><div className="w-3 h-0.5 bg-stem-600 rounded"></div></div> :
+                            <Square className="w-6 h-6 text-stem-300" />}
+                         </div>
+                         <div className="flex-1">
+                           <h5 className="font-extrabold text-stem-900 text-lg">Module {index + 1}: {mod.title}</h5>
+                           <p className="text-xs text-stem-500 font-bold uppercase tracking-wider">{tc('min', { min: mod.estimatedMinutes })} • {selectedCount}/{moduleTopicIds.length} sélectionnés</p>
+                         </div>
+                       </div>
+
+                       <div className="p-2 md:p-4 bg-white space-y-1">
+                         {mod.topics?.map((topic) => {
+                           const isTopicSelected = selectedTopics.has(topic.id.toString());
+                           return (
+                             <div
+                               key={topic.id}
+                               onClick={() => toggleTopic(topic.id.toString())}
+                               className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${isTopicSelected ? 'bg-stem-50/50 hover:bg-stem-100' : 'hover:bg-gray-50'}`}
+                             >
+                               <div className="flex-shrink-0 ml-2 md:ml-6">
+                                 {isTopicSelected ? <CheckSquare className="w-5 h-5 text-accent-500 fill-orange-50" /> : <Square className="w-5 h-5 text-gray-300" />}
+                               </div>
+                               <span className={`font-medium text-sm md:text-base ${isTopicSelected ? 'text-stem-900 font-bold' : 'text-gray-600'}`}>
+                                 {topic.title}
+                               </span>
+                             </div>
+                           );
+                         })}
+                       </div>
                      </div>
-                     <div className="flex-1">
-                       <h5 className="font-bold text-stem-900 text-lg mb-1">{mod.title}</h5>
-                       <p className="text-sm text-stem-600 font-medium leading-relaxed">{mod.description}</p>
-                     </div>
-                     <div className="bg-stem-50 text-stem-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap self-start sm:self-auto border border-stem-100">
-                       {tc('min', { min: mod.estimatedMinutes })}
-                     </div>
-                   </li>
-                 ))}
-               </ul>
+                   );
+                 })}
+               </div>
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-stem-100 pt-8">
                <button
                  onClick={() => {
                    setUploadState('idle');
@@ -179,7 +275,16 @@ export default function CreateCoursePage() {
                >
                  {tc('restartBtn')}
                </button>
+
+               <button
+                 disabled={selectedTopics.size === 0}
+                 className="btn-3d bg-accent-500 hover:bg-orange-500 disabled:bg-gray-300 disabled:shadow-none disabled:translate-y-0 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button flex items-center justify-center gap-3 w-full sm:w-auto text-lg transition-all"
+               >
+                 <Play className="w-6 h-6 fill-white" />
+                 {selectedTopics.size === 0 ? "Sélection requise" : tc('startSelected')}
+               </button>
             </div>
+
           </div>
         )}
       </div>
