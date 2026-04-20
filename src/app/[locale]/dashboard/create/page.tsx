@@ -1,10 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle, CheckSquare, Square } from 'lucide-react';
+import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle, CheckSquare, Square, X } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useState } from 'react';
 import { generateCourseFromText } from '@/app/actions/ai';
+import { useParams } from 'next/navigation';
 
 interface Topic {
   id: string;
@@ -27,6 +28,8 @@ interface CoursePlan {
 export default function CreateCoursePage() {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('CreateCourse');
+  const params = useParams();
+  const locale = params.locale as string;
 
   const [uploadState, setUploadState] = useState<'idle' | 'loading' | 'result' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
@@ -34,6 +37,13 @@ export default function CreateCoursePage() {
   const [coursePlan, setCoursePlan] = useState<CoursePlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
+  const [additionalSpecs, setAdditionalSpecs] = useState('');
+  const [draggedTopic, setDraggedTopic] = useState<{ moduleId: number; topicId: string } | null>(null);
+  const [showAddTopicModal, setShowAddTopicModal] = useState(false);
+  const [currentModuleId, setCurrentModuleId] = useState<number | null>(null);
+  const [newTopicTitle, setNewTopicTitle] = useState('');
+  const [explanationLevel, setExplanationLevel] = useState<'simple' | 'detailed'>('detailed');
+  const [isSaving, setIsSaving] = useState(false);
 
   const startGeneration = async () => {
     if (!textInput.trim() || textInput.length < 20) {
@@ -51,7 +61,7 @@ export default function CreateCoursePage() {
     }, 400);
 
     try {
-      const res = await generateCourseFromText(textInput);
+      const res = await generateCourseFromText(textInput, locale, explanationLevel, additionalSpecs);
       clearInterval(interval);
 
       if (!res.success || !res.data) {
@@ -122,6 +132,134 @@ export default function CreateCoursePage() {
     setSelectedTopics(new Set());
   };
 
+  const addCustomTopic = (moduleId: number) => {
+    setCurrentModuleId(moduleId);
+    setNewTopicTitle('');
+    setShowAddTopicModal(true);
+  };
+
+  const confirmAddTopic = () => {
+    if (!newTopicTitle.trim() || currentModuleId === null) return;
+
+    setCoursePlan(prev => {
+      if (!prev) return prev;
+      const updatedModules = prev.modules.map(mod => {
+        if (mod.id === currentModuleId) {
+          const newTopicId = `${currentModuleId}-custom-${Date.now()}`;
+          const newTopic = { id: newTopicId, title: newTopicTitle.trim() };
+          return {
+            ...mod,
+            topics: [...(mod.topics || []), newTopic]
+          };
+        }
+        return mod;
+      });
+      return { ...prev, modules: updatedModules };
+    });
+
+    // Auto-sélectionner le nouveau topic
+    const newTopicId = `${currentModuleId}-custom-${Date.now()}`;
+    setSelectedTopics(prev => {
+      const newSet = new Set(prev);
+      newSet.add(newTopicId);
+      return newSet;
+    });
+
+    setShowAddTopicModal(false);
+    setNewTopicTitle('');
+    setCurrentModuleId(null);
+  };
+
+  const handleDragStart = (moduleId: number, topicId: string) => {
+    setDraggedTopic({ moduleId, topicId });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (targetModuleId: number, targetTopicId: string) => {
+    if (!draggedTopic || !coursePlan) return;
+
+    const { moduleId: sourceModuleId, topicId: sourceTopicId } = draggedTopic;
+
+    if (sourceModuleId !== targetModuleId) {
+      setDraggedTopic(null);
+      return; // Ne pas permettre de déplacer entre modules
+    }
+
+    setCoursePlan(prev => {
+      if (!prev) return prev;
+
+      const updatedModules = prev.modules.map(mod => {
+        if (mod.id === sourceModuleId) {
+          const topics = [...(mod.topics || [])];
+          const sourceIndex = topics.findIndex(t => t.id === sourceTopicId);
+          const targetIndex = topics.findIndex(t => t.id === targetTopicId);
+
+          if (sourceIndex === -1 || targetIndex === -1) return mod;
+
+          const [movedTopic] = topics.splice(sourceIndex, 1);
+          topics.splice(targetIndex, 0, movedTopic);
+
+          return { ...mod, topics };
+        }
+        return mod;
+      });
+
+      return { ...prev, modules: updatedModules };
+    });
+
+    setDraggedTopic(null);
+  };
+
+  const handleStartCourse = async () => {
+    if (!coursePlan || selectedTopics.size === 0) return;
+
+    setIsSaving(true);
+
+    try {
+      // Filtrer le plan pour ne garder que les topics sélectionnés
+      const filteredModules = coursePlan.modules
+        .map(mod => ({
+          ...mod,
+          topics: mod.topics.filter(topic => selectedTopics.has(topic.id.toString()))
+        }))
+        .filter(mod => mod.topics.length > 0);
+
+      const finalPlan = {
+        ...coursePlan,
+        modules: filteredModules
+      };
+
+      // Sauvegarder en base de données
+      const response = await fetch('/api/courses/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          originalText: textInput,
+          explanationLevel,
+          additionalSpecs,
+          coursePlan: finalPlan,
+          locale
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Rediriger vers le cours
+        window.location.href = `/${locale}/dashboard/course/${result.courseId}`;
+      } else {
+        setErrorMsg(result.error || 'Erreur lors de la sauvegarde');
+        setIsSaving(false);
+      }
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Erreur lors de la sauvegarde');
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
 
@@ -151,6 +289,69 @@ export default function CreateCoursePage() {
               ></textarea>
             </div>
 
+            <div className="w-full mb-6">
+              <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('explanationLevelLabel')}</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setExplanationLevel('simple')}
+                  className={`p-5 rounded-2xl border-2 transition-all relative overflow-hidden ${
+                    explanationLevel === 'simple'
+                      ? 'border-accent-500 bg-gradient-to-br from-accent-50 to-orange-50 shadow-lg scale-105'
+                      : 'border-stem-200 bg-white hover:border-accent-300 hover:shadow-md'
+                  }`}
+                >
+                  {explanationLevel === 'simple' && (
+                    <div className="absolute top-3 right-3 w-6 h-6 bg-accent-500 rounded-full flex items-center justify-center">
+                      <CheckSquare className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <div className="text-left">
+                    <div className={`font-extrabold text-xl mb-2 ${explanationLevel === 'simple' ? 'text-accent-600' : 'text-stem-900'}`}>
+                      {tc('simpleResume')}
+                    </div>
+                    <div className={`text-sm font-medium ${explanationLevel === 'simple' ? 'text-accent-700' : 'text-stem-600'}`}>
+                      {tc('simpleResumeDesc')}
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setExplanationLevel('detailed')}
+                  className={`p-5 rounded-2xl border-2 transition-all relative overflow-hidden ${
+                    explanationLevel === 'detailed'
+                      ? 'border-stem-500 bg-gradient-to-br from-stem-50 to-teal-50 shadow-lg scale-105'
+                      : 'border-stem-200 bg-white hover:border-stem-400 hover:shadow-md'
+                  }`}
+                >
+                  {explanationLevel === 'detailed' && (
+                    <div className="absolute top-3 right-3 w-6 h-6 bg-stem-600 rounded-full flex items-center justify-center">
+                      <CheckSquare className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <div className="text-left">
+                    <div className={`font-extrabold text-xl mb-2 ${explanationLevel === 'detailed' ? 'text-stem-600' : 'text-stem-900'}`}>
+                      {tc('detailedExplanation')}
+                    </div>
+                    <div className={`text-sm font-medium ${explanationLevel === 'detailed' ? 'text-stem-700' : 'text-stem-600'}`}>
+                      {tc('detailedExplanationDesc')}
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div className="w-full mb-6">
+              <label className="block text-stem-900 font-bold mb-3 text-sm">{tc('specsLabel')}</label>
+              <textarea
+                value={additionalSpecs}
+                onChange={(e) => setAdditionalSpecs(e.target.value)}
+                placeholder={tc('specsPlaceholder')}
+                className="w-full h-20 p-4 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 font-medium text-stem-900 text-sm resize-none shadow-inner"
+              ></textarea>
+            </div>
+
             {errorMsg && (
               <div className="w-full mb-6 p-4 bg-red-50 text-red-600 border border-red-100 rounded-xl flex items-center gap-3 font-medium">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -177,7 +378,7 @@ export default function CreateCoursePage() {
             <Loader2 className="w-14 h-14 text-accent-500 animate-spin mb-6" />
             <h3 className="text-2xl font-bold text-stem-900 mb-2">{tc('analyzing')}</h3>
             <p className="text-stem-600 font-medium mb-8 text-center max-w-sm">
-              L'IA génère un plan très détaillé. Cela peut prendre <strong>jusqu'à une minute</strong>. Ne quittez pas la page.
+              {tc('pleaseWait')}
             </p>
 
             <div className="w-full max-w-md bg-stem-100 rounded-full h-3 overflow-hidden shadow-inner">
@@ -239,8 +440,17 @@ export default function CreateCoursePage() {
                          </div>
                          <div className="flex-1">
                            <h5 className="font-extrabold text-stem-900 text-lg">Module {index + 1}: {mod.title}</h5>
-                           <p className="text-xs text-stem-500 font-bold uppercase tracking-wider">{tc('min', { min: mod.estimatedMinutes })} • {selectedCount}/{moduleTopicIds.length} sélectionnés</p>
+                           <p className="text-xs text-stem-500 font-bold uppercase tracking-wider">{tc('min', { min: mod.estimatedMinutes })} • {selectedCount}/{moduleTopicIds.length} {tc('selected')}</p>
                          </div>
+                         <button
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             addCustomTopic(mod.id);
+                           }}
+                           className="text-xs font-bold text-accent-600 hover:text-accent-800 px-3 py-1.5 bg-white border border-accent-200 rounded-lg hover:bg-accent-50 transition-colors flex items-center gap-1"
+                         >
+                           <span className="text-lg leading-none">+</span> {tc('addTopic')}
+                         </button>
                        </div>
 
                        <div className="p-2 md:p-4 bg-white space-y-1">
@@ -249,15 +459,20 @@ export default function CreateCoursePage() {
                            return (
                              <div
                                key={topic.id}
+                               draggable
+                               onDragStart={() => handleDragStart(mod.id, topic.id.toString())}
+                               onDragOver={handleDragOver}
+                               onDrop={() => handleDrop(mod.id, topic.id.toString())}
                                onClick={() => toggleTopic(topic.id.toString())}
-                               className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${isTopicSelected ? 'bg-stem-50/50 hover:bg-stem-100' : 'hover:bg-gray-50'}`}
+                               className={`flex items-center gap-3 p-3 rounded-xl cursor-move transition-colors ${isTopicSelected ? 'bg-stem-50/50 hover:bg-stem-100' : 'hover:bg-gray-50'}`}
                              >
                                <div className="flex-shrink-0 ml-2 md:ml-6">
                                  {isTopicSelected ? <CheckSquare className="w-5 h-5 text-accent-500 fill-orange-50" /> : <Square className="w-5 h-5 text-gray-300" />}
                                </div>
-                               <span className={`font-medium text-sm md:text-base ${isTopicSelected ? 'text-stem-900 font-bold' : 'text-gray-600'}`}>
+                               <span className={`font-medium text-sm md:text-base flex-1 ${isTopicSelected ? 'text-stem-900 font-bold' : 'text-gray-600'}`}>
                                  {topic.title}
                                </span>
+                               <span className="text-gray-400 text-xs">⋮⋮</span>
                              </div>
                            );
                          })}
@@ -269,28 +484,93 @@ export default function CreateCoursePage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-stem-100 pt-8">
-               <button
-                 onClick={() => {
-                   setUploadState('idle');
-                   setTextInput('');
-                 }}
-                 className="text-stem-500 font-bold text-sm hover:text-stem-700 transition-colors"
+               <Link
+                 href="/dashboard"
+                 className="btn-3d bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button-teal flex items-center justify-center gap-3 w-full sm:w-auto text-lg transition-all"
                >
-                 {tc('restartBtn')}
-               </button>
+                 <ChevronLeft className="w-5 h-5" />
+                 {tc('backButton')}
+               </Link>
 
                <button
-                 disabled={selectedTopics.size === 0}
+                 disabled={selectedTopics.size === 0 || isSaving}
+                 onClick={handleStartCourse}
                  className="btn-3d bg-accent-500 hover:bg-orange-500 disabled:bg-gray-300 disabled:shadow-none disabled:translate-y-0 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button flex items-center justify-center gap-3 w-full sm:w-auto text-lg transition-all"
                >
-                 <Play className="w-6 h-6 fill-white" />
-                 {selectedTopics.size === 0 ? "Sélection requise" : tc('startSelected')}
+                 {isSaving ? (
+                   <>
+                     <Loader2 className="w-6 h-6 animate-spin" />
+                     {tc('saving')}
+                   </>
+                 ) : (
+                   <>
+                     <Play className="w-6 h-6 fill-white" />
+                     {selectedTopics.size === 0 ? tc('selectionRequired') : tc('startCourse')}
+                   </>
+                 )}
                </button>
             </div>
 
           </div>
         )}
       </div>
+
+      {/* Modal d'ajout de topic */}
+      {showAddTopicModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-extrabold text-stem-900 font-display">{tc('addTopicTitle')}</h3>
+              <button
+                onClick={() => {
+                  setShowAddTopicModal(false);
+                  setNewTopicTitle('');
+                }}
+                className="text-stem-400 hover:text-stem-900 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-stem-900 font-bold mb-3 text-sm">{tc('topicTitleLabel')}</label>
+              <input
+                type="text"
+                value={newTopicTitle}
+                onChange={(e) => setNewTopicTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    confirmAddTopic();
+                  }
+                }}
+                placeholder={tc('topicTitlePlaceholder')}
+                className="w-full px-4 py-3 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 font-medium text-stem-900"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowAddTopicModal(false);
+                  setNewTopicTitle('');
+                }}
+                className="flex-1 px-4 py-3 border-2 border-stem-200 text-stem-600 font-bold rounded-xl hover:bg-stem-50 transition-colors"
+              >
+                {tc('cancel')}
+              </button>
+              <button
+                onClick={confirmAddTopic}
+                disabled={!newTopicTitle.trim()}
+                className="flex-1 btn-3d bg-accent-500 hover:bg-accent-600 disabled:bg-gray-300 disabled:shadow-none text-white font-extrabold px-4 py-3 rounded-xl shadow-button transition-all"
+              >
+                {tc('add')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
