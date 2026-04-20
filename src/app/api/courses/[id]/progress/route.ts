@@ -3,9 +3,10 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: courseId } = await params;
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -15,8 +16,6 @@ export async function GET(
         { status: 401 }
       );
     }
-
-    const courseId = params.id;
 
     // Charger la progression
     const { data: progress, error: progressError } = await supabase
@@ -54,9 +53,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: courseId } = await params;
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -66,8 +66,6 @@ export async function POST(
         { status: 401 }
       );
     }
-
-    const courseId = params.id;
     const { completedTopics, completedModules, quizScores } = await request.json();
 
     // Upsert progression

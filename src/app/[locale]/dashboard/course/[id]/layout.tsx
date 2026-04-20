@@ -7,8 +7,9 @@ export default async function CourseLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { id: string; locale: string };
+  params: Promise<{ id: string; locale: string }>;
 }) {
+  const { id, locale } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -20,7 +21,7 @@ export default async function CourseLayout({
   const { data: course, error } = await supabase
     .from('courses')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user.id)
     .single();
 

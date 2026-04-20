@@ -7,9 +7,10 @@ const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-ds2api-key-1-your-c
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: courseId } = await params;
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -19,8 +20,6 @@ export async function POST(
         { status: 401 }
       );
     }
-
-    const courseId = params.id;
     const { targetId, targetType } = await request.json();
 
     // Vérifier si le quiz existe déjà
