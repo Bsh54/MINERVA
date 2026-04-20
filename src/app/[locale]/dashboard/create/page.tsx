@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Upload, Loader2, Play, ChevronLeft, FileText, Sparkles, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useState } from 'react';
+import { generateCourseAction } from '@/app/actions/generate';
 
 interface Module {
   id: number;
@@ -42,21 +43,17 @@ export default function CreateCoursePage() {
     }, 150);
 
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textInput })
-      });
+      const result = await generateCourseAction(textInput);
 
       clearInterval(interval);
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || tc('errorGen'));
+      if (result.error || !result.success) {
+         setErrorMsg(result.error || tc('errorGen'));
+         setUploadState('error');
+         return;
       }
 
-      const data = await res.json();
-      setCoursePlan(data);
+      setCoursePlan(result.data);
       setProgress(100);
 
       setTimeout(() => setUploadState('result'), 400);
