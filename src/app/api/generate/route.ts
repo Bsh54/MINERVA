@@ -1,6 +1,5 @@
 import { createOpenAI } from '@ai-sdk/openai';
-import { generateObject } from 'ai';
-import { z } from 'zod';
+import { generateText } from 'ai';
 import { NextResponse } from 'next/server';
 
 // Configuration du provider personnalisé (DeepSeek via OpenAI compatible endpoint)
@@ -17,27 +16,56 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Texte fourni trop court ou invalide.' }, { status: 400 });
     }
 
-    const result = await generateObject({
+    const systemPrompt = `Tu es un professeur expert en STEM. Ton rôle est d'analyser le contenu brut soumis par l'étudiant et de générer un plan de cours structuré en micro-modules pour un apprentissage adaptatif.
+    
+RÈGLES ABSOLUES : 
+1. Tu DOIS répondre UNIQUEMENT avec un objet JSON valide.
+2. N'ajoute AUCUN texte avant ou après le JSON.
+3. N'utilise PAS de balises markdown (comme \`\`\`json). Renvoie le JSON pur.
+
+Le format exact du JSON attendu est :
+{
+  "courseTitle": "Titre optimisé et engageant du cours",
+  "summary": "Bref résumé de ce qui sera appris (2 phrases max)",
+  "modules": [
+    {
+      "id": 1,
+      "title": "Titre du module (ex: Les bases)",
+      "description": "Ce que l'étudiant va y apprendre (1 phrase)",
+      "estimatedMinutes": 10
+    }
+  ]
+}
+Assure-toi de générer entre 3 et 5 modules maximum couvrant le contenu fourni.`;
+
+    const { text: generatedText } = await generateText({
       model: deepseek('deepseek-chat'),
-      system: "Tu es un professeur expert en STEM. Ton rôle est d'analyser le contenu brut soumis par l'étudiant et de générer un plan de cours structuré en micro-modules pour un apprentissage adaptatif. Reste concis et clair.",
-      prompt: `Voici le contenu brut à analyser :\n\n"${text}"\n\nGénère un plan d'étude détaillé en français basé uniquement sur ce contenu.`,
-      schema: z.object({
-        courseTitle: z.string().describe('Le titre optimisé et engageant du cours généré'),
-        summary: z.string().describe('Un bref résumé de ce qui sera appris (2 phrases max)'),
-        modules: z.array(
-          z.object({
-            id: z.number(),
-            title: z.string().describe('Titre du module (ex: Les bases de la mécanique)'),
-            description: z.string().describe('Ce que l\'étudiant va y apprendre (1 phrase)'),
-            estimatedMinutes: z.number().describe('Temps d\'étude estimé en minutes')
-          })
-        ).describe('Liste ordonnée de 3 à 5 modules maximum couvrant tout le texte'),
-      }),
+      system: systemPrompt,
+      prompt: `Voici le contenu brut à analyser :\n\n"${text}"\n\nGénère le JSON pur maintenant :`,
     });
 
-    return NextResponse.json(result.object);
+    // Nettoyage manuel au cas où le modèle ajoute quand même des balises markdown
+    let cleanJson = generatedText.trim();
+    if (cleanJson.startsWith('```json')) {
+      cleanJson = cleanJson.replace(/^```json/, '');
+    } else if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.replace(/^```/, '');
+    }
+    if (cleanJson.endsWith('```')) {
+      cleanJson = cleanJson.replace(/```$/, '');
+    }
+    cleanJson = cleanJson.trim();
+
+    try {
+      const parsedData = JSON.parse(cleanJson);
+      return NextResponse.json(parsedData);
+    } catch (parseError) {
+      console.error("Erreur de parsing JSON. Réponse brute de l'IA :", cleanJson);
+      return NextResponse.json({ error: "L'IA a retourné un format invalide, veuillez réessayer." }, { status: 500 });
+    }
+
   } catch (error: any) {
     console.error("DeepSeek API Error:", error);
-    return NextResponse.json({ error: error.message || 'Erreur lors de la génération du cours.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Erreur de connexion à l\'API DeepSeek.' }, { status: 500 });
   }
 }
