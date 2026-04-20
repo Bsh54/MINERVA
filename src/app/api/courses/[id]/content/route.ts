@@ -77,7 +77,7 @@ export async function POST(
       ? 'Tu DOIS répondre en FRANÇAIS.'
       : 'You MUST respond in ENGLISH.';
 
-    const systemPrompt = `You are an expert STEM teacher. Generate a clear, detailed explanation for a specific topic.
+    const systemPrompt = `You are an expert STEM teacher. Generate a clear, engaging explanation for a specific topic.
 
 ${languageInstruction}
 
@@ -86,8 +86,26 @@ RULES:
 2. Use simple language and concrete examples
 3. Break down complex ideas into digestible parts
 4. Include practical applications when relevant
-5. Keep the explanation between 300-500 words
-6. Do NOT use markdown formatting, just plain text with line breaks`;
+5. Keep the explanation between 400-600 words
+
+FORMATTING (use markdown):
+- Use **bold** for key concepts and important terms
+- Use *italic* for emphasis
+- Use > blockquotes for important notes or tips
+- Use bullet points (- ) for lists
+- Use numbered lists (1. 2. 3.) for steps or sequences
+- Use ### for section headers if needed
+- Use \`code\` for formulas, equations, or technical terms
+- Add 📌 emoji before key takeaways
+- Add 💡 emoji before examples
+- Add ⚠️ emoji before warnings or common mistakes
+
+STRUCTURE:
+1. Start with a simple definition
+2. Explain WHY it matters (real-world context)
+3. Break down HOW it works (step by step)
+4. Provide 1-2 concrete examples with 💡
+5. End with a key takeaway with 📌`;
 
     const apiUrl = DEEPSEEK_API_URL.endsWith('/chat/completions')
       ? DEEPSEEK_API_URL
@@ -97,10 +115,10 @@ RULES:
       model: 'deepseek-chat',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Course: ${coursePlan.courseTitle}\nModule: ${moduleTitle}\nTopic: ${topicTitle}\n\nOriginal context:\n${course.original_text}\n\nGenerate a detailed explanation for this topic:` }
+        { role: 'user', content: `Course: ${coursePlan.courseTitle}\nModule: ${moduleTitle}\nTopic: ${topicTitle}\n\nOriginal context:\n${course.original_text}\n\nGenerate an engaging, well-formatted explanation for this topic:` }
       ],
       temperature: 0.7,
-      max_tokens: 800,
+      max_tokens: 1200,
       stream: false
     }, {
       headers: {

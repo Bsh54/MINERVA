@@ -7,6 +7,44 @@ import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
 
+// Simple markdown to HTML converter
+function formatMarkdown(text: string): string {
+  let html = text;
+
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+  // Italic
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Code inline
+  html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+
+  // Blockquotes
+  html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Lists
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+  // Numbered lists
+  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+  // Paragraphs
+  html = html.split('\n\n').map(p => {
+    if (!p.startsWith('<') && p.trim()) {
+      return `<p>${p}</p>`;
+    }
+    return p;
+  }).join('\n');
+
+  return html;
+}
+
 export default function TopicPage() {
   const t = useTranslations('Dashboard');
   const router = useRouter();
@@ -93,10 +131,8 @@ export default function TopicPage() {
             <p className="text-stem-600 font-medium">Génération de l'explication...</p>
           </div>
         ) : explanation ? (
-          <div className="prose prose-lg max-w-none">
-            <div className="text-stem-900 leading-relaxed whitespace-pre-wrap text-lg">
-              {explanation}
-            </div>
+          <div className="prose prose-lg max-w-none prose-headings:text-stem-900 prose-headings:font-extrabold prose-p:text-stem-800 prose-p:leading-relaxed prose-strong:text-stem-900 prose-strong:font-bold prose-em:text-accent-600 prose-blockquote:border-l-4 prose-blockquote:border-accent-500 prose-blockquote:bg-accent-50 prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:text-accent-900 prose-code:bg-stem-100 prose-code:text-stem-900 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-ul:text-stem-800 prose-ol:text-stem-800 prose-li:my-2">
+            <div dangerouslySetInnerHTML={{ __html: formatMarkdown(explanation) }} />
           </div>
         ) : (
           <div className="text-center py-16 text-stem-500">
