@@ -22,15 +22,7 @@ export default function CoursePage() {
   const progressPercent = totalTopics > 0 ? (completedTopicsCount / totalTopics) * 100 : 0;
 
   const handleTopicClick = (topicId: string) => {
-    let topicTitle = '';
-    for (const module of course.coursePlan.modules) {
-      const topic = module.topics.find(t => t.id === topicId);
-      if (topic) {
-        topicTitle = topic.title;
-        break;
-      }
-    }
-    setSelectedTopic({ id: topicId, title: topicTitle });
+    window.location.href = `/dashboard/course/${course.id}/topic/${topicId}`;
   };
 
   const handleModuleQuizClick = (moduleId: number) => {
