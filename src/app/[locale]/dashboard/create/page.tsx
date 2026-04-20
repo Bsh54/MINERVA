@@ -33,7 +33,6 @@ export default function CreateCoursePage() {
   const [textInput, setTextInput] = useState('');
   const [coursePlan, setCoursePlan] = useState<CoursePlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
 
   const startGeneration = async () => {
@@ -46,9 +45,10 @@ export default function CreateCoursePage() {
     setUploadState('loading');
     setProgress(0);
 
+    // Progression lente (ne s'arrête pas par timeout)
     const interval = setInterval(() => {
-      setProgress((prev) => (prev >= 90 ? 90 : prev + 2));
-    }, 150);
+      setProgress((prev) => (prev >= 98 ? 98 : prev + 1));
+    }, 400);
 
     try {
       const res = await generateCourseFromText(textInput);
@@ -135,6 +135,7 @@ export default function CreateCoursePage() {
         <p className="text-stem-600 text-lg font-medium">{tc('subtitle')}</p>
       </header>
 
+      {/* Zone Principale */}
       <div className="bg-white p-8 md:p-12 rounded-3xl shadow-soft border border-gray-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
@@ -175,11 +176,13 @@ export default function CreateCoursePage() {
           <div className="flex flex-col items-center justify-center py-16 relative z-10">
             <Loader2 className="w-14 h-14 text-accent-500 animate-spin mb-6" />
             <h3 className="text-2xl font-bold text-stem-900 mb-2">{tc('analyzing')}</h3>
-            <p className="text-stem-600 font-medium mb-8">{tc('creatingPlan')}</p>
+            <p className="text-stem-600 font-medium mb-8 text-center max-w-sm">
+              L'IA génère un plan très détaillé. Cela peut prendre <strong>jusqu'à une minute</strong>. Ne quittez pas la page.
+            </p>
 
             <div className="w-full max-w-md bg-stem-100 rounded-full h-3 overflow-hidden shadow-inner">
               <div
-                className="bg-gradient-to-r from-stem-400 to-accent-500 h-3 rounded-full transition-all duration-300 ease-out relative"
+                className="bg-gradient-to-r from-stem-400 to-accent-500 h-3 rounded-full transition-all duration-500 ease-out relative"
                 style={{ width: `${progress}%` }}
               >
                 <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 animate-pulse"></div>
