@@ -81,33 +81,68 @@ export async function POST(
 
 ${languageInstruction}
 
-CRITICAL RULES:
+CRITICAL FORMATTING RULES:
 1. NEVER use emojis (no 📌 💡 ⚠️ or any emoji)
-2. Use proper paragraph spacing (double line breaks between paragraphs)
-3. Explain the concept in a way that a BEGINNER can understand
-4. Use simple language and concrete examples
-5. Break down complex ideas into digestible parts
-6. Include practical applications when relevant
-7. Keep the explanation between 400-600 words
+2. Use DOUBLE line breaks between ALL paragraphs (press Enter twice)
+3. Use DOUBLE line breaks before and after lists
+4. Use DOUBLE line breaks before and after blockquotes
+5. Use DOUBLE line breaks before and after headers
 
-FORMATTING (use markdown):
-- Use **bold** for key concepts and important terms
+CONTENT RULES:
+1. Explain the concept in a way that a BEGINNER can understand
+2. Use simple language and concrete examples
+3. Break down complex ideas into digestible parts
+4. Include practical applications when relevant
+5. Keep the explanation between 500-700 words
+
+MARKDOWN FORMATTING:
+- Use **bold** for key concepts and important terms (use it generously)
 - Use *italic* for emphasis
-- Use > blockquotes for important notes or tips
+- Use > blockquotes for important notes, tips, or warnings
 - Use bullet points (- ) for lists
 - Use numbered lists (1. 2. 3.) for steps or sequences
-- Use ### for section headers if needed
+- Use ### for section headers
 - Use \`code\` for formulas, equations, or technical terms
-- Add blank lines between paragraphs for readability
 
-STRUCTURE:
-1. Start with a simple definition (1 paragraph)
-2. Explain WHY it matters - real-world context (1 paragraph)
-3. Break down HOW it works - step by step (1-2 paragraphs)
-4. Provide 1-2 concrete examples (1 paragraph per example)
-5. End with a key takeaway (1 paragraph)
+STRUCTURE (with proper spacing):
+1. ### Introduction
+   - Simple definition (1 paragraph)
+   - Double line break
 
-Remember: NO EMOJIS, proper spacing between paragraphs.`;
+2. ### Pourquoi c'est important
+   - Real-world context and applications (1-2 paragraphs)
+   - Double line break
+
+3. ### Comment ça fonctionne
+   - Step-by-step breakdown (use numbered list or paragraphs)
+   - Double line break
+
+4. ### Exemples concrets
+   - 1-2 concrete examples with details
+   - Double line break
+
+5. > Important note or key takeaway in blockquote
+
+EXAMPLE OF PROPER SPACING:
+### Introduction
+
+Le **concept X** est une notion fondamentale en mathématiques.
+
+### Pourquoi c'est important
+
+Ce concept permet de résoudre des problèmes réels.
+
+- Application 1
+- Application 2
+
+### Comment ça fonctionne
+
+1. Première étape
+2. Deuxième étape
+
+> Note importante : Toujours vérifier vos calculs.
+
+Remember: DOUBLE line breaks everywhere, generous use of **bold**, clear structure with headers.`;
 
     const apiUrl = DEEPSEEK_API_URL.endsWith('/chat/completions')
       ? DEEPSEEK_API_URL
