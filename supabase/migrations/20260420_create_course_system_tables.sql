@@ -42,6 +42,13 @@ ALTER TABLE topic_explanations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quizzes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view explanations of their courses" ON topic_explanations;
+DROP POLICY IF EXISTS "Users can view quizzes of their courses" ON quizzes;
+DROP POLICY IF EXISTS "Users can view their own progress" ON user_progress;
+DROP POLICY IF EXISTS "Users can insert their own progress" ON user_progress;
+DROP POLICY IF EXISTS "Users can update their own progress" ON user_progress;
+
 -- Policies pour topic_explanations
 CREATE POLICY "Users can view explanations of their courses"
   ON topic_explanations FOR SELECT

@@ -22,6 +22,12 @@ CREATE INDEX IF NOT EXISTS idx_courses_created_at ON courses(created_at DESC);
 -- Enable Row Level Security
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own courses" ON courses;
+DROP POLICY IF EXISTS "Users can insert their own courses" ON courses;
+DROP POLICY IF EXISTS "Users can update their own courses" ON courses;
+DROP POLICY IF EXISTS "Users can delete their own courses" ON courses;
+
 -- Policy: Users can only see their own courses
 CREATE POLICY "Users can view their own courses"
   ON courses
