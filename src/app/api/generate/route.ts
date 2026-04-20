@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// Configuration du provider personnalisé (DeepSeek via OpenAI compatible endpoint)
 const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://ds2api-tau-woad.vercel.app/v1';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-ds2api-key-1-your-custom-key';
 
@@ -37,14 +36,18 @@ Assure-toi de générer entre 3 et 5 modules maximum couvrant le contenu fourni.
     const apiUrl = DEEPSEEK_API_URL.endsWith('/chat/completions') ? DEEPSEEK_API_URL : `${DEEPSEEK_API_URL}/chat/completions`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        // Important : Désactive la compression (GZIP/Brotli) pour contourner le bug ERR__ERROR_FORMAT_PADDING_2
+        'Accept-Encoding': 'identity',
       },
+      // Important : Désactive le cache de fetch de Next.js
+      cache: 'no-store',
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [
@@ -71,7 +74,6 @@ Assure-toi de générer entre 3 et 5 modules maximum couvrant le contenu fourni.
     const data = JSON.parse(rawText);
     let generatedContent = data.choices?.[0]?.message?.content || "";
 
-    // Nettoyage manuel au cas où le modèle ajoute quand même des balises markdown
     let cleanJson = generatedContent.trim();
     if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json/, '');
     else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```/, '');
