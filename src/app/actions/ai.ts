@@ -1,7 +1,5 @@
 'use server';
 
-export const maxDuration = 300; // 5 minutes de timeout global (important pour Vercel/Next.js)
-
 const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://ds2api-tau-woad.vercel.app/v1';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-ds2api-key-1-your-custom-key';
 
