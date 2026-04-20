@@ -1,0 +1,94 @@
+{
+  "Index": {
+    "title": "Learn faster with <highlight>your custom AI tutor</highlight>",
+    "description": "Upload your math, physics or coding courses. Our platform generates adaptive quizzes and mental maps to validate your knowledge step by step.",
+    "cta": "Create my free account",
+    "signIn": "Sign In",
+    "signUp": "Get Started",
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "pricing": "Pricing"
+    },
+    "features": {
+      "tag": "Why EvoluticsLearn?",
+      "title": "Supercharge your STEM learning",
+      "subtitle": "Everything you need to master complex subjects in record time.",
+      "feat1": "Smart Segmentation",
+      "feat1Desc": "Your long document is segmented into digestible micro-modules by our AI to prevent cognitive overload.",
+      "feat2": "Adaptive Loop",
+      "feat2Desc": "Stuck on a concept? The AI generates a new explanation and a targeted quiz before letting you move forward.",
+      "feat3": "Auto Mind Maps",
+      "feat3Desc": "Visualize links between complex science concepts with dynamically generated graphs."
+    },
+    "how": {
+      "tag": "Process",
+      "title": "From raw notes to mastery in 3 steps",
+      "step1": "Upload",
+      "step1Desc": "Drop your PDF, Word doc, or raw text.",
+      "step2": "AI Analysis",
+      "step2Desc": "Our engine extracts key concepts and creates a learning path.",
+      "step3": "Learn & Validate",
+      "step3Desc": "Take adaptive quizzes and progress at your own pace."
+    },
+    "pricing": {
+      "tag": "Pricing",
+      "title": "Simple, transparent pricing",
+      "free": "Free",
+      "freeDesc": "Perfect for trying out the platform.",
+      "pro": "Pro",
+      "proDesc": "For serious students who want to accelerate.",
+      "startFree": "Start for free",
+      "upgradePro": "Upgrade to Pro",
+      "month": "/month"
+    },
+    "footer": {
+      "rights": "© 2026 EvoluticsLearn. All rights reserved.",
+      "terms": "Terms",
+      "privacy": "Privacy"
+    }
+  },
+  "Auth": {
+    "joinElite": "Join the scientific elite.",
+    "socialProof": "Over 10,000 students have doubled their learning speed with our adaptive loop.",
+    "createAccount": "Create an account",
+    "welcomeBack": "Welcome back!",
+    "subtitleRegister": "Start your learning journey.",
+    "subtitleLogin": "Enter your details to access your courses.",
+    "continueGoogle": "Continue with Google",
+    "orEmail": "or with email",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "emailPlaceholder": "john@example.com",
+    "registerBtn": "Continue to Dashboard",
+    "loginBtn": "Log In",
+    "haveAccount": "Already have an account? Log in",
+    "noAccount": "Don't have an account? Sign up",
+    "backHome": "Back to Home"
+  },
+  "Hub": {
+    "greeting": "Hello, {name} 👋",
+    "whatToDo": "What do you want to do today?",
+    "createTitle": "New Course",
+    "createDesc": "Generate a course with AI",
+    "libraryTitle": "My Courses",
+    "libraryDesc": "History and revisions",
+    "profileTitle": "Profile",
+    "profileDesc": "Manage my account"
+  },
+  "Dashboard": {
+    "home": "Dashboard",
+    "myCourses": "My Courses",
+    "stats": "Statistics",
+    "profile": "Profile",
+    "logout": "Log out",
+    "greeting": "Hello, {name} 👋",
+    "readyToLearn": "Ready to learn something new today?",
+    "createNew": "Create a new mini-course",
+    "uploadSupport": "Upload your material",
+    "uploadDesc": "PDF, Word, or paste raw text",
+    "resumeLearning": "Resume learning",
+    "completed": "{percent}% completed",
+    "backHub": "Back to Hub"
+  }
+}

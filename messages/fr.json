@@ -1,0 +1,94 @@
+{
+  "Index": {
+    "title": "Apprenez plus vite avec <highlight>votre tuteur IA sur-mesure</highlight>",
+    "description": "Uploadez vos cours de maths, physique ou code. Notre plateforme génère des quiz adaptatifs et des cartes mentales pour valider vos acquis pas à pas.",
+    "cta": "Créer mon compte gratuitement",
+    "signIn": "Connexion",
+    "signUp": "Commencer",
+    "nav": {
+      "features": "Fonctionnalités",
+      "howItWorks": "Comment ça marche",
+      "pricing": "Tarifs"
+    },
+    "features": {
+      "tag": "Pourquoi EvoluticsLearn ?",
+      "title": "Boostez votre apprentissage STEM",
+      "subtitle": "Tout ce dont vous avez besoin pour maîtriser des sujets complexes en un temps record.",
+      "feat1": "Découpage Intelligent",
+      "feat1Desc": "Votre long document est segmenté en micro-modules digestes par notre IA pour éviter la surcharge cognitive.",
+      "feat2": "Boucle Adaptative",
+      "feat2Desc": "Vous bloquez sur une notion ? L'IA génère une nouvelle explication et un quiz ciblé avant de vous laisser avancer.",
+      "feat3": "Cartes Mentales Auto",
+      "feat3Desc": "Visualisez les liens entre les concepts complexes des sciences exactes grâce aux graphes générés dynamiquement."
+    },
+    "how": {
+      "tag": "Processus",
+      "title": "De vos notes à la maîtrise en 3 étapes",
+      "step1": "Upload",
+      "step1Desc": "Déposez votre PDF, Word ou texte brut.",
+      "step2": "Analyse IA",
+      "step2Desc": "Notre moteur extrait les concepts clés et crée un plan.",
+      "step3": "Apprendre & Valider",
+      "step3Desc": "Passez des quiz adaptatifs et progressez à votre rythme."
+    },
+    "pricing": {
+      "tag": "Tarifs",
+      "title": "Des prix simples et transparents",
+      "free": "Gratuit",
+      "freeDesc": "Parfait pour essayer la plateforme.",
+      "pro": "Pro",
+      "proDesc": "Pour les étudiants sérieux qui veulent accélérer.",
+      "startFree": "Commencer gratuitement",
+      "upgradePro": "Passer au plan Pro",
+      "month": "/mois"
+    },
+    "footer": {
+      "rights": "© 2026 EvoluticsLearn. Tous droits réservés.",
+      "terms": "CGU",
+      "privacy": "Confidentialité"
+    }
+  },
+  "Auth": {
+    "joinElite": "Rejoignez l'élite scientifique.",
+    "socialProof": "Plus de 10 000 étudiants ont déjà doublé leur vitesse d'apprentissage grâce à notre boucle adaptative.",
+    "createAccount": "Créer un compte",
+    "welcomeBack": "Bon retour !",
+    "subtitleRegister": "Commencez votre voyage d'apprentissage.",
+    "subtitleLogin": "Entrez vos identifiants pour accéder à vos cours.",
+    "continueGoogle": "Continuer avec Google",
+    "orEmail": "ou avec un email",
+    "emailLabel": "Email",
+    "passwordLabel": "Mot de passe",
+    "emailPlaceholder": "jean@exemple.com",
+    "registerBtn": "Continuer vers le Dashboard",
+    "loginBtn": "Se connecter",
+    "haveAccount": "Déjà un compte ? Connectez-vous",
+    "noAccount": "Pas encore de compte ? S'inscrire",
+    "backHome": "Retour à l'accueil"
+  },
+  "Hub": {
+    "greeting": "Bonjour, {name} 👋",
+    "whatToDo": "Que souhaitez-vous faire aujourd'hui ?",
+    "createTitle": "Nouveau Cours",
+    "createDesc": "Créer un cours avec l'IA",
+    "libraryTitle": "Mes Cours",
+    "libraryDesc": "Historique et révisions",
+    "profileTitle": "Profil",
+    "profileDesc": "Gérer mon compte"
+  },
+  "Dashboard": {
+    "home": "Dashboard",
+    "myCourses": "Mes Cours",
+    "stats": "Statistiques",
+    "profile": "Profil",
+    "logout": "Se déconnecter",
+    "greeting": "Bonjour, {name} 👋",
+    "readyToLearn": "Prêt à apprendre de nouvelles choses aujourd'hui ?",
+    "createNew": "Créer un nouveau mini-cours",
+    "uploadSupport": "Uploadez votre support",
+    "uploadDesc": "PDF, Word ou entrez un texte brut",
+    "resumeLearning": "Reprendre l'apprentissage",
+    "completed": "{percent}% complété",
+    "backHub": "Retour au Hub"
+  }
+}
