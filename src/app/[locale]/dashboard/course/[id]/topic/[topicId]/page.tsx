@@ -40,7 +40,7 @@ export default function TopicPage() {
 
   const isLoading = loadingExplanations.has(topicId);
   const explanation = explanations[topicId];
-  const isComplete = progress.completedTopics.includes(topicId);
+  const isComplete = progress?.completedTopics?.includes(topicId) || false;
 
   const handleMarkComplete = () => {
     if (!isComplete && !hasMarkedComplete) {
