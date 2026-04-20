@@ -11,12 +11,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Vérifier que les variables d'environnement sont présentes
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Missing Supabase environment variables');
+    return intlMiddleware(request);
+  }
+
   // Initialiser la réponse avec next-intl
   let response = intlMiddleware(request);
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
