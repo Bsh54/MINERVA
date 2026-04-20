@@ -20,6 +20,7 @@ interface CoursePlan {
 
 export default function CreateCoursePage() {
   const t = useTranslations('Dashboard');
+  const tc = useTranslations('CreateCourse');
   const [uploadState, setUploadState] = useState<'idle' | 'loading' | 'result' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
   const [textInput, setTextInput] = useState('');
@@ -28,7 +29,7 @@ export default function CreateCoursePage() {
 
   const startGeneration = async () => {
     if (!textInput.trim() || textInput.length < 20) {
-      setErrorMsg("Veuillez coller un texte d'au moins 20 caractères pour générer un cours.");
+      setErrorMsg(tc('errorShort'));
       return;
     }
 
@@ -36,7 +37,6 @@ export default function CreateCoursePage() {
     setUploadState('loading');
     setProgress(0);
 
-    // Fausse barre de progression qui bloque à 90% en attendant l'API
     const interval = setInterval(() => {
       setProgress((prev) => (prev >= 90 ? 90 : prev + 2));
     }, 150);
@@ -52,7 +52,7 @@ export default function CreateCoursePage() {
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || "Erreur de communication avec l'IA.");
+        throw new Error(errData.error || tc('errorGen'));
       }
 
       const data = await res.json();
@@ -63,7 +63,7 @@ export default function CreateCoursePage() {
 
     } catch (error: any) {
       clearInterval(interval);
-      setErrorMsg(error.message || 'Une erreur est survenue lors de la génération.');
+      setErrorMsg(error.message || tc('errorGen'));
       setUploadState('error');
     }
   };
@@ -78,7 +78,7 @@ export default function CreateCoursePage() {
 
       <header className="mb-10">
         <h1 className="text-4xl font-extrabold text-stem-900 font-display mb-2">{t('createNew')}</h1>
-        <p className="text-stem-600 text-lg font-medium">Laissez l'IA (DeepSeek) transformer vos notes brutes en cours interactifs.</p>
+        <p className="text-stem-600 text-lg font-medium">{tc('subtitle')}</p>
       </header>
 
       {/* Zone Principale */}
@@ -89,11 +89,11 @@ export default function CreateCoursePage() {
           <div className="relative z-10 flex flex-col items-center">
 
             <div className="w-full mb-6">
-              <label className="block text-stem-900 font-bold mb-3 text-lg">Collez le contenu de votre cours ici :</label>
+              <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('pasteLabel')}</label>
               <textarea
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Exemple : La photosynthèse est le processus par lequel les plantes vertes utilisent l'énergie solaire pour synthétiser des nutriments..."
+                placeholder={tc('pastePlaceholder')}
                 className="w-full h-48 p-5 bg-stem-50/50 border border-stem-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 font-medium text-stem-900 resize-none shadow-inner"
               ></textarea>
             </div>
@@ -110,11 +110,11 @@ export default function CreateCoursePage() {
               className="btn-3d w-full md:w-auto bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button-teal flex items-center justify-center gap-3 text-lg transition-colors"
             >
               <Sparkles className="w-6 h-6 fill-white/20" />
-              Générer le mini-cours avec l'IA
+              {tc('generateBtn')}
             </button>
 
             <p className="mt-6 text-sm font-medium text-stem-400">
-              Dans cette version démo, seul le texte brut est supporté. Le support PDF arrive bientôt !
+              {tc('demoWarning')}
             </p>
           </div>
         ) : null}
@@ -122,8 +122,8 @@ export default function CreateCoursePage() {
         {uploadState === 'loading' && (
           <div className="flex flex-col items-center justify-center py-16 relative z-10">
             <Loader2 className="w-14 h-14 text-accent-500 animate-spin mb-6" />
-            <h3 className="text-2xl font-bold text-stem-900 mb-2">L'IA analyse votre contenu...</h3>
-            <p className="text-stem-600 font-medium mb-8">Création d'un plan d'apprentissage adaptatif en cours</p>
+            <h3 className="text-2xl font-bold text-stem-900 mb-2">{tc('analyzing')}</h3>
+            <p className="text-stem-600 font-medium mb-8">{tc('creatingPlan')}</p>
 
             <div className="w-full max-w-md bg-stem-100 rounded-full h-3 overflow-hidden shadow-inner">
               <div
@@ -142,20 +142,20 @@ export default function CreateCoursePage() {
             <div className="flex flex-col md:flex-row items-start justify-between mb-8 border-b border-stem-100 pb-8 gap-6">
               <div className="flex-1">
                 <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-md uppercase mb-3 inline-flex items-center gap-1 shadow-sm">
-                  <Sparkles className="w-3 h-3" /> Généré par IA
+                  <Sparkles className="w-3 h-3" /> {tc('generatedByAi')}
                 </span>
                 <h3 className="text-3xl md:text-4xl font-extrabold text-stem-900 mb-3 font-display">{coursePlan.courseTitle}</h3>
                 <p className="text-stem-600 font-medium text-lg leading-relaxed">{coursePlan.summary}</p>
               </div>
               <button className="btn-3d bg-accent-500 hover:bg-orange-500 text-white font-extrabold py-4 px-8 rounded-2xl shadow-button flex items-center justify-center gap-3 w-full md:w-auto text-lg flex-shrink-0">
-                <Play className="w-6 h-6 fill-white" /> Commencer
+                <Play className="w-6 h-6 fill-white" /> {tc('startBtn')}
               </button>
             </div>
 
             {/* Aperçu du plan (Données réelles) */}
             <div className="bg-stem-50/50 rounded-3xl p-8 border border-stem-100">
                <h4 className="font-extrabold text-xl text-stem-900 mb-6 flex items-center gap-2">
-                 <FileText className="w-5 h-5 text-stem-500" /> Plan du cours ({coursePlan.modules.length} modules)
+                 <FileText className="w-5 h-5 text-stem-500" /> {tc('coursePlan')} ({tc('modulesCount', { count: coursePlan.modules.length })})
                </h4>
                <ul className="space-y-4">
                  {coursePlan.modules.map((mod, index) => (
@@ -168,7 +168,7 @@ export default function CreateCoursePage() {
                        <p className="text-sm text-stem-600 font-medium leading-relaxed">{mod.description}</p>
                      </div>
                      <div className="bg-stem-50 text-stem-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap self-start sm:self-auto border border-stem-100">
-                       ~ {mod.estimatedMinutes} min
+                       {tc('min', { min: mod.estimatedMinutes })}
                      </div>
                    </li>
                  ))}
@@ -183,7 +183,7 @@ export default function CreateCoursePage() {
                  }}
                  className="text-stem-500 font-bold text-sm hover:text-stem-700 transition-colors"
                >
-                 Recommencer avec un autre texte
+                 {tc('restartBtn')}
                </button>
             </div>
           </div>

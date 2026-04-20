@@ -90,5 +90,22 @@
     "resumeLearning": "Reprendre l'apprentissage",
     "completed": "{percent}% complété",
     "backHub": "Retour au Hub"
+  },
+  "CreateCourse": {
+    "subtitle": "Laissez l'IA (DeepSeek) transformer vos notes brutes en cours interactifs.",
+    "pasteLabel": "Collez le contenu de votre cours ici :",
+    "pastePlaceholder": "Exemple : La photosynthèse est le processus par lequel les plantes vertes utilisent l'énergie solaire pour synthétiser des nutriments...",
+    "generateBtn": "Générer le mini-cours avec l'IA",
+    "demoWarning": "Dans cette version démo, seul le texte brut est supporté. Le support PDF arrive bientôt !",
+    "analyzing": "L'IA analyse votre contenu...",
+    "creatingPlan": "Création d'un plan d'apprentissage adaptatif en cours...",
+    "generatedByAi": "Généré par IA",
+    "startBtn": "Commencer",
+    "coursePlan": "Plan du cours",
+    "modulesCount": "{count} modules",
+    "min": "~ {min} min",
+    "restartBtn": "Recommencer avec un autre texte",
+    "errorShort": "Veuillez coller un texte d'au moins 20 caractères pour générer un cours.",
+    "errorGen": "Une erreur est survenue lors de la génération."
   }
 }
