@@ -6,6 +6,11 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
+  // Ignorer les requêtes d'API pour éviter les redirections de locale qui causent des erreurs HTML/JSON
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    return NextResponse.next();
+  }
+
   // Initialiser la réponse avec next-intl
   let response = intlMiddleware(request);
 
@@ -51,6 +56,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Exclure les fichiers statiques, images et API
-  matcher: ['/', '/(fr|en)/:path*', '/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
+  // Exclure expressément /api
+  matcher: ['/', '/(fr|en)/:path*', '/((?!api|_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
 };

@@ -95,7 +95,7 @@
     "subtitle": "Let AI (DeepSeek) transform your raw notes into interactive courses.",
     "pasteLabel": "Paste your course content here:",
     "pastePlaceholder": "Example: Photosynthesis is the process by which green plants use sunlight to synthesize nutrients...",
-    "generateBtn": "Generate mini-course with AI",
+    "generateBtn": "Generate an explanation with AI",
     "demoWarning": "In this demo version, only raw text is supported. PDF support is coming soon!",
     "analyzing": "AI is analyzing your content...",
     "creatingPlan": "Creating an adaptive learning plan...",

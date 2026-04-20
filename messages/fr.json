@@ -95,7 +95,7 @@
     "subtitle": "Laissez l'IA (DeepSeek) transformer vos notes brutes en cours interactifs.",
     "pasteLabel": "Collez le contenu de votre cours ici :",
     "pastePlaceholder": "Exemple : La photosynthèse est le processus par lequel les plantes vertes utilisent l'énergie solaire pour synthétiser des nutriments...",
-    "generateBtn": "Générer le mini-cours avec l'IA",
+    "generateBtn": "Générer une explication avec l'IA",
     "demoWarning": "Dans cette version démo, seul le texte brut est supporté. Le support PDF arrive bientôt !",
     "analyzing": "L'IA analyse votre contenu...",
     "creatingPlan": "Création d'un plan d'apprentissage adaptatif en cours...",
