@@ -24,23 +24,48 @@ function formatMarkdown(text: string): string {
   // Code inline
   html = html.replace(/`(.+?)`/g, '<code>$1</code>');
 
-  // Blockquotes
+  // Blockquotes (multi-line support)
   html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
 
-  // Lists
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  // Unordered lists
+  const lines = html.split('\n');
+  let inList = false;
+  const processed: string[] = [];
 
-  // Numbered lists
-  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-
-  // Paragraphs
-  html = html.split('\n\n').map(p => {
-    if (!p.startsWith('<') && p.trim()) {
-      return `<p>${p}</p>`;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.match(/^- (.+)$/)) {
+      if (!inList) {
+        processed.push('<ul>');
+        inList = true;
+      }
+      processed.push(line.replace(/^- (.+)$/, '<li>$1</li>'));
+    } else if (line.match(/^\d+\. (.+)$/)) {
+      if (!inList) {
+        processed.push('<ol>');
+        inList = true;
+      }
+      processed.push(line.replace(/^\d+\. (.+)$/, '<li>$1</li>'));
+    } else {
+      if (inList) {
+        processed.push('</ul>');
+        inList = false;
+      }
+      processed.push(line);
     }
-    return p;
-  }).join('\n');
+  }
+  if (inList) processed.push('</ul>');
+
+  html = processed.join('\n');
+
+  // Paragraphs (preserve double line breaks)
+  const blocks = html.split('\n\n');
+  html = blocks.map(block => {
+    const trimmed = block.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('<')) return trimmed;
+    return `<p>${trimmed}</p>`;
+  }).join('\n\n');
 
   return html;
 }

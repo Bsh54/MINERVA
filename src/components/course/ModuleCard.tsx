@@ -66,7 +66,7 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
 
       {/* Liste des topics */}
       <div className="space-y-2 mb-4">
-        {module.topics.map((topic) => {
+        {module.topics.map((topic, topicIndex) => {
           const isComplete = progress.completedTopics.includes(topic.id);
           return (
             <button
@@ -83,7 +83,10 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
               ) : (
                 <Circle className="w-5 h-5 text-stem-400 flex-shrink-0" />
               )}
-              <span className={`text-sm font-medium text-left ${
+              <span className={`text-xs font-bold text-stem-400 flex-shrink-0 w-10`}>
+                {index + 1}-{topicIndex + 1}
+              </span>
+              <span className={`text-sm font-medium text-left flex-1 ${
                 isComplete ? 'text-green-900' : 'text-stem-900'
               }`}>
                 {topic.title}
@@ -96,11 +99,11 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
       {/* Bouton Quiz du module */}
       <button
         onClick={() => onQuizClick(module.id)}
-        className="w-full btn-3d bg-accent-500 hover:bg-accent-600 text-white font-bold py-3 px-4 rounded-xl shadow-button transition-all flex items-center justify-center gap-2"
+        className="w-full bg-stem-100 hover:bg-stem-200 text-stem-700 font-medium py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-sm border border-stem-200"
       >
         <span>Quiz du Module</span>
         {progress.quizScores[`module-${module.id}`] !== undefined && (
-          <span className="bg-white/20 px-2 py-0.5 rounded text-xs">
+          <span className="bg-stem-300 text-stem-900 px-2 py-0.5 rounded text-xs font-bold">
             {Math.round(progress.quizScores[`module-${module.id}`])}%
           </span>
         )}

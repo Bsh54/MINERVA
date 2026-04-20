@@ -81,12 +81,14 @@ export async function POST(
 
 ${languageInstruction}
 
-RULES:
-1. Explain the concept in a way that a BEGINNER can understand
-2. Use simple language and concrete examples
-3. Break down complex ideas into digestible parts
-4. Include practical applications when relevant
-5. Keep the explanation between 400-600 words
+CRITICAL RULES:
+1. NEVER use emojis (no 📌 💡 ⚠️ or any emoji)
+2. Use proper paragraph spacing (double line breaks between paragraphs)
+3. Explain the concept in a way that a BEGINNER can understand
+4. Use simple language and concrete examples
+5. Break down complex ideas into digestible parts
+6. Include practical applications when relevant
+7. Keep the explanation between 400-600 words
 
 FORMATTING (use markdown):
 - Use **bold** for key concepts and important terms
@@ -96,16 +98,16 @@ FORMATTING (use markdown):
 - Use numbered lists (1. 2. 3.) for steps or sequences
 - Use ### for section headers if needed
 - Use \`code\` for formulas, equations, or technical terms
-- Add 📌 emoji before key takeaways
-- Add 💡 emoji before examples
-- Add ⚠️ emoji before warnings or common mistakes
+- Add blank lines between paragraphs for readability
 
 STRUCTURE:
-1. Start with a simple definition
-2. Explain WHY it matters (real-world context)
-3. Break down HOW it works (step by step)
-4. Provide 1-2 concrete examples with 💡
-5. End with a key takeaway with 📌`;
+1. Start with a simple definition (1 paragraph)
+2. Explain WHY it matters - real-world context (1 paragraph)
+3. Break down HOW it works - step by step (1-2 paragraphs)
+4. Provide 1-2 concrete examples (1 paragraph per example)
+5. End with a key takeaway (1 paragraph)
+
+Remember: NO EMOJIS, proper spacing between paragraphs.`;
 
     const apiUrl = DEEPSEEK_API_URL.endsWith('/chat/completions')
       ? DEEPSEEK_API_URL
