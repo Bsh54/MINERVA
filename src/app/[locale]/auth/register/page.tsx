@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { signup } from '@/app/actions/auth';
 import { createClient } from '@/utils/supabase/client';
@@ -11,7 +11,22 @@ export default function RegisterPage() {
   const t = useTranslations('Auth');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const supabase = createClient();
+
+  // Validation du mot de passe
+  const hasMinLength = password.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
+
+  const isPasswordValid = hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+  const canSubmit = isPasswordValid && passwordsMatch;
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
@@ -22,11 +37,16 @@ export default function RegisterPage() {
     });
   };
 
-  const handleRegister = async (formData: FormData) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+
     setIsLoading(true);
     setError(null);
+
+    const formData = new FormData(e.currentTarget);
     const result = await signup(formData);
-    
+
     if (result?.error) {
       setError(result.error);
       setIsLoading(false);
@@ -40,9 +60,9 @@ export default function RegisterPage() {
         <p className="text-stem-600 text-sm">{t('subtitleRegister')}</p>
       </div>
 
-      <form action={handleRegister} className="space-y-4 flex flex-col">
-        <button 
-          type="button" 
+      <form onSubmit={handleRegister} className="space-y-4 flex flex-col">
+        <button
+          type="button"
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 border-2 border-stem-100 rounded-xl text-stem-900 text-sm font-bold hover:bg-stem-50 hover:border-stem-200 transition-all shadow-sm"
         >
@@ -71,37 +91,114 @@ export default function RegisterPage() {
         <div className="space-y-3">
           <div>
             <label className="block text-sm font-bold text-stem-900 mb-1">{t('emailLabel')}</label>
-            <input 
-              type="email" 
-              name="email" 
-              required 
-              className="w-full px-4 py-2.5 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900" 
-              placeholder={t('emailPlaceholder')} 
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full px-4 py-2.5 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900"
+              placeholder={t('emailPlaceholder')}
             />
           </div>
+
           <div>
-            <label className="block text-sm font-bold text-stem-900 mb-1">{t('passwordLabel')}</label>
-            <input 
-              type="password" 
-              name="password" 
-              required 
-              minLength={6}
-              className="w-full px-4 py-2.5 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900" 
-              placeholder="••••••••" 
-            />
+            <label className="block text-sm font-bold text-stem-900 mb-1">Mot de passe</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2.5 pr-10 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stem-400 hover:text-stem-600"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {password.length > 0 && (
+              <div className="mt-3 space-y-1.5 bg-stem-50 p-3 rounded-lg border border-stem-100">
+                <p className="text-xs font-bold text-stem-700 mb-2">Critères du mot de passe:</p>
+                <div className={`flex items-center gap-2 text-xs ${hasMinLength ? 'text-green-600' : 'text-stem-500'}`}>
+                  {hasMinLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Au moins 8 caractères</span>
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${hasUpperCase ? 'text-green-600' : 'text-stem-500'}`}>
+                  {hasUpperCase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Une lettre majuscule</span>
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${hasLowerCase ? 'text-green-600' : 'text-stem-500'}`}>
+                  {hasLowerCase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Une lettre minuscule</span>
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${hasNumber ? 'text-green-600' : 'text-stem-500'}`}>
+                  {hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Un chiffre</span>
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${hasSpecialChar ? 'text-green-600' : 'text-stem-500'}`}>
+                  {hasSpecialChar ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>Un caractère spécial (!@#$%...)</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-stem-900 mb-1">Confirmer le mot de passe</label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={`w-full px-4 py-2.5 pr-10 bg-stem-50/50 border rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900 ${
+                  confirmPassword.length > 0
+                    ? passwordsMatch
+                      ? 'border-green-500 focus:border-green-500'
+                      : 'border-red-500 focus:border-red-500'
+                    : 'border-stem-200 focus:border-stem-400'
+                }`}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stem-400 hover:text-stem-600"
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {confirmPassword.length > 0 && !passwordsMatch && (
+              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                <X className="w-3 h-3" />
+                Les mots de passe ne correspondent pas
+              </p>
+            )}
+            {passwordsMatch && (
+              <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                <Check className="w-3 h-3" />
+                Les mots de passe correspondent
+              </p>
+            )}
           </div>
         </div>
 
-        <button 
-          type="submit" 
-          disabled={isLoading}
+        <button
+          type="submit"
+          disabled={isLoading || !canSubmit}
           className="w-full btn-3d bg-stem-600 hover:bg-stem-800 disabled:bg-stem-300 disabled:cursor-not-allowed text-white font-extrabold py-3 px-4 rounded-xl shadow-button-teal mt-4 flex items-center justify-center gap-2 text-base"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {t('registerBtn')}
+          S'inscrire
         </button>
       </form>
-      
+
       <div className="mt-6 text-center bg-stem-50 p-3 rounded-xl border border-stem-100">
         <Link href="/auth/login" className="text-xs font-bold text-stem-600 hover:text-stem-900 transition-colors">
           {t('haveAccount')}
