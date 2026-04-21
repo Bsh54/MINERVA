@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, Loader2, CheckCircle, BookOpen } from 'lucide-react';
+import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
@@ -137,14 +137,24 @@ export default function TopicPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <Link
-        href={`/dashboard/course/${courseId}`}
-        className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold mb-8 transition-colors"
-      >
-        <ChevronLeft className="w-5 h-5" />
-        Retour au cours
-      </Link>
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href={`/dashboard/course/${courseId}`}
+          className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Retour au cours
+        </Link>
+
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
+        >
+          <Home className="w-5 h-5" />
+          Dashboard
+        </Link>
+      </div>
 
       {/* Header */}
       <div className="bg-gradient-to-br from-stem-50 to-teal-50 rounded-3xl p-8 mb-8 border border-stem-100">
@@ -206,16 +216,6 @@ export default function TopicPage() {
           </button>
         </div>
       )}
-
-      {/* Return to Dashboard */}
-      <div className="mt-6 text-center">
-        <Link
-          href="/dashboard"
-          className="text-sm text-stem-600 hover:text-stem-900 font-medium transition-colors"
-        >
-          ← Retour au dashboard
-        </Link>
-      </div>
     </div>
   );
 }

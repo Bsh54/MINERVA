@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, BookOpen, Trophy } from 'lucide-react';
+import { ChevronLeft, BookOpen, Trophy, Home } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import ModuleCard from '@/components/course/ModuleCard';
@@ -49,14 +49,24 @@ export default function CoursePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Header */}
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold mb-8 transition-colors"
-      >
-        <ChevronLeft className="w-5 h-5" />
-        {t('backHub')}
-      </Link>
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          {t('backHub')}
+        </Link>
+
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
+        >
+          <Home className="w-5 h-5" />
+          Dashboard
+        </Link>
+      </div>
 
       {/* Course Info */}
       <div className="bg-gradient-to-br from-stem-600 to-stem-800 rounded-3xl p-8 md:p-12 mb-8 text-white shadow-lg">
@@ -105,16 +115,6 @@ export default function CoursePage() {
             onQuizClick={handleModuleQuizClick}
           />
         ))}
-      </div>
-
-      {/* Return to Dashboard */}
-      <div className="mt-8 text-center">
-        <Link
-          href="/dashboard"
-          className="text-sm text-stem-600 hover:text-stem-900 font-medium transition-colors"
-        >
-          ← Retour au dashboard
-        </Link>
       </div>
 
       {/* Modals */}
