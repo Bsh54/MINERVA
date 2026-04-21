@@ -6,8 +6,6 @@ import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home, Download } from 'luc
 import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 // Simple markdown to HTML converter with proper spacing
 function formatMarkdown(text: string): string {
@@ -109,7 +107,6 @@ export default function TopicPage() {
 
   const { course, explanations, loadingExplanations, loadExplanation, markTopicComplete, progress } = useCourse();
   const [hasMarkedComplete, setHasMarkedComplete] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   // Trouver le topic dans le cours
   let topicTitle = '';
@@ -147,52 +144,125 @@ export default function TopicPage() {
     router.push(`/dashboard/course/${courseId}/topic/${topicId}/quiz`);
   };
 
-  const handleDownloadPDF = async () => {
-    if (!contentRef.current || !explanation) return;
+  const handleDownloadPDF = () => {
+    if (!explanation) return;
 
-    setIsDownloading(true);
+    // Create a printable HTML document
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
 
-    try {
-      const canvas = await html2canvas(contentRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${topicTitle}</title>
+          <style>
+            body {
+              font-family: system-ui, -apple-system, sans-serif;
+              max-width: 800px;
+              margin: 40px auto;
+              padding: 20px;
+              line-height: 1.6;
+              color: #134E4A;
+            }
+            h1 {
+              color: #134E4A;
+              font-size: 32px;
+              font-weight: 800;
+              margin-bottom: 10px;
+            }
+            h2 {
+              color: #134E4A;
+              font-size: 28px;
+              font-weight: 800;
+              margin-top: 40px;
+              margin-bottom: 20px;
+            }
+            h3 {
+              color: #134E4A;
+              font-size: 24px;
+              font-weight: 800;
+              margin-top: 32px;
+              margin-bottom: 16px;
+            }
+            p {
+              color: #0F766E;
+              font-size: 18px;
+              margin: 16px 0;
+            }
+            strong {
+              font-weight: 700;
+              color: #134E4A;
+              background: #F0FDFA;
+              padding: 2px 4px;
+              border-radius: 4px;
+            }
+            em {
+              font-style: italic;
+              color: #EA580C;
+            }
+            code {
+              background: #E0F2FE;
+              color: #134E4A;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-family: monospace;
+              font-size: 14px;
+              border: 1px solid #BAE6FD;
+            }
+            blockquote {
+              border-left: 4px solid #EA580C;
+              background: #FFF7ED;
+              padding: 16px 24px;
+              border-radius: 0 12px 12px 0;
+              margin: 24px 0;
+              color: #9A3412;
+              font-weight: 500;
+            }
+            ul, ol {
+              margin: 24px 0;
+              padding-left: 24px;
+            }
+            li {
+              color: #0F766E;
+              margin: 8px 0;
+            }
+            .header {
+              border-bottom: 3px solid #134E4A;
+              padding-bottom: 20px;
+              margin-bottom: 40px;
+            }
+            .module-title {
+              color: #0D9488;
+              font-size: 14px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              margin-bottom: 8px;
+            }
+            @media print {
+              body { margin: 0; padding: 20px; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="module-title">${moduleTitle}</div>
+            <h1>${topicTitle}</h1>
+          </div>
+          ${formatMarkdown(explanation)}
+        </body>
+      </html>
+    `;
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
 
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      // Add additional pages if needed
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      // Generate filename
-      const filename = `${topicTitle.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-      pdf.save(filename);
-    } catch (error) {
-      console.error('Erreur génération PDF:', error);
-    } finally {
-      setIsDownloading(false);
-    }
+    // Wait for content to load then trigger print
+    printWindow.onload = () => {
+      printWindow.print();
+    };
   };
 
   if (!course) return null;
@@ -273,20 +343,10 @@ export default function TopicPage() {
 
             <button
               onClick={handleDownloadPDF}
-              disabled={isDownloading}
-              className="flex items-center gap-2 px-6 py-4 rounded-xl font-bold transition-all text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-4 rounded-xl font-bold transition-all text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
             >
-              {isDownloading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Génération...
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5" />
-                  Télécharger PDF
-                </>
-              )}
+              <Download className="w-5 h-5" />
+              Télécharger PDF
             </button>
           </div>
 
