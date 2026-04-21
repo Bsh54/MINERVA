@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 interface Topic {
   id: string;
@@ -85,7 +85,7 @@ export function CourseProvider({
     }
   };
 
-  const loadExplanation = async (topicId: string) => {
+  const loadExplanation = useCallback(async (topicId: string) => {
     if (explanations[topicId] || loadingExplanations.has(topicId)) return;
 
     setLoadingExplanations(prev => new Set(prev).add(topicId));
@@ -114,7 +114,7 @@ export function CourseProvider({
         return newSet;
       });
     }
-  };
+  }, [course.id, explanations, loadingExplanations]);
 
   const markTopicComplete = (topicId: string) => {
     setProgress(prev => {

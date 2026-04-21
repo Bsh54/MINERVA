@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, Loader2, CheckCircle, XCircle, Trophy, Home } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -28,6 +28,7 @@ export default function ModuleQuizPage() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
+  const [quizLoaded, setQuizLoaded] = useState(false);
 
   // Trouver le module
   let moduleTitle = '';
@@ -38,11 +39,9 @@ export default function ModuleQuizPage() {
     }
   }
 
-  useEffect(() => {
-    loadQuiz();
-  }, [moduleId]);
+  const loadQuiz = useCallback(async () => {
+    if (quizLoaded) return;
 
-  const loadQuiz = async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/courses/${courseId}/quiz`, {
@@ -54,13 +53,18 @@ export default function ModuleQuizPage() {
       const data = await response.json();
       if (data.success) {
         setQuestions(data.questions);
+        setQuizLoaded(true);
       }
     } catch (error) {
       console.error('Erreur chargement quiz:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId, moduleId, quizLoaded]);
+
+  useEffect(() => {
+    loadQuiz();
+  }, [loadQuiz]);
 
   const handleAnswer = (answer: any) => {
     setAnswers({ ...answers, [questions[currentQuestion].id]: answer });

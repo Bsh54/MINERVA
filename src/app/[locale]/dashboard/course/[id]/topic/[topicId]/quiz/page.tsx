@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, Loader2, CheckCircle, XCircle, Trophy, Home } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -28,6 +28,30 @@ export default function TopicQuizPage() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
+  const [quizLoaded, setQuizLoaded] = useState(false);
+
+  const loadQuiz = useCallback(async () => {
+    if (quizLoaded) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/courses/${courseId}/quiz`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetId: topicId, targetType: 'topic' })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setQuestions(data.questions);
+        setQuizLoaded(true);
+      }
+    } catch (error) {
+      console.error('Erreur chargement quiz:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [courseId, topicId, quizLoaded]);
 
   // Trouver le topic
   let topicTitle = '';
@@ -56,27 +80,7 @@ export default function TopicQuizPage() {
 
   useEffect(() => {
     loadQuiz();
-  }, [topicId]);
-
-  const loadQuiz = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/courses/${courseId}/quiz`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetId: topicId, targetType: 'topic' })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setQuestions(data.questions);
-      }
-    } catch (error) {
-      console.error('Erreur chargement quiz:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadQuiz]);
 
   const handleAnswer = (answer: any) => {
     setAnswers({ ...answers, [questions[currentQuestion].id]: answer });

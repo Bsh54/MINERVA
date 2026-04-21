@@ -19,7 +19,7 @@ export default function ExplanationModal({ topicId, topicTitle, onClose, onQuizC
 
   useEffect(() => {
     loadExplanation(topicId);
-  }, [topicId]);
+  }, [topicId, loadExplanation]);
 
   const isLoading = loadingExplanations.has(topicId);
   const explanation = explanations[topicId];

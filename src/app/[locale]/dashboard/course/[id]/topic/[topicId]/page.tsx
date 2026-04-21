@@ -116,7 +116,7 @@ export default function TopicPage() {
     if (topicId) {
       loadExplanation(topicId);
     }
-  }, [topicId]);
+  }, [topicId, loadExplanation]);
 
   const isLoading = loadingExplanations.has(topicId);
   const explanation = explanations[topicId];
