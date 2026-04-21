@@ -102,7 +102,7 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
         className="w-full bg-stem-100 hover:bg-stem-200 text-stem-700 font-medium py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-sm border border-stem-200"
       >
         <span>Quiz du Module</span>
-        {progress.quizScores[`module-${module.id}`] !== undefined && (
+        {progress?.quizScores?.[`module-${module.id}`] !== undefined && (
           <span className="bg-stem-300 text-stem-900 px-2 py-0.5 rounded text-xs font-bold">
             {Math.round(progress.quizScores[`module-${module.id}`])}%
           </span>
