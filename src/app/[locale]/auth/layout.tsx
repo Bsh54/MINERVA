@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Image de fond qui remplit tout */}
         <img
           src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80"
-          alt="Students learning together"
+          alt={t('studentsLearningAlt')}
           className="absolute inset-0 w-full h-full object-cover"
         />
 

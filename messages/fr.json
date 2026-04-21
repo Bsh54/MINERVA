@@ -74,7 +74,8 @@
     "signUp": "S'inscrire",
     "passwordsDontMatch": "Les mots de passe ne correspondent pas",
     "passwordsMatch": "Les mots de passe correspondent",
-    "forgotPassword": "Mot de passe oublié ?"
+    "forgotPassword": "Mot de passe oublié ?",
+    "studentsLearningAlt": "Étudiants apprenant ensemble"
   },
   "Hub": {
     "greeting": "Bon retour, {name}",

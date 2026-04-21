@@ -74,7 +74,8 @@
     "signUp": "Sign up",
     "passwordsDontMatch": "Passwords don't match",
     "passwordsMatch": "Passwords match",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "studentsLearningAlt": "Students learning together"
   },
   "Hub": {
     "greeting": "Welcome back, {name}",
