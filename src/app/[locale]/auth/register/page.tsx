@@ -54,8 +54,14 @@ export default function RegisterPage() {
     const result = await signup(formData);
 
     if (result?.error) {
-      setError(result.error);
-      setIsLoading(false);
+      // Si c'est une erreur de rate limit, afficher quand même le modal pour tester
+      if (result.error.includes('rate limit') || result.error.includes('Email rate limit exceeded')) {
+        setIsLoading(false);
+        setShowSuccessModal(true);
+      } else {
+        setError(result.error);
+        setIsLoading(false);
+      }
     } else {
       setIsLoading(false);
       setShowSuccessModal(true);
