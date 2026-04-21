@@ -10,20 +10,40 @@ function formatMarkdown(text: string): string {
 
   let html = text;
 
-  // Code blocks (before inline code)
-  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-stem-100 p-3 rounded-lg my-2 overflow-x-auto"><code>$2</code></pre>');
+  // Code blocks (before inline code) - protect them from further processing
+  const codeBlocks: string[] = [];
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    const placeholder = `__CODEBLOCK_${codeBlocks.length}__`;
+    codeBlocks.push(`<pre class="bg-stem-100 p-3 rounded-lg my-2 overflow-x-auto"><code>${code}</code></pre>`);
+    return placeholder;
+  });
 
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code class="bg-stem-100 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
-
-  // Bold
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold">$1</strong>');
-
-  // Italic
-  html = html.replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>');
+  // Inline code - protect from further processing
+  const inlineCodes: string[] = [];
+  html = html.replace(/`([^`]+)`/g, (match, code) => {
+    const placeholder = `__INLINECODE_${inlineCodes.length}__`;
+    inlineCodes.push(`<code class="bg-stem-100 px-1.5 py-0.5 rounded text-sm font-mono">${code}</code>`);
+    return placeholder;
+  });
 
   // Links
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  // Bold (non-greedy to avoid capturing too much)
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold">$1</strong>');
+
+  // Italic (non-greedy, avoid matching ** for bold)
+  html = html.replace(/\*([^*]+?)\*/g, '<em class="italic">$1</em>');
+
+  // Restore inline code
+  inlineCodes.forEach((code, i) => {
+    html = html.replace(`__INLINECODE_${i}__`, code);
+  });
+
+  // Restore code blocks
+  codeBlocks.forEach((block, i) => {
+    html = html.replace(`__CODEBLOCK_${i}__`, block);
+  });
 
   // Line breaks
   html = html.replace(/\n/g, '<br />');

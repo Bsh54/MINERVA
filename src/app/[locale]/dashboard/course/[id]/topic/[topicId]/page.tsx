@@ -94,10 +94,23 @@ function formatMarkdown(text: string): string {
       continue;
     }
 
-    // Regular paragraphs - apply inline formatting
+    // Regular paragraphs - apply inline formatting with proper order
+    // First protect code blocks from other formatting
+    const inlineCodes: string[] = [];
+    line = line.replace(/`(.+?)`/g, (match, code) => {
+      const placeholder = `__CODE_${inlineCodes.length}__`;
+      inlineCodes.push(`<code class="bg-stem-100 text-stem-900 px-2 py-1 rounded font-mono text-sm border border-stem-200">${code}</code>`);
+      return placeholder;
+    });
+
+    // Then apply bold and italic
     line = line.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-stem-900 bg-stem-50 px-1 rounded">$1</strong>');
     line = line.replace(/\*(.+?)\*/g, '<em class="italic text-accent-600">$1</em>');
-    line = line.replace(/`(.+?)`/g, '<code class="bg-stem-100 text-stem-900 px-2 py-1 rounded font-mono text-sm border border-stem-200">$1</code>');
+
+    // Restore code blocks
+    inlineCodes.forEach((code, idx) => {
+      line = line.replace(`__CODE_${idx}__`, code);
+    });
 
     processed.push(`<p class="text-stem-800 leading-relaxed my-4 text-lg">${line}</p>`);
   }
