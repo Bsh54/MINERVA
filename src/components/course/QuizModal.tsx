@@ -79,7 +79,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
     const finalScore = (correctCount / questions.length) * 100;
     setScore(finalScore);
     setShowResults(true);
-    saveQuizScore(targetId, targetType, finalScore);
+    saveQuizScore(`${targetType}-${targetId}`, finalScore);
   };
 
   if (loading) {
