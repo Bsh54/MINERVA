@@ -242,7 +242,18 @@ export default function TopicQuizPage() {
                       : 'border-stem-200 bg-white hover:border-accent-300 hover:bg-accent-50/50 text-stem-900'
                   }`}
                 >
-                  {option}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      answers[currentQ.id] === index
+                        ? 'border-accent-500 bg-accent-500'
+                        : 'border-stem-300 bg-white'
+                    }`}>
+                      {answers[currentQ.id] === index && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
+                      )}
+                    </div>
+                    <span className="flex-1">{option}</span>
+                  </div>
                 </button>
               ))}
             </div>
@@ -258,7 +269,18 @@ export default function TopicQuizPage() {
                     : 'border-stem-200 bg-white hover:border-green-300 hover:bg-green-50/50 text-stem-900'
                 }`}
               >
-                ✓ Vrai
+                <div className="flex flex-col items-center gap-2">
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    answers[currentQ.id] === true
+                      ? 'border-green-500 bg-green-500'
+                      : 'border-stem-300 bg-white'
+                  }`}>
+                    {answers[currentQ.id] === true && (
+                      <div className="w-3 h-3 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <span>✓ Vrai</span>
+                </div>
               </button>
               <button
                 onClick={() => handleAnswer(false)}
@@ -268,7 +290,18 @@ export default function TopicQuizPage() {
                     : 'border-stem-200 bg-white hover:border-red-300 hover:bg-red-50/50 text-stem-900'
                 }`}
               >
-                ✗ Faux
+                <div className="flex flex-col items-center gap-2">
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    answers[currentQ.id] === false
+                      ? 'border-red-500 bg-red-500'
+                      : 'border-stem-300 bg-white'
+                  }`}>
+                    {answers[currentQ.id] === false && (
+                      <div className="w-3 h-3 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <span>✗ Faux</span>
+                </div>
               </button>
             </div>
           )}
