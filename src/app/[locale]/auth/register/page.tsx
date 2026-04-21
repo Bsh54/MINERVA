@@ -2,19 +2,22 @@
 
 import { useTranslations } from 'next-intl';
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
-import { Link } from '@/i18n/routing';
+import { Link, useRouter } from '@/i18n/routing';
 import { signup } from '@/app/actions/auth';
 import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 
 export default function RegisterPage() {
   const t = useTranslations('Auth');
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const supabase = createClient();
 
   // Validation du mot de passe
@@ -45,16 +48,46 @@ export default function RegisterPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    setUserEmail(email);
+
     const result = await signup(formData);
 
     if (result?.error) {
       setError(result.error);
       setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      setShowSuccessModal(true);
     }
   };
 
   return (
     <>
+      {/* Modal de succès */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-stem-900 mb-3">Email de confirmation envoyé !</h3>
+              <p className="text-stem-600 mb-6">
+                Un email de confirmation a été envoyé à <span className="font-bold">{userEmail}</span>.
+                Veuillez vérifier votre boîte de réception et cliquer sur le lien pour activer votre compte.
+              </p>
+              <button
+                onClick={() => router.push('/auth/login')}
+                className="w-full btn-3d bg-stem-600 hover:bg-stem-800 text-white font-bold py-3 px-6 rounded-xl shadow-button-teal"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6 text-center md:text-left">
         <h3 className="text-3xl font-extrabold text-stem-900 mb-2 font-display tracking-tight">{t('createAccount')}</h3>
         <p className="text-stem-600 text-sm">{t('subtitleRegister')}</p>
