@@ -6,11 +6,18 @@ import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home, Download } from 'luc
 import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-// @ts-ignore
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// Dynamic import for pdfMake (client-side only)
+let pdfMake: any = null;
+if (typeof window !== 'undefined') {
+  import('pdfmake/build/pdfmake').then(module => {
+    pdfMake = module.default;
+    import('pdfmake/build/vfs_fonts').then(fonts => {
+      // @ts-ignore
+      pdfMake.vfs = fonts.default.pdfMake.vfs;
+    });
+  });
+}
 
 // Simple markdown to HTML converter with proper spacing
 function formatMarkdown(text: string): string {
@@ -151,7 +158,10 @@ export default function TopicPage() {
   };
 
   const handleDownloadPDF = () => {
-    if (!explanation) return;
+    if (!explanation || !pdfMake) {
+      console.error('PDF library not loaded yet');
+      return;
+    }
 
     setIsDownloading(true);
 
