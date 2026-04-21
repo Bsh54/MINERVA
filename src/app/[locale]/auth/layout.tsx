@@ -31,6 +31,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </span>
           </Link>
         </div>
+
+        {/* Texte centré */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-8 lg:px-12">
+          <div className="text-center max-w-md">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+              {t('joinElite')}
+            </h2>
+            <p className="text-lg text-stem-200">
+              {t('socialProof')}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Right Side (Form Area) - Strict 50% & Centered */}
