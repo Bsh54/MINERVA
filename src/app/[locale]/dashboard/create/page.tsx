@@ -248,8 +248,19 @@ export default function CreateCoursePage() {
       const result = await response.json();
 
       if (result.success) {
-        // Rediriger vers le cours
-        window.location.href = `/${locale}/dashboard/course/${result.courseId}`;
+        const courseId = result.courseId;
+
+        // Lancer la pré-génération des 3 premiers topics en arrière-plan
+        // Ne pas attendre la réponse - l'utilisateur peut commencer à apprendre
+        fetch(`/api/courses/${courseId}/pregenerate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(err => {
+          console.error('Erreur pré-génération (non bloquante):', err);
+        });
+
+        // Rediriger vers le cours immédiatement
+        window.location.href = `/${locale}/dashboard/course/${courseId}`;
       } else {
         setErrorMsg(result.error || 'Erreur lors de la sauvegarde');
         setIsSaving(false);
