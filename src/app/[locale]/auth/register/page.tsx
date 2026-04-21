@@ -120,32 +120,6 @@ export default function RegisterPage() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-
-            {password.length > 0 && (
-              <div className="mt-3 space-y-1.5 bg-stem-50 p-3 rounded-lg border border-stem-100">
-                <p className="text-xs font-bold text-stem-700 mb-2">Critères du mot de passe:</p>
-                <div className={`flex items-center gap-2 text-xs ${hasMinLength ? 'text-green-600' : 'text-stem-500'}`}>
-                  {hasMinLength ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  <span>Au moins 8 caractères</span>
-                </div>
-                <div className={`flex items-center gap-2 text-xs ${hasUpperCase ? 'text-green-600' : 'text-stem-500'}`}>
-                  {hasUpperCase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  <span>Une lettre majuscule</span>
-                </div>
-                <div className={`flex items-center gap-2 text-xs ${hasLowerCase ? 'text-green-600' : 'text-stem-500'}`}>
-                  {hasLowerCase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  <span>Une lettre minuscule</span>
-                </div>
-                <div className={`flex items-center gap-2 text-xs ${hasNumber ? 'text-green-600' : 'text-stem-500'}`}>
-                  {hasNumber ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  <span>Un chiffre</span>
-                </div>
-                <div className={`flex items-center gap-2 text-xs ${hasSpecialChar ? 'text-green-600' : 'text-stem-500'}`}>
-                  {hasSpecialChar ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  <span>Un caractère spécial (!@#$%...)</span>
-                </div>
-              </div>
-            )}
           </div>
 
           <div>
