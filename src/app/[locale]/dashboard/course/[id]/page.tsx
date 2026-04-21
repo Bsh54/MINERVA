@@ -18,7 +18,7 @@ export default function CoursePage() {
   if (!course) return null;
 
   const totalTopics = course.coursePlan.modules.reduce((acc, mod) => acc + mod.topics.length, 0);
-  const completedTopicsCount = progress.completedTopics.length;
+  const completedTopicsCount = progress?.completedTopics?.length || 0;
   const progressPercent = totalTopics > 0 ? (completedTopicsCount / totalTopics) * 100 : 0;
 
   const handleTopicClick = (topicId: string) => {
