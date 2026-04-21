@@ -1,42 +1,42 @@
 # MINERVA
 
-Plateforme d'apprentissage STEM alimentée par l'IA qui génère des cours personnalisés à partir de n'importe quel contenu texte.
+AI-powered STEM learning platform that generates personalized courses from any text content.
 
-## Fonctionnalités
+## Features
 
-- **Génération de cours par IA** : Transformez n'importe quel texte en cours structuré avec modules et topics
-- **Explications détaillées** : Chaque topic dispose d'une explication complète générée par IA avec formatage riche
-- **Quiz interactifs** : QCM et Vrai/Faux pour chaque topic et module
-- **Suivi de progression** : Sauvegarde automatique de votre avancement
-- **Multilingue** : Support complet français et anglais
-- **Interface moderne** : Design épuré avec Tailwind CSS
+- **AI Course Generation**: Transform any text into structured courses with modules and topics
+- **Detailed Explanations**: Each topic includes comprehensive AI-generated explanations with rich formatting
+- **Interactive Quizzes**: Multiple choice and true/false questions for every topic and module
+- **Progress Tracking**: Automatic saving of your learning progress
+- **Multilingual**: Full support for English and French
+- **Modern Interface**: Clean design with Tailwind CSS
 
-## Stack technique
+## Tech Stack
 
-- **Framework** : Next.js 16.2.4 (App Router)
-- **Langage** : TypeScript
-- **Base de données** : Supabase (PostgreSQL)
-- **Authentification** : Supabase Auth
-- **IA** : DeepSeek API
-- **Styling** : Tailwind CSS 4
-- **Internationalisation** : next-intl
+- **Framework**: Next.js 16.2.4 (App Router)
+- **Language**: TypeScript
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **AI**: DeepSeek API
+- **Styling**: Tailwind CSS 4
+- **Internationalization**: next-intl
 
 ## Installation
 
-1. Cloner le repository
+1. Clone the repository
 ```bash
 git clone https://github.com/Bsh54/MINERVA.git
 cd MINERVA/stem-app
 ```
 
-2. Installer les dépendances
+2. Install dependencies
 ```bash
 npm install
 ```
 
-3. Configurer les variables d'environnement
+3. Configure environment variables
 
-Créer un fichier `.env.local` :
+Create a `.env.local` file:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -44,86 +44,94 @@ DEEPSEEK_API_URL=your_deepseek_api_url
 DEEPSEEK_API_KEY=your_deepseek_api_key
 ```
 
-4. Configurer la base de données
+4. Set up the database
 
-Exécuter les migrations SQL dans Supabase Dashboard :
+Run SQL migrations in Supabase Dashboard:
 - `supabase/migrations/20260420_create_courses_table.sql`
 - `supabase/migrations/20260420_create_course_system_tables.sql`
 
-5. Lancer le serveur de développement
+5. Start the development server
 ```bash
 npm run dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000)
 
-## Structure du projet
+## Project Structure
 
 ```
 stem-app/
 ├── src/
-│   ├── app/                    # Pages Next.js (App Router)
-│   │   ├── [locale]/          # Routes internationalisées
+│   ├── app/                    # Next.js pages (App Router)
+│   │   ├── [locale]/          # Internationalized routes
 │   │   └── api/               # API routes
-│   ├── components/            # Composants React
-│   ├── contexts/              # Context API (état global)
-│   ├── i18n/                  # Configuration i18n
-│   └── utils/                 # Utilitaires
+│   ├── components/            # React components
+│   ├── contexts/              # Context API (global state)
+│   ├── i18n/                  # i18n configuration
+│   └── utils/                 # Utilities
 ├── supabase/
-│   └── migrations/            # Migrations SQL
-└── public/                    # Assets statiques
+│   └── migrations/            # SQL migrations
+└── public/                    # Static assets
 ```
 
-## Utilisation
+## Usage
 
-1. **Créer un compte** : Inscription via email/mot de passe
-2. **Créer un cours** : Coller n'importe quel texte et choisir le niveau d'explication
-3. **Personnaliser** : Sélectionner les topics à inclure, réorganiser, ajouter des topics personnalisés
-4. **Apprendre** : Cliquer sur un topic pour voir l'explication détaillée
-5. **Tester** : Passer les quiz pour valider vos connaissances
-6. **Progresser** : Votre avancement est sauvegardé automatiquement
+1. **Create an account**: Sign up via email/password or Google OAuth
+2. **Create a course**: Paste any text and choose the explanation level
+3. **Customize**: Select topics to include, reorganize, add custom topics
+4. **Learn**: Click on a topic to view detailed explanations
+5. **Test**: Take quizzes to validate your knowledge
+6. **Progress**: Your progress is automatically saved
 
 ## Architecture
 
-### Génération de contenu
+### Content Generation
 
-- Les cours sont générés via DeepSeek API avec des prompts structurés
-- Les explications utilisent du markdown pour un formatage riche
-- Les quiz combinent QCM (4 options) et questions Vrai/Faux
+- Courses are generated via DeepSeek API with structured prompts
+- Explanations use markdown for rich formatting
+- Quizzes combine multiple choice (4 options) and true/false questions
+- Content is cached in database to avoid regeneration
 
-### Base de données
+### Database
 
-- **courses** : Stocke les cours avec leur plan (JSONB)
-- **topic_explanations** : Cache des explications générées
-- **quizzes** : Cache des quiz générés
-- **user_progress** : Progression utilisateur (topics/modules complétés, scores)
+- **courses**: Stores courses with their plan (JSONB)
+- **topic_explanations**: Cache for generated explanations
+- **quizzes**: Cache for generated quizzes
+- **user_progress**: User progress (completed topics/modules, scores)
 
-### Sécurité
+### Security
 
-- Row Level Security (RLS) activé sur toutes les tables
-- Authentification via Supabase Auth
-- Les utilisateurs ne voient que leurs propres données
+- Row Level Security (RLS) enabled on all tables
+- Authentication via Supabase Auth
+- Users only see their own data
 
-## Développement
+## Development
 
 ```bash
-# Lancer en mode développement
+# Run in development mode
 npm run dev
 
-# Build de production
+# Production build
 npm run build
 
-# Lancer la version de production
+# Run production version
 npm start
 
 # Linter
 npm run lint
 ```
 
-## Licence
+## Performance Optimizations
+
+- API calls are cached to prevent duplicate content generation
+- Explanations and quizzes are stored in database after first generation
+- Frontend uses `useCallback` to prevent unnecessary re-renders
+- Content is only fetched once per session
+
+## License
 
 MIT
 
-## Auteur
+## Author
 
 Bsh54
