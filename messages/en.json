@@ -131,6 +131,27 @@
     "startCourse": "Start Course",
     "selectionRequired": "Selection required",
     "saving": "Saving...",
-    "selected": "selected"
+    "selected": "selected",
+    "dashboard": "Dashboard",
+    "backToCourse": "Back to course",
+    "backToTopic": "Back to topic",
+    "loadingQuiz": "Loading quiz...",
+    "congratulations": "Congratulations!",
+    "keepTrying": "Keep trying!",
+    "correctAnswers": "You answered {correct} out of {total} questions correctly.",
+    "reviewTopic": "Review topic",
+    "nextTopic": "Next topic",
+    "moduleQuiz": "Module quiz",
+    "finishQuiz": "Finish quiz",
+    "next": "Next",
+    "previous": "Previous",
+    "question": "Question",
+    "quiz": "Quiz",
+    "true": "True",
+    "false": "False",
+    "understood": "Understood",
+    "markAsUnderstood": "Mark as understood",
+    "takeQuiz": "Take Quiz",
+    "generatingExplanation": "Generating explanation..."
   }
 }

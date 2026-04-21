@@ -116,7 +116,7 @@ export default function TopicQuizPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-center py-16">
           <Loader2 className="w-12 h-12 text-accent-500 animate-spin mb-4" />
-          <p className="text-stem-600 font-medium">Chargement du quiz...</p>
+          <p className="text-stem-600 font-medium">{t('loadingQuiz')}</p>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export default function TopicQuizPage() {
           </div>
 
           <h2 className="text-3xl font-extrabold text-stem-900 mb-4 font-display">
-            {passed ? 'Félicitations !' : 'Continuez vos efforts !'}
+            {passed ? t('congratulations') : t('keepTrying')}
           </h2>
 
           <div className="text-6xl font-extrabold mb-6" style={{ color: passed ? '#10b981' : '#f97316' }}>
@@ -148,7 +148,7 @@ export default function TopicQuizPage() {
           </div>
 
           <p className="text-stem-600 text-lg mb-8">
-            Vous avez répondu correctement à {questions.filter(q => answers[q.id] === q.correctAnswer).length} sur {questions.length} questions.
+            {t('correctAnswers', { correct: questions.filter(q => answers[q.id] === q.correctAnswer).length, total: questions.length })}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -156,7 +156,7 @@ export default function TopicQuizPage() {
               href={`/dashboard/course/${courseId}/topic/${topicId}`}
               className="btn-3d bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-4 px-8 rounded-xl shadow-button-teal"
             >
-              Revoir le topic
+              {t('reviewTopic')}
             </Link>
 
             {nextTopicId ? (
@@ -164,21 +164,21 @@ export default function TopicQuizPage() {
                 href={`/dashboard/course/${courseId}/topic/${nextTopicId}`}
                 className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
               >
-                Topic suivant →
+                {t('nextTopic')} →
               </Link>
             ) : isLastTopicInModule && currentModuleId ? (
               <Link
                 href={`/dashboard/course/${courseId}/module/${currentModuleId}/quiz`}
                 className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
               >
-                Quiz du module →
+                {t('moduleQuiz')} →
               </Link>
             ) : (
               <Link
                 href={`/dashboard/course/${courseId}`}
                 className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
               >
-                Retour au cours
+                {t('backToCourse')}
               </Link>
             )}
           </div>
@@ -200,7 +200,7 @@ export default function TopicQuizPage() {
           className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
-          Retour au topic
+          {t('backToTopic')}
         </Link>
 
         <Link
@@ -208,7 +208,7 @@ export default function TopicQuizPage() {
           className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
         >
           <Home className="w-5 h-5" />
-          Dashboard
+          {t('dashboard')}
         </Link>
       </div>
 
@@ -216,10 +216,10 @@ export default function TopicQuizPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-bold text-stem-500 uppercase tracking-wider">
-              Question {currentQuestion + 1} / {questions.length}
+              {t('question')} {currentQuestion + 1} / {questions.length}
             </span>
             <span className="text-sm font-bold text-accent-600">
-              Quiz: {topicTitle}
+              {t('quiz')}: {topicTitle}
             </span>
           </div>
 
@@ -281,7 +281,7 @@ export default function TopicQuizPage() {
                       <div className="w-3 h-3 rounded-full bg-white"></div>
                     )}
                   </div>
-                  <span>✓ Vrai</span>
+                  <span>✓ {t('true')}</span>
                 </div>
               </button>
               <button
@@ -302,7 +302,7 @@ export default function TopicQuizPage() {
                       <div className="w-3 h-3 rounded-full bg-white"></div>
                     )}
                   </div>
-                  <span>✗ Faux</span>
+                  <span>✗ {t('false')}</span>
                 </div>
               </button>
             </div>
@@ -315,7 +315,7 @@ export default function TopicQuizPage() {
             disabled={currentQuestion === 0}
             className="px-6 py-3 rounded-xl font-bold text-stem-600 hover:text-stem-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            ← Précédent
+            ← {t('previous')}
           </button>
 
           {isLastQuestion ? (
@@ -324,7 +324,7 @@ export default function TopicQuizPage() {
               disabled={!hasAnswered}
               className="btn-3d bg-accent-500 hover:bg-accent-600 disabled:bg-gray-300 disabled:shadow-none text-white font-extrabold py-3 px-8 rounded-xl shadow-button transition-all"
             >
-              Terminer le quiz
+              {t('finishQuiz')}
             </button>
           ) : (
             <button
@@ -332,7 +332,7 @@ export default function TopicQuizPage() {
               disabled={!hasAnswered}
               className="btn-3d bg-stem-600 hover:bg-stem-800 disabled:bg-gray-300 disabled:shadow-none text-white font-extrabold py-3 px-8 rounded-xl shadow-button-teal transition-all"
             >
-              Suivant →
+              {t('next')} →
             </button>
           )}
         </div>

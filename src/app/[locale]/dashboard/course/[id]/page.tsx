@@ -64,7 +64,7 @@ export default function CoursePage() {
           className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
         >
           <Home className="w-5 h-5" />
-          Dashboard
+          {t('dashboard')}
         </Link>
       </div>
 

@@ -144,7 +144,7 @@ export default function TopicPage() {
           className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
-          Retour au cours
+          {t('backToCourse')}
         </Link>
 
         <Link
@@ -152,7 +152,7 @@ export default function TopicPage() {
           className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold transition-colors"
         >
           <Home className="w-5 h-5" />
-          Dashboard
+          {t('dashboard')}
         </Link>
       </div>
 
@@ -169,7 +169,7 @@ export default function TopicPage() {
           {(isComplete || hasMarkedComplete) && (
             <div className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-xl font-bold">
               <CheckCircle className="w-5 h-5" />
-              Compris
+              {t('understood')}
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function TopicPage() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="w-12 h-12 text-accent-500 animate-spin mb-4" />
-            <p className="text-stem-600 font-medium">Génération de l'explication...</p>
+            <p className="text-stem-600 font-medium">{t('generatingExplanation')}</p>
           </div>
         ) : explanation ? (
           <div className="prose prose-lg max-w-none">
@@ -205,14 +205,14 @@ export default function TopicPage() {
                 : 'bg-stem-600 hover:bg-stem-800 text-white shadow-button-teal'
             }`}
           >
-            {isComplete || hasMarkedComplete ? '✓ Compris' : 'Marquer comme compris'}
+            {isComplete || hasMarkedComplete ? `✓ ${t('understood')}` : t('markAsUnderstood')}
           </button>
 
           <button
             onClick={handleQuizClick}
             className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-10 rounded-xl shadow-button transition-all text-lg"
           >
-            Passer le Quiz →
+            {t('takeQuiz')} →
           </button>
         </div>
       )}
