@@ -26,11 +26,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         {/* Image centrale */}
         <div className="relative z-10 flex-1 flex items-center justify-center">
-          <div className="relative w-full max-w-md">
+          <div className="relative w-full h-full flex items-center justify-center">
             <img
-              src="/auth-illustration.svg"
-              alt="Learning illustration"
-              className="w-full h-auto drop-shadow-2xl"
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
+              alt="Students learning together"
+              className="w-full h-full object-cover rounded-2xl shadow-2xl"
             />
           </div>
         </div>
