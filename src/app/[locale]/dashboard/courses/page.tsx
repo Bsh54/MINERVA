@@ -82,40 +82,48 @@ export default async function CoursesPage() {
               <Link
                 key={course.id}
                 href={`/dashboard/course/${course.id}`}
-                className="bg-white rounded-3xl p-8 border border-stem-100 shadow-soft hover:shadow-float hover:-translate-y-1 transition-all duration-200 group relative overflow-hidden"
+                className="bg-gradient-to-br from-white to-stem-50/30 rounded-3xl p-8 border-2 border-stem-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:border-stem-400 transition-all duration-300 group relative overflow-hidden"
               >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-sm relative z-10 ${
+                {/* Effet de fond décoratif */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-stem-200/40 to-accent-200/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500"></div>
+
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md relative z-10 ${
                   isComplete
-                    ? 'bg-green-50 text-green-600 border border-green-100'
-                    : 'bg-stem-50 text-stem-600 border border-stem-200'
+                    ? 'bg-gradient-to-br from-green-400 to-green-600 text-white'
+                    : 'bg-gradient-to-br from-stem-500 to-stem-700 text-white'
                 }`}>
-                  <BookOpen className="w-7 h-7" />
+                  <BookOpen className="w-8 h-8" />
                 </div>
 
-                <h3 className="text-xl font-extrabold text-stem-900 mb-2 relative z-10 line-clamp-2">
+                <h3 className="text-2xl font-extrabold text-stem-900 mb-3 relative z-10 line-clamp-2 group-hover:text-stem-700 transition-colors">
                   {course.title}
                 </h3>
 
-                <p className="text-sm text-stem-500 font-medium mb-6 flex items-center gap-2 relative z-10">
+                <p className="text-sm text-stem-600 font-bold mb-6 flex items-center gap-2 relative z-10 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-lg w-fit">
                   <Clock className="w-4 h-4" /> {timeLabel}
                 </p>
 
-                <div className="w-full bg-stem-50 rounded-full h-2.5 mb-3 overflow-hidden relative z-10">
+                <div className="w-full bg-stem-100 rounded-full h-3 mb-3 overflow-hidden relative z-10 shadow-inner">
                   <div
-                    className={`h-2.5 rounded-full ${
+                    className={`h-3 rounded-full shadow-sm transition-all duration-500 ${
                       isComplete
-                        ? 'bg-gradient-to-r from-green-400 to-green-600'
-                        : 'bg-gradient-to-r from-stem-400 to-stem-600'
+                        ? 'bg-gradient-to-r from-green-400 via-green-500 to-green-600'
+                        : 'bg-gradient-to-r from-stem-400 via-stem-500 to-stem-600'
                     }`}
                     style={{ width: `${course.progressPercent}%` }}
                   ></div>
                 </div>
 
-                <p className={`text-xs text-right font-bold uppercase tracking-wide relative z-10 ${
-                  isComplete ? 'text-green-600' : 'text-stem-400'
-                }`}>
-                  {isComplete ? 'Terminé 🎉' : `${Math.round(course.progressPercent)}% complété`}
-                </p>
+                <div className="flex items-center justify-between relative z-10">
+                  <p className={`text-sm font-bold uppercase tracking-wide ${
+                    isComplete ? 'text-green-600' : 'text-stem-600'
+                  }`}>
+                    {isComplete ? '✨ Terminé' : `${Math.round(course.progressPercent)}% complété`}
+                  </p>
+                  <span className="text-stem-400 text-xs font-medium">
+                    {course.completedCount}/{course.totalTopics} topics
+                  </span>
+                </div>
               </Link>
             );
           })}
