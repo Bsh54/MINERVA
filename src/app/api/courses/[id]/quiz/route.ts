@@ -40,11 +40,14 @@ export async function POST(
       .single();
 
     if (existingQuiz) {
+      console.log(`[CACHE HIT] Quiz trouvé en cache pour ${targetType} ${targetId}`);
       return NextResponse.json({
         success: true,
         questions: existingQuiz.questions
       });
     }
+
+    console.log(`[CACHE MISS] Génération de quiz pour ${targetType} ${targetId}`);
 
     // Charger le cours
     const { data: course, error: courseError } = await supabase

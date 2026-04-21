@@ -39,11 +39,14 @@ export async function POST(
       .single();
 
     if (existingExplanation) {
+      console.log(`[CACHE HIT] Explication trouvée en cache pour topic ${topicId}`);
       return NextResponse.json({
         success: true,
         explanation: existingExplanation.explanation
       });
     }
+
+    console.log(`[CACHE MISS] Génération d'explication pour topic ${topicId}`);
 
     // Charger le cours
     const { data: course, error: courseError } = await supabase
