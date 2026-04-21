@@ -36,8 +36,8 @@ export default function ChatbotPanel() {
     <div
       className={`fixed bg-white shadow-2xl border border-stem-200 flex flex-col z-50 transition-all ${
         isResizable
-          ? 'top-20 right-6 bottom-6 w-[600px] rounded-2xl'
-          : 'bottom-24 right-6 w-96 h-[600px] rounded-2xl md:bottom-6'
+          ? 'top-20 right-6 bottom-6 w-[700px] rounded-2xl'
+          : 'bottom-28 right-6 w-[450px] h-[700px] rounded-2xl md:bottom-6'
       }`}
     >
       {/* Header */}
