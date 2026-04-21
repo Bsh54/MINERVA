@@ -1,7 +1,5 @@
 'use server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
 export async function generateCourseFromText(
   text: string,
   locale: string = 'en',
@@ -13,8 +11,12 @@ export async function generateCourseFromText(
       return { success: false, error: 'Texte fourni trop court ou invalide.' };
     }
 
-    // Appeler notre API Route interne au lieu de DeepSeek directement
-    const response = await fetch(`${API_BASE_URL}/api/generate-course`, {
+    // Utiliser l'URL relative pour fonctionner en local et sur Vercel
+    const apiUrl = typeof window === 'undefined'
+      ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/generate-course`
+      : '/api/generate-course';
+
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
