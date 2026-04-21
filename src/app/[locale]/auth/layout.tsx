@@ -9,11 +9,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="h-screen w-full flex bg-white overflow-hidden">
       {/* Left Side (Branding) - Strict 50% */}
-      <div className="hidden md:flex w-1/2 bg-stem-900 p-8 lg:p-12 flex-col justify-between text-white relative overflow-hidden">
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-stem-900 to-stem-800 p-8 lg:p-12 flex-col justify-between text-white relative overflow-hidden">
         {/* Background blobs for depth */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-stem-600/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-accent-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
-        
+
         {/* Logo */}
         <Link href="/" className="relative z-10 flex items-center gap-2 cursor-pointer w-fit">
           <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center backdrop-blur-md shadow-soft">
@@ -23,18 +23,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Evolutics<span className="text-accent-500">Learn</span>
           </span>
         </Link>
-        
-        {/* Marketing Text */}
-        <div className="relative z-10 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-stem-100 font-medium mb-4 text-xs backdrop-blur-sm">
-            <SparkleIcon /> Plateforme adaptative
+
+        {/* Image centrale */}
+        <div className="relative z-10 flex-1 flex items-center justify-center">
+          <div className="relative w-full max-w-md">
+            <img
+              src="/auth-illustration.svg"
+              alt="Learning illustration"
+              className="w-full h-auto drop-shadow-2xl"
+            />
           </div>
-          <h2 className="text-3xl lg:text-4xl font-extrabold mb-4 font-display leading-tight text-white">
-            {t('joinElite')}
-          </h2>
-          <p className="text-stem-200 text-sm lg:text-base leading-relaxed max-w-sm">
-            {t('socialProof')}
-          </p>
         </div>
       </div>
 
