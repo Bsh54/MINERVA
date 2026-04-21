@@ -50,18 +50,18 @@ export default function ProfilePage() {
         <div className="flex flex-col items-center relative z-10">
           <img src="https://i.pravatar.cc/150?img=11" alt="User" className="w-36 h-36 rounded-full border-4 border-white shadow-md mb-6" />
           <button className="text-sm font-bold text-stem-600 bg-stem-50 px-6 py-3 rounded-xl hover:bg-stem-100 transition-colors">
-            Modifier la photo
+            {t('changePhoto')}
           </button>
         </div>
         
         <div className="flex-1 space-y-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-stem-900 mb-2">Nom complet</label>
-              <input type="text" defaultValue="Étudiant STEM" className="w-full px-5 py-3 bg-stem-50/50 border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900" readOnly />
+              <label className="block text-sm font-bold text-stem-900 mb-2">{t('fullName')}</label>
+              <input type="text" defaultValue={t('defaultStudentName')} className="w-full px-5 py-3 bg-stem-50/50 border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900" readOnly />
             </div>
             <div>
-              <label className="block text-sm font-bold text-stem-900 mb-2">Email</label>
+              <label className="block text-sm font-bold text-stem-900 mb-2">{t('email')}</label>
               <input type="email" value={email} className="w-full px-5 py-3 bg-stem-50/50 border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900" readOnly />
             </div>
             <div className="md:col-span-2">

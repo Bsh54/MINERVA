@@ -134,7 +134,11 @@
     "upgradeToPro": "Passer Pro",
     "today": "Aujourd'hui",
     "yesterday": "Hier",
-    "daysAgo": "Il y a {days} jours"
+    "daysAgo": "Il y a {days} jours",
+    "changePhoto": "Modifier la photo",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "defaultStudentName": "Étudiant STEM"
   },
   "CreateCourse": {
     "subtitle": "Transformez vos notes en parcours d'apprentissage structurés.",

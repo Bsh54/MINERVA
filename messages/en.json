@@ -134,7 +134,11 @@
     "upgradeToPro": "Upgrade to Pro",
     "today": "Today",
     "yesterday": "Yesterday",
-    "daysAgo": "{days} days ago"
+    "daysAgo": "{days} days ago",
+    "changePhoto": "Change photo",
+    "fullName": "Full name",
+    "email": "Email",
+    "defaultStudentName": "STEM Student"
   },
   "CreateCourse": {
     "subtitle": "Transform your notes into structured learning paths.",
