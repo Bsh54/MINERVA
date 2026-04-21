@@ -6,6 +6,11 @@ import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home, Download } from 'luc
 import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+// @ts-ignore
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // Simple markdown to HTML converter with proper spacing
 function formatMarkdown(text: string): string {
@@ -107,6 +112,7 @@ export default function TopicPage() {
 
   const { course, explanations, loadingExplanations, loadExplanation, markTopicComplete, progress } = useCourse();
   const [hasMarkedComplete, setHasMarkedComplete] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Trouver le topic dans le cours
   let topicTitle = '';
@@ -147,122 +153,160 @@ export default function TopicPage() {
   const handleDownloadPDF = () => {
     if (!explanation) return;
 
-    // Create a printable HTML document
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+    setIsDownloading(true);
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>${topicTitle}</title>
-          <style>
-            body {
-              font-family: system-ui, -apple-system, sans-serif;
-              max-width: 800px;
-              margin: 40px auto;
-              padding: 20px;
-              line-height: 1.6;
-              color: #134E4A;
-            }
-            h1 {
-              color: #134E4A;
-              font-size: 32px;
-              font-weight: 800;
-              margin-bottom: 10px;
-            }
-            h2 {
-              color: #134E4A;
-              font-size: 28px;
-              font-weight: 800;
-              margin-top: 40px;
-              margin-bottom: 20px;
-            }
-            h3 {
-              color: #134E4A;
-              font-size: 24px;
-              font-weight: 800;
-              margin-top: 32px;
-              margin-bottom: 16px;
-            }
-            p {
-              color: #0F766E;
-              font-size: 18px;
-              margin: 16px 0;
-            }
-            strong {
-              font-weight: 700;
-              color: #134E4A;
-              background: #F0FDFA;
-              padding: 2px 4px;
-              border-radius: 4px;
-            }
-            em {
-              font-style: italic;
-              color: #EA580C;
-            }
-            code {
-              background: #E0F2FE;
-              color: #134E4A;
-              padding: 4px 8px;
-              border-radius: 4px;
-              font-family: monospace;
-              font-size: 14px;
-              border: 1px solid #BAE6FD;
-            }
-            blockquote {
-              border-left: 4px solid #EA580C;
-              background: #FFF7ED;
-              padding: 16px 24px;
-              border-radius: 0 12px 12px 0;
-              margin: 24px 0;
-              color: #9A3412;
-              font-weight: 500;
-            }
-            ul, ol {
-              margin: 24px 0;
-              padding-left: 24px;
-            }
-            li {
-              color: #0F766E;
-              margin: 8px 0;
-            }
-            .header {
-              border-bottom: 3px solid #134E4A;
-              padding-bottom: 20px;
-              margin-bottom: 40px;
-            }
-            .module-title {
-              color: #0D9488;
-              font-size: 14px;
-              font-weight: 700;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-              margin-bottom: 8px;
-            }
-            @media print {
-              body { margin: 0; padding: 20px; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="module-title">${moduleTitle}</div>
-            <h1>${topicTitle}</h1>
-          </div>
-          ${formatMarkdown(explanation)}
-        </body>
-      </html>
-    `;
+    try {
+      // Convert markdown to pdfmake content
+      const lines = explanation.split('\n');
+      const content: any[] = [];
 
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+      // Add header
+      content.push({
+        text: moduleTitle,
+        style: 'moduleTitle',
+        margin: [0, 0, 0, 5]
+      });
+      content.push({
+        text: topicTitle,
+        style: 'header',
+        margin: [0, 0, 0, 20]
+      });
 
-    // Wait for content to load then trigger print
-    printWindow.onload = () => {
-      printWindow.print();
-    };
+      let inList = false;
+      let listItems: any[] = [];
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          if (inList) {
+            content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+            listItems = [];
+            inList = false;
+          }
+          continue;
+        }
+
+        // Headers
+        if (trimmed.startsWith('### ')) {
+          if (inList) {
+            content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+            listItems = [];
+            inList = false;
+          }
+          content.push({
+            text: trimmed.replace(/^### /, ''),
+            style: 'subheader',
+            margin: [0, 15, 0, 8]
+          });
+          continue;
+        }
+
+        if (trimmed.startsWith('## ')) {
+          if (inList) {
+            content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+            listItems = [];
+            inList = false;
+          }
+          content.push({
+            text: trimmed.replace(/^## /, ''),
+            style: 'subheader',
+            margin: [0, 15, 0, 8]
+          });
+          continue;
+        }
+
+        // Blockquotes
+        if (trimmed.startsWith('> ')) {
+          if (inList) {
+            content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+            listItems = [];
+            inList = false;
+          }
+          content.push({
+            text: '💡 ' + trimmed.replace(/^> /, ''),
+            style: 'blockquote',
+            margin: [0, 10, 0, 10]
+          });
+          continue;
+        }
+
+        // Lists
+        if (trimmed.startsWith('- ') || trimmed.match(/^\d+\. /)) {
+          const text = trimmed.replace(/^[-\d]+\.?\s/, '');
+          listItems.push({ text, margin: [0, 2, 0, 2] });
+          inList = true;
+          continue;
+        }
+
+        // Regular paragraph
+        if (inList) {
+          content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+          listItems = [];
+          inList = false;
+        }
+
+        // Process inline formatting
+        let processedText = trimmed;
+        processedText = processedText.replace(/\*\*(.+?)\*\*/g, '$1'); // Bold (pdfmake doesn't support inline bold easily)
+        processedText = processedText.replace(/`(.+?)`/g, '$1'); // Code
+
+        content.push({
+          text: processedText,
+          style: 'paragraph',
+          margin: [0, 0, 0, 8]
+        });
+      }
+
+      if (inList) {
+        content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+      }
+
+      const docDefinition: any = {
+        content,
+        styles: {
+          header: {
+            fontSize: 24,
+            bold: true,
+            color: '#134E4A',
+            margin: [0, 0, 0, 10]
+          },
+          moduleTitle: {
+            fontSize: 10,
+            bold: true,
+            color: '#0D9488',
+            margin: [0, 0, 0, 5]
+          },
+          subheader: {
+            fontSize: 18,
+            bold: true,
+            color: '#134E4A',
+            margin: [0, 10, 0, 5]
+          },
+          paragraph: {
+            fontSize: 12,
+            color: '#0F766E',
+            lineHeight: 1.5
+          },
+          blockquote: {
+            fontSize: 12,
+            color: '#9A3412',
+            italics: true,
+            margin: [10, 5, 0, 5]
+          }
+        },
+        defaultStyle: {
+          font: 'Roboto'
+        }
+      };
+
+      const filename = `${topicTitle.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      pdfMake.createPdf(docDefinition).download(filename);
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (!course) return null;
@@ -343,10 +387,20 @@ export default function TopicPage() {
 
             <button
               onClick={handleDownloadPDF}
-              className="flex items-center gap-2 px-6 py-4 rounded-xl font-bold transition-all text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+              disabled={isDownloading}
+              className="flex items-center gap-2 px-6 py-4 rounded-xl font-bold transition-all text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download className="w-5 h-5" />
-              Télécharger PDF
+              {isDownloading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Génération...
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5" />
+                  Télécharger PDF
+                </>
+              )}
             </button>
           </div>
 
