@@ -65,7 +65,16 @@ export function CourseProvider({
     completedModules: [],
     quizScores: {}
   });
-  const [explanations, setExplanations] = useState<Record<string, string>>({});
+
+  // Charger les explications depuis localStorage au montage
+  const [explanations, setExplanations] = useState<Record<string, string>>(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(`explanations_${courseData.id}`);
+      return cached ? JSON.parse(cached) : {};
+    }
+    return {};
+  });
+
   const [loadingExplanations, setLoadingExplanations] = useState<Set<string>>(new Set());
 
   // Charger la progression au montage
@@ -100,10 +109,17 @@ export function CourseProvider({
       const data = await response.json();
 
       if (data.success && data.explanation) {
-        setExplanations(prev => ({
-          ...prev,
-          [topicId]: data.explanation
-        }));
+        setExplanations(prev => {
+          const updated = {
+            ...prev,
+            [topicId]: data.explanation
+          };
+          // Sauvegarder dans localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(`explanations_${course.id}`, JSON.stringify(updated));
+          }
+          return updated;
+        });
       }
     } catch (error) {
       console.error('Erreur chargement explication:', error);
