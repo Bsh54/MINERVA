@@ -166,7 +166,7 @@ Format:
     const questions = JSON.parse(cleanJson);
 
     // Sauvegarder le quiz
-    await supabase
+    const { error: insertError } = await supabase
       .from('quizzes')
       .insert({
         course_id: courseId,
@@ -174,6 +174,13 @@ Format:
         target_type: targetType,
         questions: questions
       });
+
+    if (insertError) {
+      console.error('[ERREUR SAUVEGARDE] Impossible de sauvegarder le quiz:', insertError);
+      // On retourne quand même le quiz même si la sauvegarde échoue
+    } else {
+      console.log(`[SAUVEGARDE OK] Quiz sauvegardé pour ${targetType} ${targetId}`);
+    }
 
     return NextResponse.json({
       success: true,

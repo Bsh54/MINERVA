@@ -183,13 +183,20 @@ Remember: DOUBLE line breaks everywhere, generous use of **bold**, clear structu
     const explanation = data.choices?.[0]?.message?.content || "";
 
     // Sauvegarder l'explication
-    await supabase
+    const { error: insertError } = await supabase
       .from('topic_explanations')
       .insert({
         course_id: courseId,
         topic_id: topicId,
         explanation: explanation.trim()
       });
+
+    if (insertError) {
+      console.error('[ERREUR SAUVEGARDE] Impossible de sauvegarder l\'explication:', insertError);
+      // On retourne quand même l'explication même si la sauvegarde échoue
+    } else {
+      console.log(`[SAUVEGARDE OK] Explication sauvegardée pour topic ${topicId}`);
+    }
 
     return NextResponse.json({
       success: true,
