@@ -11,82 +11,92 @@ import html2canvas from 'html2canvas';
 
 // Simple markdown to HTML converter with proper spacing
 function formatMarkdown(text: string): string {
+  if (!text) return '';
+
   let html = text;
 
   // Normalize line breaks
   html = html.replace(/\r\n/g, '\n');
 
-  // Headers (with spacing)
-  html = html.replace(/^### (.+)$/gm, '<h3 class="text-2xl font-extrabold text-stem-900 mt-8 mb-4 first:mt-0">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 class="text-3xl font-extrabold text-stem-900 mt-10 mb-5 first:mt-0">$1</h2>');
-
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-stem-900 bg-stem-50 px-1 rounded">$1</strong>');
-
-  // Italic
-  html = html.replace(/\*(.+?)\*/g, '<em class="italic text-accent-600">$1</em>');
-
-  // Code inline
-  html = html.replace(/`(.+?)`/g, '<code class="bg-stem-100 text-stem-900 px-2 py-1 rounded font-mono text-sm border border-stem-200">$1</code>');
-
-  // Blockquotes (with icon and styling)
-  html = html.replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-accent-500 bg-accent-50 py-4 px-6 rounded-r-xl my-6 text-accent-900 font-medium">💡 $1</blockquote>');
-
-  // Process lists
+  // Process line by line to avoid nesting issues
   const lines = html.split('\n');
   const processed: string[] = [];
   let inUl = false;
   let inOl = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i];
 
-    if (line.match(/^- (.+)$/)) {
+    // Close lists if we're not in a list item anymore
+    if (inUl && !line.trim().match(/^- /)) {
+      processed.push('</ul>');
+      inUl = false;
+    }
+    if (inOl && !line.trim().match(/^\d+\. /)) {
+      processed.push('</ol>');
+      inOl = false;
+    }
+
+    // Headers
+    if (line.match(/^### /)) {
+      line = line.replace(/^### (.+)$/, '<h3 class="text-2xl font-extrabold text-stem-900 mt-8 mb-4 first:mt-0">$1</h3>');
+      processed.push(line);
+      continue;
+    }
+    if (line.match(/^## /)) {
+      line = line.replace(/^## (.+)$/, '<h2 class="text-3xl font-extrabold text-stem-900 mt-10 mb-5 first:mt-0">$1</h2>');
+      processed.push(line);
+      continue;
+    }
+
+    // Blockquotes
+    if (line.match(/^> /)) {
+      line = line.replace(/^> (.+)$/, '<blockquote class="border-l-4 border-accent-500 bg-accent-50 py-4 px-6 rounded-r-xl my-6 text-accent-900 font-medium">💡 $1</blockquote>');
+      processed.push(line);
+      continue;
+    }
+
+    // Unordered lists
+    if (line.match(/^- /)) {
       if (!inUl) {
         processed.push('<ul class="space-y-2 my-6 ml-6">');
         inUl = true;
       }
-      processed.push(line.replace(/^- (.+)$/, '<li class="flex items-start gap-3"><span class="text-accent-500 font-bold mt-1">•</span><span class="flex-1 text-stem-800">$1</span></li>'));
-    } else if (line.match(/^\d+\. (.+)$/)) {
+      line = line.replace(/^- (.+)$/, '<li class="flex items-start gap-3"><span class="text-accent-500 font-bold mt-1">•</span><span class="flex-1 text-stem-800">$1</span></li>');
+      processed.push(line);
+      continue;
+    }
+
+    // Ordered lists
+    if (line.match(/^\d+\. /)) {
       if (!inOl) {
         processed.push('<ol class="space-y-3 my-6 ml-6 list-decimal list-inside">');
         inOl = true;
       }
-      processed.push(line.replace(/^\d+\. (.+)$/, '<li class="text-stem-800 font-medium"><span class="font-bold text-stem-900">$1</span></li>'));
-    } else {
-      if (inUl) {
-        processed.push('</ul>');
-        inUl = false;
-      }
-      if (inOl) {
-        processed.push('</ol>');
-        inOl = false;
-      }
-      if (line) {
-        processed.push(line);
-      } else {
-        processed.push('');
-      }
+      line = line.replace(/^\d+\. (.+)$/, '<li class="text-stem-800 font-medium">$1</li>');
+      processed.push(line);
+      continue;
     }
+
+    // Empty lines
+    if (!line.trim()) {
+      processed.push('');
+      continue;
+    }
+
+    // Regular paragraphs - apply inline formatting
+    line = line.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-stem-900 bg-stem-50 px-1 rounded">$1</strong>');
+    line = line.replace(/\*(.+?)\*/g, '<em class="italic text-accent-600">$1</em>');
+    line = line.replace(/`(.+?)`/g, '<code class="bg-stem-100 text-stem-900 px-2 py-1 rounded font-mono text-sm border border-stem-200">$1</code>');
+
+    processed.push(`<p class="text-stem-800 leading-relaxed my-4 text-lg">${line}</p>`);
   }
 
+  // Close any open lists
   if (inUl) processed.push('</ul>');
   if (inOl) processed.push('</ol>');
 
-  html = processed.join('\n');
-
-  // Paragraphs (preserve spacing, add margin)
-  const blocks = html.split('\n\n');
-  html = blocks.map(block => {
-    const trimmed = block.trim();
-    if (!trimmed) return '';
-    if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<ol') || trimmed.startsWith('<blockquote')) {
-      return trimmed;
-    }
-    return `<p class="text-stem-800 leading-relaxed my-4 text-lg">${trimmed}</p>`;
-  }).filter(b => b).join('\n\n');
-
-  return html;
+  return processed.join('\n');
 }
 
 export default function TopicPage() {
