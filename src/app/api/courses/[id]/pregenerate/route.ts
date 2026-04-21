@@ -25,6 +25,13 @@ export async function POST(
       );
     }
 
+    if (!DEEPSEEK_API_URL || !DEEPSEEK_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: 'Configuration API manquante' },
+        { status: 500 }
+      );
+    }
+
     // Charger le cours
     const { data: course, error: courseError } = await supabase
       .from('courses')

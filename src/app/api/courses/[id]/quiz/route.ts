@@ -20,6 +20,14 @@ export async function POST(
         { status: 401 }
       );
     }
+
+    if (!DEEPSEEK_API_URL || !DEEPSEEK_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: 'Configuration API manquante' },
+        { status: 500 }
+      );
+    }
+
     const { targetId, targetType } = await request.json();
 
     // Vérifier si le quiz existe déjà

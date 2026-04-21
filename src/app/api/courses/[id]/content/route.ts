@@ -20,6 +20,14 @@ export async function POST(
         { status: 401 }
       );
     }
+
+    if (!DEEPSEEK_API_URL || !DEEPSEEK_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: 'Configuration API manquante' },
+        { status: 500 }
+      );
+    }
+
     const { topicId } = await request.json();
 
     // Vérifier si l'explication existe déjà

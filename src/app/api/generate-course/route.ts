@@ -15,6 +15,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!DEEPSEEK_API_URL || !DEEPSEEK_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: 'Configuration API manquante' },
+        { status: 500 }
+      );
+    }
+
     const languageInstruction = locale === 'fr'
       ? 'Tu DOIS répondre en FRANÇAIS.'
       : 'You MUST respond in ENGLISH.';

@@ -4,6 +4,13 @@ const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL;
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 
 export async function GET() {
+  if (!DEEPSEEK_API_URL || !DEEPSEEK_API_KEY) {
+    return NextResponse.json(
+      { error: 'Configuration API manquante' },
+      { status: 500 }
+    );
+  }
+
   const apiUrl = DEEPSEEK_API_URL.endsWith('/chat/completions') ? DEEPSEEK_API_URL : `${DEEPSEEK_API_URL}/chat/completions`;
 
   try {
