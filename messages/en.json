@@ -120,7 +120,17 @@
     "understood": "Understood",
     "markAsUnderstood": "Mark as understood",
     "takeQuiz": "Take Quiz",
-    "generatingExplanation": "Generating explanation..."
+    "generatingExplanation": "Generating explanation...",
+    "failedToLoadExplanation": "Failed to load explanation.",
+    "moduleQuizLabel": "Module Quiz",
+    "educationLevel": "Education Level",
+    "highSchoolSenior": "High School - Senior Year",
+    "universityFirstYear": "University - First Year",
+    "scientificPrep": "Scientific Preparatory Class",
+    "currentSubscription": "Current Subscription",
+    "freePlan": "Free Plan",
+    "courseGenerationsPerMonth": "{count} course generations per month",
+    "upgradeToPro": "Upgrade to Pro"
   },
   "CreateCourse": {
     "subtitle": "Transform your notes into structured learning paths.",

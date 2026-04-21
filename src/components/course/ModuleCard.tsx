@@ -3,6 +3,7 @@
 import { CheckCircle2, Circle, Clock } from 'lucide-react';
 import { useCourse } from '@/contexts/CourseContext';
 import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 
 interface Topic {
   id: string;
@@ -25,6 +26,7 @@ interface ModuleCardProps {
 }
 
 export default function ModuleCard({ module, index, courseId, onTopicClick, onQuizClick }: ModuleCardProps) {
+  const t = useTranslations('Dashboard');
   const { progress } = useCourse();
 
   const completedTopicsCount = module.topics.filter(t =>
@@ -103,7 +105,7 @@ export default function ModuleCard({ module, index, courseId, onTopicClick, onQu
         href={`/dashboard/course/${courseId}/module/${module.id}/quiz`}
         className="w-full bg-stem-100 hover:bg-stem-200 text-stem-700 font-medium py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 text-sm border border-stem-200"
       >
-        <span>Quiz du Module</span>
+        <span>{t('moduleQuizLabel')}</span>
         {progress?.quizScores?.[`module-${module.id}`] !== undefined && (
           <span className="bg-stem-300 text-stem-900 px-2 py-0.5 rounded text-xs font-bold">
             {Math.round(progress.quizScores[`module-${module.id}`])}%

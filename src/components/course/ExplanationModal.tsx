@@ -3,6 +3,7 @@
 import { X, Loader2 } from 'lucide-react';
 import { useCourse } from '@/contexts/CourseContext';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ExplanationModalProps {
   topicId: string;
@@ -12,6 +13,7 @@ interface ExplanationModalProps {
 }
 
 export default function ExplanationModal({ topicId, topicTitle, onClose, onQuizClick }: ExplanationModalProps) {
+  const t = useTranslations('Dashboard');
   const { explanations, loadingExplanations, loadExplanation, markTopicComplete, progress } = useCourse();
   const [hasMarkedComplete, setHasMarkedComplete] = useState(false);
 
@@ -49,7 +51,7 @@ export default function ExplanationModal({ topicId, topicTitle, onClose, onQuizC
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Loader2 className="w-12 h-12 text-accent-500 animate-spin mb-4" />
-              <p className="text-stem-600 font-medium">Génération de l'explication...</p>
+              <p className="text-stem-600 font-medium">{t('generatingExplanation')}</p>
             </div>
           ) : explanation ? (
             <div className="prose prose-stem max-w-none">
@@ -59,7 +61,7 @@ export default function ExplanationModal({ topicId, topicTitle, onClose, onQuizC
             </div>
           ) : (
             <div className="text-center py-16 text-stem-500">
-              <p>Impossible de charger l'explication.</p>
+              <p>{t('failedToLoadExplanation')}</p>
             </div>
           )}
         </div>
@@ -76,14 +78,14 @@ export default function ExplanationModal({ topicId, topicTitle, onClose, onQuizC
                   : 'bg-stem-600 hover:bg-stem-800 text-white'
               }`}
             >
-              {isComplete || hasMarkedComplete ? '✓ Compris' : 'Marquer comme compris'}
+              {isComplete || hasMarkedComplete ? `✓ ${t('understood')}` : t('markAsUnderstood')}
             </button>
 
             <button
               onClick={onQuizClick}
               className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-3 px-8 rounded-xl shadow-button transition-all"
             >
-              Passer le Quiz
+              {t('takeQuiz')}
             </button>
           </div>
         )}

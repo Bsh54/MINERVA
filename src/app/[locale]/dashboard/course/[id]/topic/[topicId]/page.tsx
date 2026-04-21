@@ -188,7 +188,7 @@ export default function TopicPage() {
           </div>
         ) : (
           <div className="text-center py-16 text-stem-500">
-            <p>Impossible de charger l'explication.</p>
+            <p>{t('failedToLoadExplanation')}</p>
           </div>
         )}
       </div>

@@ -120,7 +120,17 @@
     "understood": "Compris",
     "markAsUnderstood": "Marquer comme compris",
     "takeQuiz": "Passer le Quiz",
-    "generatingExplanation": "Génération de l'explication..."
+    "generatingExplanation": "Génération de l'explication...",
+    "failedToLoadExplanation": "Impossible de charger l'explication.",
+    "moduleQuizLabel": "Quiz du Module",
+    "educationLevel": "Niveau d'étude",
+    "highSchoolSenior": "Lycée - Terminale",
+    "universityFirstYear": "Université - L1",
+    "scientificPrep": "Prépa Scientifique",
+    "currentSubscription": "Abonnement Actuel",
+    "freePlan": "Plan Gratuit",
+    "courseGenerationsPerMonth": "{count} générations de cours par mois",
+    "upgradeToPro": "Passer Pro"
   },
   "CreateCourse": {
     "subtitle": "Transformez vos notes en parcours d'apprentissage structurés.",

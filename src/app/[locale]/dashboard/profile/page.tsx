@@ -65,24 +65,24 @@ export default function ProfilePage() {
               <input type="email" value={email} className="w-full px-5 py-3 bg-stem-50/50 border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900" readOnly />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-bold text-stem-900 mb-2">Niveau d'étude</label>
-              <select className="w-full px-5 py-3 bg-white border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900 shadow-sm" defaultValue="Lycée - Terminale">
-                <option>Lycée - Terminale</option>
-                <option>Université - L1</option>
-                <option>Prépa Scientifique</option>
+              <label className="block text-sm font-bold text-stem-900 mb-2">{t('educationLevel')}</label>
+              <select className="w-full px-5 py-3 bg-white border border-stem-200 rounded-xl focus:outline-none font-medium text-stem-900 shadow-sm" defaultValue={t('highSchoolSenior')}>
+                <option>{t('highSchoolSenior')}</option>
+                <option>{t('universityFirstYear')}</option>
+                <option>{t('scientificPrep')}</option>
               </select>
             </div>
           </div>
           
           <div className="pt-8 border-t border-stem-100">
-            <h3 className="font-extrabold text-xl text-stem-900 mb-6">Abonnement Actuel</h3>
+            <h3 className="font-extrabold text-xl text-stem-900 mb-6">{t('currentSubscription')}</h3>
             <div className="bg-gradient-to-br from-stem-800 to-stem-900 rounded-2xl p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-float">
               <div>
-                <p className="font-display font-bold text-2xl mb-1">Plan Gratuit</p>
-                <p className="text-stem-200 font-medium">3 générations de cours par mois</p>
+                <p className="font-display font-bold text-2xl mb-1">{t('freePlan')}</p>
+                <p className="text-stem-200 font-medium">{t('courseGenerationsPerMonth', { count: 3 })}</p>
               </div>
               <button className="btn-3d w-full md:w-auto bg-accent-500 hover:bg-orange-500 text-white font-extrabold px-8 py-4 rounded-xl shadow-button flex justify-center items-center">
-                Passer Pro
+                {t('upgradeToPro')}
               </button>
             </div>
           </div>
