@@ -26,11 +26,11 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
   const { progress } = useCourse();
 
   const completedTopicsCount = module.topics.filter(t =>
-    progress.completedTopics.includes(t.id)
+    progress?.completedTopics?.includes(t.id)
   ).length;
   const totalTopics = module.topics.length;
   const progressPercent = totalTopics > 0 ? (completedTopicsCount / totalTopics) * 100 : 0;
-  const isModuleComplete = progress.completedModules.includes(module.id.toString());
+  const isModuleComplete = progress?.completedModules?.includes(module.id.toString());
 
   return (
     <div className="bg-white rounded-3xl p-6 border border-stem-100 shadow-soft">
@@ -67,7 +67,7 @@ export default function ModuleCard({ module, index, onTopicClick, onQuizClick }:
       {/* Liste des topics */}
       <div className="space-y-2 mb-4">
         {module.topics.map((topic, topicIndex) => {
-          const isComplete = progress.completedTopics.includes(topic.id);
+          const isComplete = progress?.completedTopics?.includes(topic.id);
           return (
             <button
               key={topic.id}
