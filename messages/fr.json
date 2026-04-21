@@ -65,7 +65,16 @@
     "loginBtn": "Se connecter",
     "haveAccount": "Déjà un compte ? Connectez-vous",
     "noAccount": "Pas encore de compte ? S'inscrire",
-    "backHome": "Retour à l'accueil"
+    "backHome": "Retour à l'accueil",
+    "confirmationEmailSent": "Email de confirmation envoyé !",
+    "confirmationEmailDesc": "Un email de confirmation a été envoyé à {email}. Veuillez vérifier votre boîte de réception et cliquer sur le lien pour activer votre compte.",
+    "okButton": "OK",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "signUp": "S'inscrire",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+    "passwordsMatch": "Les mots de passe correspondent",
+    "forgotPassword": "Mot de passe oublié ?"
   },
   "Hub": {
     "greeting": "Bon retour, {name}",

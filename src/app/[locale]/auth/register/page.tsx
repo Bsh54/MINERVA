@@ -72,16 +72,15 @@ export default function RegisterPage() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-stem-900 mb-3">Email de confirmation envoyé !</h3>
+              <h3 className="text-2xl font-bold text-stem-900 mb-3">{t('confirmationEmailSent')}</h3>
               <p className="text-stem-600 mb-6">
-                Un email de confirmation a été envoyé à <span className="font-bold">{userEmail}</span>.
-                Veuillez vérifier votre boîte de réception et cliquer sur le lien pour activer votre compte.
+                {t('confirmationEmailDesc', { email: userEmail })}
               </p>
               <button
                 onClick={() => router.push('/auth/login')}
                 className="w-full btn-3d bg-stem-600 hover:bg-stem-800 text-white font-bold py-3 px-6 rounded-xl shadow-button-teal"
               >
-                OK
+                {t('okButton')}
               </button>
             </div>
           </div>
@@ -114,7 +113,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-stem-900 mb-1">Mot de passe</label>
+            <label className="block text-sm font-bold text-stem-900 mb-1">{t('password')}</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -136,7 +135,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-stem-900 mb-1">Confirmer le mot de passe</label>
+            <label className="block text-sm font-bold text-stem-900 mb-1">{t('confirmPassword')}</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -164,13 +163,13 @@ export default function RegisterPage() {
             {confirmPassword.length > 0 && !passwordsMatch && (
               <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
                 <X className="w-3 h-3" />
-                Les mots de passe ne correspondent pas
+                {t('passwordsDontMatch')}
               </p>
             )}
             {passwordsMatch && (
               <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                 <Check className="w-3 h-3" />
-                Les mots de passe correspondent
+                {t('passwordsMatch')}
               </p>
             )}
           </div>
