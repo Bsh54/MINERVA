@@ -54,6 +54,16 @@ export function ChatbotProvider({ children }: { children: React.ReactNode }) {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
+    // Create placeholder for assistant message
+    const assistantId = `assistant-${Date.now()}`;
+    const assistantMessage: Message = {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now()
+    };
+    setMessages(prev => [...prev, assistantMessage]);
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -66,19 +76,56 @@ export function ChatbotProvider({ children }: { children: React.ReactNode }) {
         })
       });
 
-      const data = await response.json();
-
-      if (data.success && data.message) {
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: data.message,
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, assistantMessage]);
+      if (!response.ok) {
+        throw new Error('API request failed');
       }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let accumulatedContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.content) {
+                accumulatedContent += data.content;
+                setMessages(prev =>
+                  prev.map(m =>
+                    m.id === assistantId
+                      ? { ...m, content: accumulatedContent }
+                      : m
+                  )
+                );
+              }
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+        }
+      }
+
     } catch (error) {
       console.error('Erreur envoi message:', error);
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === assistantId
+            ? { ...m, content: 'Erreur lors de la génération de la réponse.' }
+            : m
+        )
+      );
     } finally {
       setIsLoading(false);
     }
