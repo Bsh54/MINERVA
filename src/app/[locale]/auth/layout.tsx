@@ -9,30 +9,27 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="h-screen w-full flex bg-white overflow-hidden">
       {/* Left Side (Branding) - Strict 50% */}
-      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-stem-900 to-stem-800 p-8 lg:p-12 flex-col justify-between text-white relative overflow-hidden">
-        {/* Background blobs for depth */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-stem-600/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-accent-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-stem-900 to-stem-800 flex-col relative overflow-hidden">
+        {/* Image de fond qui remplit tout */}
+        <img
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80"
+          alt="Students learning together"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Overlay sombre pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-br from-stem-900/80 to-stem-800/80"></div>
 
         {/* Logo */}
-        <Link href="/" className="relative z-10 flex items-center gap-2 cursor-pointer w-fit">
-          <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center backdrop-blur-md shadow-soft">
-            <BrainCircuit className="w-6 h-6 text-white" />
-          </div>
-          <span className="font-display font-bold text-xl tracking-tight">
-            Evolutics<span className="text-accent-500">Learn</span>
-          </span>
-        </Link>
-
-        {/* Image centrale */}
-        <div className="relative z-10 flex-1 flex items-center justify-center">
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
-              alt="Students learning together"
-              className="w-full h-full object-cover rounded-2xl shadow-2xl"
-            />
-          </div>
+        <div className="relative z-10 p-8 lg:p-12">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer w-fit">
+            <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center backdrop-blur-md shadow-soft">
+              <BrainCircuit className="w-6 h-6 text-white" />
+            </div>
+            <span className="font-display font-bold text-xl tracking-tight text-white">
+              Evolutics<span className="text-accent-500">Learn</span>
+            </span>
+          </Link>
         </div>
       </div>
 
