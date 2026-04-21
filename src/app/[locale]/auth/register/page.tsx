@@ -173,8 +173,8 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <div className="mt-6 text-center bg-stem-50 p-3 rounded-xl border border-stem-100">
-        <Link href="/auth/login" className="text-xs font-bold text-stem-600 hover:text-stem-900 transition-colors">
+      <div className="mt-6 text-center bg-stem-50 p-4 rounded-xl border border-stem-200">
+        <Link href="/auth/login" className="text-sm font-bold text-stem-700 hover:text-stem-900 transition-colors">
           {t('haveAccount')}
         </Link>
       </div>
