@@ -74,9 +74,9 @@ export default async function CoursesPage() {
             const diffDays = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
             let timeLabel = '';
-            if (diffDays === 0) timeLabel = "Aujourd'hui";
-            else if (diffDays === 1) timeLabel = "Hier";
-            else timeLabel = `Il y a ${diffDays} jours`;
+            if (diffDays === 0) timeLabel = t('today');
+            else if (diffDays === 1) timeLabel = t('yesterday');
+            else timeLabel = t('daysAgo', { days: diffDays });
 
             return (
               <Link

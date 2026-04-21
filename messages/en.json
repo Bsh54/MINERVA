@@ -130,7 +130,10 @@
     "currentSubscription": "Current Subscription",
     "freePlan": "Free Plan",
     "courseGenerationsPerMonth": "{count} course generations per month",
-    "upgradeToPro": "Upgrade to Pro"
+    "upgradeToPro": "Upgrade to Pro",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{days} days ago"
   },
   "CreateCourse": {
     "subtitle": "Transform your notes into structured learning paths.",

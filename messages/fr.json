@@ -130,7 +130,10 @@
     "currentSubscription": "Abonnement Actuel",
     "freePlan": "Plan Gratuit",
     "courseGenerationsPerMonth": "{count} générations de cours par mois",
-    "upgradeToPro": "Passer Pro"
+    "upgradeToPro": "Passer Pro",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "daysAgo": "Il y a {days} jours"
   },
   "CreateCourse": {
     "subtitle": "Transformez vos notes en parcours d'apprentissage structurés.",
