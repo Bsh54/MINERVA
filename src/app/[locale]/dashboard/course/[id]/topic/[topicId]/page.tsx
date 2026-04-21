@@ -206,6 +206,16 @@ export default function TopicPage() {
           </button>
         </div>
       )}
+
+      {/* Return to Dashboard */}
+      <div className="mt-6 text-center">
+        <Link
+          href="/dashboard"
+          className="text-sm text-stem-600 hover:text-stem-900 font-medium transition-colors"
+        >
+          ← Retour au dashboard
+        </Link>
+      </div>
     </div>
   );
 }

@@ -107,6 +107,16 @@ export default function CoursePage() {
         ))}
       </div>
 
+      {/* Return to Dashboard */}
+      <div className="mt-8 text-center">
+        <Link
+          href="/dashboard"
+          className="text-sm text-stem-600 hover:text-stem-900 font-medium transition-colors"
+        >
+          ← Retour au dashboard
+        </Link>
+      </div>
+
       {/* Modals */}
       {selectedTopic && (
         <ExplanationModal

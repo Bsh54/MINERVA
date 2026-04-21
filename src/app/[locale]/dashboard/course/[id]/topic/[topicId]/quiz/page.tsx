@@ -31,11 +31,24 @@ export default function TopicQuizPage() {
 
   // Trouver le topic
   let topicTitle = '';
+  let currentModuleId: number | null = null;
+  let currentTopicIndex = -1;
+  let nextTopicId: string | null = null;
+  let moduleTopics: any[] = [];
+
   if (course) {
     for (const module of course.coursePlan.modules) {
-      const topic = module.topics.find(t => t.id === topicId);
-      if (topic) {
-        topicTitle = topic.title;
+      const topicIndex = module.topics.findIndex(t => t.id === topicId);
+      if (topicIndex !== -1) {
+        topicTitle = module.topics[topicIndex].title;
+        currentModuleId = module.id;
+        currentTopicIndex = topicIndex;
+        moduleTopics = module.topics;
+
+        // Trouver le topic suivant
+        if (topicIndex < module.topics.length - 1) {
+          nextTopicId = module.topics[topicIndex + 1].id;
+        }
         break;
       }
     }
@@ -111,6 +124,8 @@ export default function TopicQuizPage() {
 
   if (showResults) {
     const passed = score >= 70;
+    const isLastTopicInModule = currentTopicIndex === moduleTopics.length - 1;
+
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-3xl shadow-soft border border-gray-100 p-8 md:p-12 text-center">
@@ -141,13 +156,39 @@ export default function TopicQuizPage() {
               href={`/dashboard/course/${courseId}/topic/${topicId}`}
               className="btn-3d bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-4 px-8 rounded-xl shadow-button-teal"
             >
-              Revoir le cours
+              Revoir le topic
             </Link>
+
+            {nextTopicId ? (
+              <Link
+                href={`/dashboard/course/${courseId}/topic/${nextTopicId}`}
+                className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
+              >
+                Topic suivant →
+              </Link>
+            ) : isLastTopicInModule && currentModuleId ? (
+              <Link
+                href={`/dashboard/course/${courseId}/module/${currentModuleId}/quiz`}
+                className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
+              >
+                Quiz du module →
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/course/${courseId}`}
+                className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
+              >
+                Retour au cours
+              </Link>
+            )}
+          </div>
+
+          <div className="mt-6">
             <Link
-              href={`/dashboard/course/${courseId}`}
-              className="btn-3d bg-accent-500 hover:bg-accent-600 text-white font-extrabold py-4 px-8 rounded-xl shadow-button"
+              href="/dashboard"
+              className="text-sm text-stem-600 hover:text-stem-900 font-medium transition-colors"
             >
-              Retour au cours
+              ← Retour au dashboard
             </Link>
           </div>
         </div>
