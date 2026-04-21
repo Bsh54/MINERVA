@@ -82,15 +82,15 @@ export default async function CoursesPage() {
               <Link
                 key={course.id}
                 href={`/dashboard/course/${course.id}`}
-                className="bg-white rounded-3xl p-8 border-2 border-stem-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:border-stem-300 transition-all duration-300 group relative overflow-hidden"
+                className="bg-white rounded-3xl p-8 border-2 border-stem-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:border-accent-300 transition-all duration-300 group relative overflow-hidden"
               >
-                {/* Effet de fond décoratif subtil */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-stem-100/50 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500"></div>
+                {/* Effet de fond décoratif subtil avec rose */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-accent-100/40 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500"></div>
 
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300 shadow-md relative z-10 ${
                   isComplete
                     ? 'bg-green-500 text-white'
-                    : 'bg-stem-600 text-white'
+                    : 'bg-gradient-to-br from-stem-600 to-accent-500 text-white'
                 }`}>
                   <BookOpen className="w-8 h-8" />
                 </div>
@@ -100,7 +100,7 @@ export default async function CoursesPage() {
                 </h3>
 
                 <p className="text-sm text-stem-600 font-medium mb-6 flex items-center gap-2 relative z-10">
-                  <Clock className="w-4 h-4" /> {timeLabel}
+                  <Clock className="w-4 h-4 text-accent-500" /> {timeLabel}
                 </p>
 
                 <div className="w-full bg-stem-100 rounded-full h-3 mb-3 overflow-hidden relative z-10">
@@ -108,7 +108,7 @@ export default async function CoursesPage() {
                     className={`h-3 rounded-full transition-all duration-500 ${
                       isComplete
                         ? 'bg-green-500'
-                        : 'bg-stem-600'
+                        : 'bg-gradient-to-r from-stem-600 to-accent-500'
                     }`}
                     style={{ width: `${course.progressPercent}%` }}
                   ></div>
@@ -120,7 +120,7 @@ export default async function CoursesPage() {
                   }`}>
                     {isComplete ? '✨ Terminé' : `${Math.round(course.progressPercent)}% complété`}
                   </p>
-                  <span className="text-stem-400 text-xs font-medium">
+                  <span className="text-accent-500 text-xs font-bold">
                     {course.completedCount}/{course.totalTopics} topics
                   </span>
                 </div>
