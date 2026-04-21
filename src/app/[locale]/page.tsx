@@ -60,7 +60,7 @@ export default function LandingPage() {
 
               <div className="h-6 w-px bg-stem-200 hidden sm:block"></div>
 
-              <Link href="/auth/login" className="hidden sm:block btn-3d bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 md:px-6 rounded-xl shadow-button text-sm">
+              <Link href="/auth/login" className="hidden sm:block btn-3d bg-stem-600 hover:bg-stem-800 text-white font-bold py-2 px-4 md:px-6 rounded-xl shadow-button-teal text-sm">
                 {t('signIn')}
               </Link>
               <div className="h-6 w-px bg-stem-200 hidden sm:block"></div>
