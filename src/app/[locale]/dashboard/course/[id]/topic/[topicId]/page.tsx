@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home } from 'lucide-react';
+import { ChevronLeft, Loader2, CheckCircle, BookOpen, Home, Download } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/routing';
 import { useCourse } from '@/contexts/CourseContext';
 import { useParams } from 'next/navigation';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 // Simple markdown to HTML converter with proper spacing
 function formatMarkdown(text: string): string {
@@ -93,9 +95,11 @@ export default function TopicPage() {
   const params = useParams();
   const topicId = params.topicId as string;
   const courseId = params.id as string;
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const { course, explanations, loadingExplanations, loadExplanation, markTopicComplete, progress } = useCourse();
   const [hasMarkedComplete, setHasMarkedComplete] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Trouver le topic dans le cours
   let topicTitle = '';
@@ -131,6 +135,54 @@ export default function TopicPage() {
 
   const handleQuizClick = () => {
     router.push(`/dashboard/course/${courseId}/topic/${topicId}/quiz`);
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current || !explanation) return;
+
+    setIsDownloading(true);
+
+    try {
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Add first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add additional pages if needed
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Generate filename
+      const filename = `${topicTitle.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (!course) return null;
@@ -183,7 +235,7 @@ export default function TopicPage() {
             <p className="text-stem-600 font-medium">{t('generatingExplanation')}</p>
           </div>
         ) : explanation ? (
-          <div className="prose prose-lg max-w-none">
+          <div ref={contentRef} className="prose prose-lg max-w-none">
             <div dangerouslySetInnerHTML={{ __html: formatMarkdown(explanation) }} />
           </div>
         ) : (
@@ -196,17 +248,37 @@ export default function TopicPage() {
       {/* Actions */}
       {!isLoading && explanation && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white rounded-3xl shadow-soft border border-gray-100 p-6">
-          <button
-            onClick={handleMarkComplete}
-            disabled={isComplete || hasMarkedComplete}
-            className={`px-8 py-4 rounded-xl font-bold transition-all text-lg ${
-              isComplete || hasMarkedComplete
-                ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                : 'bg-stem-600 hover:bg-stem-800 text-white shadow-button-teal'
-            }`}
-          >
-            {isComplete || hasMarkedComplete ? `✓ ${t('understood')}` : t('markAsUnderstood')}
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <button
+              onClick={handleMarkComplete}
+              disabled={isComplete || hasMarkedComplete}
+              className={`px-8 py-4 rounded-xl font-bold transition-all text-lg ${
+                isComplete || hasMarkedComplete
+                  ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                  : 'bg-stem-600 hover:bg-stem-800 text-white shadow-button-teal'
+              }`}
+            >
+              {isComplete || hasMarkedComplete ? `✓ ${t('understood')}` : t('markAsUnderstood')}
+            </button>
+
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className="flex items-center gap-2 px-6 py-4 rounded-xl font-bold transition-all text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDownloading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Génération...
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5" />
+                  Télécharger PDF
+                </>
+              )}
+            </button>
+          </div>
 
           <button
             onClick={handleQuizClick}
