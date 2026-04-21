@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { BrainCircuit } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import ConditionalChatbot from '@/components/chatbot/ConditionalChatbot';
 import React from 'react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <main className="flex-1 overflow-x-hidden overflow-y-auto">
         {children}
       </main>
+
+      {/* Chatbot Widget */}
+      <ConditionalChatbot />
     </div>
   );
 }

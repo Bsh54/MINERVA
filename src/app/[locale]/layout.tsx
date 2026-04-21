@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
+import { ChatbotProvider } from '@/contexts/ChatbotContext';
 import "../globals.css";
 
 const inter = Inter({
@@ -38,7 +39,9 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased bg-slate-50 text-[#134E4A]`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ChatbotProvider>
+            {children}
+          </ChatbotProvider>
         </NextIntlClientProvider>
       </body>
     </html>
