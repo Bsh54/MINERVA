@@ -33,7 +33,7 @@ export default function LandingPage() {
                 <BrainCircuit className="w-6 h-6" />
               </div>
               <span className="font-display font-bold text-2xl text-stem-900">
-                Evolutics<span className="text-accent-500">Learn</span>
+                MINERVA
               </span>
             </Link>
 

@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EvoluticsLearn - STEM AI Learning Platform",
-  description: "Learn faster with your custom AI tutor",
+  title: "MINERVA - STEM Learning Platform",
+  description: "Master STEM subjects at your own pace with AI-powered learning paths",
 };
 
 export default async function RootLayout({

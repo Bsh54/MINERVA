@@ -17,7 +17,7 @@ export function Sidebar({ userEmail }: { userEmail: string }) {
           <div className="w-8 h-8 bg-stem-600 rounded-lg flex items-center justify-center text-white">
             <BrainCircuit className="w-5 h-5" />
           </div>
-          <span className="font-display font-bold text-xl text-stem-900">Evolutics</span>
+          <span className="font-display font-bold text-xl text-stem-900">MINERVA</span>
         </Link>
       </div>
 

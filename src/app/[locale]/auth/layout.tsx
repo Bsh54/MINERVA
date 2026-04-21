@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <BrainCircuit className="w-6 h-6 text-white" />
             </div>
             <span className="font-display font-bold text-xl tracking-tight text-white">
-              Evolutics<span className="text-accent-500">Learn</span>
+              MINERVA
             </span>
           </Link>
         </div>
@@ -61,7 +61,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="w-8 h-8 bg-stem-600 rounded-lg flex items-center justify-center text-white shadow-soft">
               <BrainCircuit className="w-5 h-5" />
             </div>
-            <span className="font-display font-bold text-lg text-stem-900">Evolutics</span>
+            <span className="font-display font-bold text-lg text-stem-900">MINERVA</span>
           </Link>
         </div>
 

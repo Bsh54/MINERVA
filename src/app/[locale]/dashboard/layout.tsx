@@ -21,7 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <BrainCircuit className="w-5 h-5" />
           </div>
           <span className="font-display font-bold text-xl text-stem-900">
-            Evolutics<span className="text-accent-500">Learn</span>
+            MINERVA
           </span>
         </Link>
       </header>
