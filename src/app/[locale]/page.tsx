@@ -109,7 +109,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-xl font-bold text-accent-500 tracking-widest uppercase mb-2">{t('features.tag')}</h2>
+              <h2 className="text-2xl font-bold text-accent-500 tracking-widest uppercase mb-2">{t('features.tag')}</h2>
               <h3 className="text-3xl md:text-4xl font-display font-bold text-stem-900 mb-4">{t('features.title')}</h3>
               <p className="text-lg text-stem-600">{t('features.subtitle')}</p>
             </div>
@@ -149,7 +149,7 @@ export default function LandingPage() {
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-xl font-bold text-stem-400 tracking-widest uppercase mb-2">{t('how.tag')}</h2>
+              <h2 className="text-2xl font-bold text-stem-400 tracking-widest uppercase mb-2">{t('how.tag')}</h2>
               <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">{t('how.title')}</h3>
             </div>
 
@@ -190,7 +190,7 @@ export default function LandingPage() {
         <section id="pricing" className="py-24 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-xl font-bold text-accent-500 tracking-widest uppercase mb-2">{t('pricing.tag')}</h2>
+              <h2 className="text-2xl font-bold text-accent-500 tracking-widest uppercase mb-2">{t('pricing.tag')}</h2>
               <h3 className="text-3xl md:text-4xl font-display font-bold text-stem-900 mb-4">{t('pricing.title')}</h3>
             </div>
 
