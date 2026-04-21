@@ -241,7 +241,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <BrainCircuit className="w-6 h-6 text-stem-600" />
             <span className="font-display font-bold text-xl text-stem-900">
-              Evolutics<span className="text-accent-500">Learn</span>
+              MINERVA
             </span>
           </div>
           <p className="text-stem-600 font-medium text-sm text-center md:text-left">
