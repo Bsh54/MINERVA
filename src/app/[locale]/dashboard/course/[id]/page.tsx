@@ -100,6 +100,7 @@ export default function CoursePage() {
             key={module.id}
             module={module}
             index={index}
+            courseId={course.id}
             onTopicClick={handleTopicClick}
             onQuizClick={handleModuleQuizClick}
           />
