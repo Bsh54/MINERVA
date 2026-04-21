@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <!-- Background circles -->
+  <circle cx="250" cy="250" r="200" fill="#0D9488" opacity="0.1"/>
+  <circle cx="250" cy="250" r="150" fill="#0D9488" opacity="0.15"/>
+
+  <!-- Book/Learning icon -->
+  <g transform="translate(150, 150)">
+    <!-- Open book -->
+    <path d="M20 40 L20 140 L100 120 L100 20 Z" fill="#14B8A6" opacity="0.8"/>
+    <path d="M180 40 L180 140 L100 120 L100 20 Z" fill="#0D9488" opacity="0.8"/>
+
+    <!-- Pages lines -->
+    <line x1="30" y1="50" x2="90" y2="40" stroke="white" stroke-width="2" opacity="0.6"/>
+    <line x1="30" y1="65" x2="90" y2="55" stroke="white" stroke-width="2" opacity="0.6"/>
+    <line x1="30" y1="80" x2="90" y2="70" stroke="white" stroke-width="2" opacity="0.6"/>
+
+    <line x1="110" y1="40" x2="170" y2="50" stroke="white" stroke-width="2" opacity="0.6"/>
+    <line x1="110" y1="55" x2="170" y2="65" stroke="white" stroke-width="2" opacity="0.6"/>
+    <line x1="110" y1="70" x2="170" y2="80" stroke="white" stroke-width="2" opacity="0.6"/>
+  </g>
+
+  <!-- Brain/AI icon -->
+  <g transform="translate(280, 200)">
+    <circle cx="50" cy="50" r="45" fill="#F97316" opacity="0.2"/>
+    <path d="M30 50 Q50 20, 70 50 T90 50" stroke="#F97316" stroke-width="3" fill="none"/>
+    <path d="M30 60 Q50 40, 70 60 T90 60" stroke="#F97316" stroke-width="3" fill="none"/>
+    <circle cx="40" cy="45" r="4" fill="#F97316"/>
+    <circle cx="60" cy="45" r="4" fill="#F97316"/>
+    <circle cx="50" cy="65" r="4" fill="#F97316"/>
+  </g>
+
+  <!-- Connecting lines (data flow) -->
+  <g opacity="0.4">
+    <line x1="250" y1="200" x2="320" y2="230" stroke="#14B8A6" stroke-width="2" stroke-dasharray="5,5">
+      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite"/>
+    </line>
+    <line x1="250" y1="280" x2="320" y2="260" stroke="#14B8A6" stroke-width="2" stroke-dasharray="5,5">
+      <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- Floating particles -->
+  <circle cx="150" cy="100" r="3" fill="#F97316" opacity="0.6">
+    <animate attributeName="cy" values="100;80;100" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="380" cy="150" r="4" fill="#14B8A6" opacity="0.6">
+    <animate attributeName="cy" values="150;130;150" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="120" cy="350" r="3" fill="#F97316" opacity="0.6">
+    <animate attributeName="cy" values="350;330;350" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="400" cy="320" r="4" fill="#14B8A6" opacity="0.6">
+    <animate attributeName="cy" values="320;300;320" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+</svg>
