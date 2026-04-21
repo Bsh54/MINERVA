@@ -114,7 +114,7 @@
     "generatingExplanation": "Generating explanation..."
   },
   "CreateCourse": {
-    "subtitle": "Let AI (DeepSeek) transform your raw notes into interactive courses.",
+    "subtitle": "Let AI transform your raw notes into interactive courses.",
     "pasteLabel": "Paste your course content here:",
     "pastePlaceholder": "Example: Photosynthesis is the process by which green plants use sunlight to synthesize nutrients...",
     "generateBtn": "Generate an explanation with AI",

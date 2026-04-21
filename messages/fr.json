@@ -114,7 +114,7 @@
     "generatingExplanation": "Génération de l'explication..."
   },
   "CreateCourse": {
-    "subtitle": "Laissez l'IA (DeepSeek) transformer vos notes brutes en cours interactifs.",
+    "subtitle": "Laissez l'IA transformer vos notes brutes en cours interactifs.",
     "pasteLabel": "Collez le contenu de votre cours ici :",
     "pastePlaceholder": "Exemple : La photosynthèse est le processus par lequel les plantes vertes utilisent l'énergie solaire pour synthétiser des nutriments...",
     "generateBtn": "Générer une explication avec l'IA",
