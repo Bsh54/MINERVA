@@ -57,6 +57,7 @@
     "subtitleLogin": "Entrez vos identifiants pour accéder à vos cours.",
     "continueGoogle": "Continuer avec Google",
     "orEmail": "ou avec un email",
+    "orContinue": "ou continuer avec",
     "emailLabel": "Email",
     "passwordLabel": "Mot de passe",
     "emailPlaceholder": "jean@exemple.com",
