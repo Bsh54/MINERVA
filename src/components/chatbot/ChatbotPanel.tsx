@@ -4,6 +4,33 @@ import { useChatbot } from '@/contexts/ChatbotContext';
 import { X, Send, Maximize2, Minimize2, Trash2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
+// Simple markdown to HTML converter for chat messages
+function formatMarkdown(text: string): string {
+  if (!text) return '';
+
+  let html = text;
+
+  // Code blocks (before inline code)
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-stem-100 p-3 rounded-lg my-2 overflow-x-auto"><code>$2</code></pre>');
+
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-stem-100 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
+
+  // Bold
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold">$1</strong>');
+
+  // Italic
+  html = html.replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>');
+
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  // Line breaks
+  html = html.replace(/\n/g, '<br />');
+
+  return html;
+}
+
 export default function ChatbotPanel() {
   const { messages, isOpen, displayMode, isLoading, sendMessage, toggleOpen, setDisplayMode, clearHistory } = useChatbot();
   const [input, setInput] = useState('');
@@ -104,7 +131,10 @@ export default function ChatbotPanel() {
                   : 'bg-stem-50 text-stem-900 border border-stem-100'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              <div
+                className="text-sm"
+                dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }}
+              />
             </div>
           </div>
         ))}
