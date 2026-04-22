@@ -422,13 +422,6 @@ export default function MeetingPage() {
             {/* Status indicators */}
             {status === 'online' && isAISpeaking && (
               <div className="flex items-center gap-2 text-accent-600">
-                <Volume2 className="h-5 w-5 animate-pulse" />
-                <span className="text-sm font-medium">MINERVA {locale === 'fr' ? 'parle...' : 'is speaking...'}</span>
-              </div>
-            )}
-
-            {status === 'online' && !isAISpeaking && (
-              <div className="flex items-center gap-2 text-accent-600">
                 {isUserSpeaking ? (
                   <>
                     <Mic className="h-5 w-5 animate-pulse" />
@@ -440,6 +433,13 @@ export default function MeetingPage() {
                     <span className="text-sm font-medium">{locale === 'fr' ? 'À l\'écoute...' : 'Listening...'}</span>
                   </>
                 )}
+              </div>
+            )}
+
+            {status === 'online' && !isAISpeaking && (
+              <div className="flex items-center gap-2 text-accent-600">
+                <Volume2 className="h-5 w-5 animate-pulse" />
+                <span className="text-sm font-medium">MINERVA {locale === 'fr' ? 'parle...' : 'is speaking...'}</span>
               </div>
             )}
 
