@@ -462,7 +462,7 @@ export default function MeetingPage() {
             {status === 'online' && (
               <div className="flex items-center gap-1">
                 {Array.from({ length: 20 }).map((_, i) => {
-                  const level = isSpeaking ? 0.5 : audioLevel / 100;
+                  const level = isAISpeaking ? 0.5 : audioLevel / 100;
                   const barVariance = Math.sin((i + Date.now() / 200) * 0.7) * 0.3 + 0.7;
                   return (
                     <div
