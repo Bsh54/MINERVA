@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, Mic, Loader2, Phone, PhoneOff } from 'lucide-react';
+import { ChevronLeft, Mic, Loader2, PhoneOff, Volume2, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -350,139 +350,140 @@ export default function MeetingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stem-50 via-white to-accent-50 flex flex-col">
+    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-stem-50 via-white to-accent-50">
 
-      {/* Top Bar */}
-      <div className="p-4 md:p-6 bg-white/80 backdrop-blur-md border-b border-stem-100">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-semibold transition-colors duration-200">
-            <ChevronLeft className="w-5 h-5" />
-            <span className="hidden sm:inline">{t('backHub')}</span>
-          </Link>
+      {/* Header */}
+      <div className="shrink-0 border-b bg-white/80 backdrop-blur-md px-4 md:px-6 py-3">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-semibold transition-colors duration-200">
+              <ChevronLeft className="w-5 h-5" />
+              <span className="hidden sm:inline">{t('backHub')}</span>
+            </Link>
+            <div className="hidden md:block h-5 w-px bg-stem-200"></div>
+            <h1 className="hidden md:block text-lg font-bold text-stem-900">MINERVA Voice</h1>
+          </div>
 
-          {status === 'online' && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-semibold text-green-700">
-                {locale === 'fr' ? 'En ligne' : 'Online'}
-              </span>
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              status === 'online'
+                ? 'bg-green-50 border-green-200 text-green-700'
+                : status === 'connecting'
+                ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                : 'bg-stem-100 border-stem-200 text-stem-600'
+            }`}>
+              {status === 'online' && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
+              {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
+              {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
+              {status === 'online' && (locale === 'fr' ? 'Connecté' : 'Connected')}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-lg">
+      {/* Error display */}
+      {error && (
+        <div className="mx-6 mt-3 flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
 
-          {/* Avatar Container */}
-          <div className="relative mb-6">
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden">
+        <div className="w-full max-w-2xl">
 
-            {/* Avatar Image */}
-            <div className={`relative w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full overflow-hidden transition-all duration-500 ${
-              status === 'online'
-                ? 'ring-4 ring-accent-500/50 shadow-xl shadow-accent-500/20'
-                : 'ring-2 ring-stem-200'
-            }`}>
+          {/* Voice visualization */}
+          <div className="flex flex-col items-center justify-center gap-6 py-8">
 
-              {/* Background Glow */}
-              {status === 'online' && (
-                <div className="absolute inset-0 bg-gradient-to-br from-accent-500/10 via-stem-500/10 to-accent-500/10 animate-pulse"></div>
-              )}
+            {/* Status indicators */}
+            {status === 'connecting' && (
+              <div className="flex items-center gap-2 text-stem-600">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span className="text-sm font-medium">{locale === 'fr' ? 'Connexion...' : 'Connecting...'}</span>
+              </div>
+            )}
 
-              {/* Avatar Image */}
-              <img
-                src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=MINERVA&backgroundColor=f8fafc&scale=90"
-                alt="MINERVA AI Avatar"
-                className="w-full h-full object-cover"
-              />
+            {status === 'online' && isSpeaking && (
+              <div className="flex items-center gap-2 text-accent-600">
+                <Volume2 className="h-5 w-5 animate-pulse" />
+                <span className="text-sm font-medium">MINERVA {locale === 'fr' ? 'parle...' : 'is speaking...'}</span>
+              </div>
+            )}
 
-              {/* Speaking Indicator Overlay */}
-              {status === 'online' && isSpeaking && (
-                <div className="absolute inset-0 bg-accent-500/10 animate-pulse"></div>
-              )}
+            {status === 'online' && !isSpeaking && (
+              <div className="flex flex-col items-center gap-3">
+                {/* Mic icon with fill level */}
+                <div className="relative h-16 w-16">
+                  <Mic className="absolute inset-0 h-full w-full text-stem-300" />
+                  <div
+                    className="absolute inset-0 overflow-hidden transition-[clip-path] duration-150 ease-out"
+                    style={{ clipPath: `inset(${(1 - audioLevel / 100) * 100}% 0 0 0)` }}
+                  >
+                    <Mic className="h-full w-full text-accent-500" />
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-accent-600">
+                  {locale === 'fr' ? 'À l\'écoute...' : 'Listening...'}
+                </span>
+              </div>
+            )}
 
-              {/* Audio Visualization */}
-              {status === 'online' && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-                  {[...Array(7)].map((_, i) => (
+            {/* Audio waveform */}
+            {status === 'online' && (
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const level = isSpeaking ? 0.5 : audioLevel / 100;
+                  const barVariance = Math.sin((i + Date.now() / 200) * 0.7) * 0.3 + 0.7;
+                  return (
                     <div
                       key={i}
-                      className="w-1 bg-gradient-to-t from-accent-500 to-stem-500 rounded-full transition-all duration-100"
+                      className={`w-1 rounded-full transition-all duration-150 ${
+                        level > 0.02 ? 'bg-accent-500' : 'bg-stem-200'
+                      }`}
                       style={{
-                        height: `${Math.max(4, (audioLevel / 100) * 24 * (1 + Math.sin(Date.now() / 60 + i * 0.4)))}px`,
-                        opacity: 0.7 + (audioLevel / 300)
+                        height: `${8 + level * barVariance * 32}px`,
                       }}
-                    ></div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Status Badge */}
-            <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-300 ${
-              status === 'offline' ? 'bg-stem-100 border-stem-200 text-stem-600' :
-              status === 'connecting' ? 'bg-yellow-50 border-yellow-200 text-yellow-700 animate-pulse' :
-              'bg-green-50 border-green-200 text-green-700'
-            }`}>
-              {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
-              {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
-              {status === 'online' && (locale === 'fr' ? 'En ligne' : 'Online')}
-            </div>
-          </div>
-
-          {/* AI Name & Description */}
-          <div className="text-center mb-6 mt-6">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-stem-900 font-display mb-2">
-              MINERVA
-            </h1>
-            <p className="text-sm md:text-base text-stem-600 font-medium">
-              {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
-            </p>
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium text-center">
-              {error}
-            </div>
-          )}
-
-          {/* Audio Level Indicator */}
-          {status === 'online' && (
-            <div className="mb-4 bg-white rounded-xl p-4 border border-stem-100 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <Mic className="w-4 h-4 text-accent-500" />
-                <span className="text-sm font-semibold text-stem-900">
-                  {locale === 'fr' ? 'Votre microphone' : 'Your microphone'}
-                </span>
-                <span className="ml-auto text-xs font-mono text-stem-500">
-                  {audioLevel.toFixed(0)}%
-                </span>
+                    />
+                  );
+                })}
               </div>
-              <div className="w-full h-2 bg-stem-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-accent-500 to-stem-500 transition-all duration-100 rounded-full"
-                  style={{ width: `${audioLevel}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* Control Button */}
-          <div className="flex justify-center">
+            {/* Avatar */}
+            {status === 'online' && (
+              <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-accent-500/30 shadow-lg">
+                <img
+                  src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=MINERVA&backgroundColor=f8fafc&scale=90"
+                  alt="MINERVA"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* AI Name */}
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-stem-900 font-display mb-1">
+                MINERVA
+              </h2>
+              <p className="text-sm text-stem-600 font-medium">
+                {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
+              </p>
+            </div>
+
+            {/* Control Button */}
             {status === 'offline' ? (
               <button
                 onClick={startMeeting}
-                className="group relative px-6 py-3 bg-gradient-to-r from-accent-500 to-stem-500 hover:from-accent-600 hover:to-stem-600 text-white font-bold rounded-full shadow-lg shadow-accent-500/20 transition-all duration-200 flex items-center gap-2 text-base"
+                className="group relative px-8 py-4 bg-gradient-to-r from-accent-500 to-stem-500 hover:from-accent-600 hover:to-stem-600 text-white font-bold rounded-full shadow-lg shadow-accent-500/20 transition-all duration-200 flex items-center gap-3 text-base"
               >
-                <Phone className="w-5 h-5" />
-                {locale === 'fr' ? 'Démarrer l\'appel' : 'Start Call'}
+                <Mic className="w-5 h-5" />
+                {locale === 'fr' ? 'Démarrer la conversation' : 'Start Voice Interview'}
               </button>
             ) : status === 'connecting' ? (
               <button
                 disabled
-                className="px-6 py-3 bg-stem-200 text-stem-500 font-bold rounded-full flex items-center gap-2 text-base cursor-not-allowed"
+                className="px-8 py-4 bg-stem-200 text-stem-500 font-bold rounded-full flex items-center gap-3 text-base cursor-not-allowed"
               >
                 <Loader2 className="w-5 h-5 animate-spin" />
                 {locale === 'fr' ? 'Connexion...' : 'Connecting...'}
@@ -490,22 +491,39 @@ export default function MeetingPage() {
             ) : (
               <button
                 onClick={stopMeeting}
-                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg shadow-red-500/20 transition-all duration-200 flex items-center gap-2 text-base"
+                className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg shadow-red-500/20 transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <PhoneOff className="w-5 h-5" />
-                {locale === 'fr' ? 'Raccrocher' : 'End Call'}
+                {locale === 'fr' ? 'Terminer' : 'End Interview'}
               </button>
+            )}
+
+            {/* Hint text */}
+            {status === 'offline' && (
+              <p className="text-center text-stem-500 text-sm font-medium max-w-md">
+                {locale === 'fr'
+                  ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
+                  : 'Click to start a voice conversation with your AI tutor'}
+              </p>
+            )}
+
+            {status === 'connecting' && (
+              <p className="text-center text-stem-500 text-sm">
+                {locale === 'fr'
+                  ? 'Connexion à l\'interview. Cela peut prendre quelques secondes.'
+                  : 'Connecting to the interview. This can take a few seconds.'}
+              </p>
+            )}
+
+            {status === 'online' && !isSpeaking && (
+              <p className="text-center text-stem-500 text-sm">
+                {locale === 'fr'
+                  ? 'Parlez naturellement — l\'IA répondra automatiquement'
+                  : 'Speak naturally — AI will respond automatically'}
+              </p>
             )}
           </div>
 
-          {/* Hint Text */}
-          {status === 'offline' && (
-            <p className="text-center text-stem-500 text-xs md:text-sm font-medium mt-4 max-w-md mx-auto">
-              {locale === 'fr'
-                ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
-                : 'Click to start a voice conversation with your AI tutor'}
-            </p>
-          )}
         </div>
       </div>
     </div>
