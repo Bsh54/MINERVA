@@ -537,7 +537,7 @@ export default function MeetingPage() {
               </p>
             )}
 
-            {status === 'online' && !isSpeaking && (
+            {status === 'online' && !isAISpeaking && (
               <p className="text-center text-stem-500 text-sm">
                 {locale === 'fr'
                   ? 'Parlez naturellement — l\'IA répondra automatiquement'
