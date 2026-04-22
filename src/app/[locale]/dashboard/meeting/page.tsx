@@ -130,26 +130,33 @@ export default function MeetingPage() {
 
   const startMeeting = async () => {
     try {
+      console.log('[MEETING] Starting meeting...');
       stopMeeting();
 
       setStatus('connecting');
       setError(null);
 
+      console.log('[MEETING] Fetching config from:', API_URL);
       const response = await fetch(API_URL);
+      console.log('[MEETING] Response status:', response.status);
+
       if (!response.ok) {
         throw new Error(`Erreur API: ${response.status}`);
       }
 
       const { wsUrl, apiKey } = await response.json();
+      console.log('[MEETING] Config received:', { wsUrl: wsUrl?.substring(0, 50), hasApiKey: !!apiKey });
 
       if (!wsUrl || !apiKey) {
         throw new Error('Configuration WebSocket manquante');
       }
 
       const wsUrlWithKey = `${wsUrl}&api-key=${encodeURIComponent(apiKey)}`;
+      console.log('[MEETING] Connecting to WebSocket...');
       wsRef.current = new WebSocket(wsUrlWithKey);
 
       wsRef.current.onopen = () => {
+        console.log('[MEETING] WebSocket connected!');
         const sessionConfig = {
           type: "session.update",
           session: {
@@ -172,16 +179,24 @@ export default function MeetingPage() {
           }
         };
 
+        console.log('[MEETING] Sending session config...');
         wsRef.current?.send(JSON.stringify(sessionConfig));
         setStatus('online');
+        console.log('[MEETING] Starting audio capture...');
         startAudioCapture();
       };
 
       wsRef.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          console.log('[MEETING] Message received:', message.type);
 
           switch (message.type) {
+            case "session.created":
+            case "session.updated":
+              console.log('[MEETING] Session configured');
+              break;
+
             case "response.audio.delta":
               if (message.delta) {
                 playAudioChunk(message.delta);
@@ -190,6 +205,7 @@ export default function MeetingPage() {
 
             case "conversation.item.input_audio_transcription.completed":
               if (message.transcript) {
+                console.log('[MEETING] User transcript:', message.transcript);
                 setTranscript(prev => [...prev, {
                   role: 'user',
                   text: message.transcript,
@@ -219,36 +235,43 @@ export default function MeetingPage() {
               break;
 
             case "input_audio_buffer.speech_started":
+              console.log('[MEETING] Speech started');
               stopAllAudio();
               setIsSpeaking(true);
               break;
 
             case "input_audio_buffer.speech_stopped":
+              console.log('[MEETING] Speech stopped');
               setIsSpeaking(false);
               break;
 
             case "response.created":
+              console.log('[MEETING] AI response created');
               stopAllAudio();
               break;
 
             case "error":
+              console.error('[MEETING] Error from server:', message.error);
               setError(message.error?.message || 'Erreur inconnue');
               break;
           }
         } catch (e) {
-          console.error('Erreur parsing message:', e);
+          console.error('[MEETING] Error parsing message:', e);
         }
       };
 
-      wsRef.current.onerror = () => {
+      wsRef.current.onerror = (err) => {
+        console.error('[MEETING] WebSocket error:', err);
         setError('Erreur de connexion WebSocket');
       };
 
       wsRef.current.onclose = () => {
+        console.log('[MEETING] WebSocket closed');
         setStatus('offline');
       };
 
     } catch (error: any) {
+      console.error('[MEETING] Error in startMeeting:', error);
       setError(error.message);
       setStatus('offline');
     }
