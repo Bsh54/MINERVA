@@ -28,6 +28,9 @@ export default function MeetingPage() {
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const currentAudioSourcesRef = useRef<AudioBufferSourceNode[]>([]);
+  const audioQueueRef = useRef<string[]>([]);
+  const isPlayingRef = useRef(false);
+  const nextPlayTimeRef = useRef(0);
 
   const API_URL = 'https://shads229-meetme.hf.space/api/config';
 
@@ -38,47 +41,77 @@ export default function MeetingPage() {
       } catch (e) {}
     });
     currentAudioSourcesRef.current = [];
+    audioQueueRef.current = [];
+    isPlayingRef.current = false;
   };
 
   const playAudioChunk = (base64Audio: string) => {
-    try {
-      const binaryString = atob(base64Audio);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const pcm16 = new Int16Array(bytes.buffer);
-
-      if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-        return;
-      }
-
-      if (audioContextRef.current.state === 'suspended') {
-        audioContextRef.current.resume();
-      }
-
-      const audioBuffer = audioContextRef.current.createBuffer(1, pcm16.length, 24000);
-      const channelData = audioBuffer.getChannelData(0);
-
-      for (let i = 0; i < pcm16.length; i++) {
-        channelData[i] = pcm16[i] / 32768.0;
-      }
-
-      const bufferSource = audioContextRef.current.createBufferSource();
-      bufferSource.buffer = audioBuffer;
-      bufferSource.connect(audioContextRef.current.destination);
-      bufferSource.start();
-
-      currentAudioSourcesRef.current.push(bufferSource);
-      bufferSource.onended = () => {
-        const index = currentAudioSourcesRef.current.indexOf(bufferSource);
-        if (index > -1) {
-          currentAudioSourcesRef.current.splice(index, 1);
-        }
-      };
-    } catch (err) {
-      console.error('[MEETING] Audio playback error:', err);
+    audioQueueRef.current.push(base64Audio);
+    if (!isPlayingRef.current) {
+      processAudioQueue();
     }
+  };
+
+  const processAudioQueue = async () => {
+    if (isPlayingRef.current || audioQueueRef.current.length === 0) {
+      return;
+    }
+
+    isPlayingRef.current = true;
+
+    while (audioQueueRef.current.length > 0) {
+      const base64Audio = audioQueueRef.current.shift();
+      if (!base64Audio) continue;
+
+      try {
+        const binaryString = atob(base64Audio);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const pcm16 = new Int16Array(bytes.buffer);
+
+        if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+          break;
+        }
+
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+
+        const audioBuffer = audioContextRef.current.createBuffer(1, pcm16.length, 24000);
+        const channelData = audioBuffer.getChannelData(0);
+
+        for (let i = 0; i < pcm16.length; i++) {
+          channelData[i] = pcm16[i] / 32768.0;
+        }
+
+        const bufferSource = audioContextRef.current.createBufferSource();
+        bufferSource.buffer = audioBuffer;
+        bufferSource.connect(audioContextRef.current.destination);
+
+        const currentTime = audioContextRef.current.currentTime;
+        const startTime = Math.max(currentTime, nextPlayTimeRef.current);
+        bufferSource.start(startTime);
+        nextPlayTimeRef.current = startTime + audioBuffer.duration;
+
+        currentAudioSourcesRef.current.push(bufferSource);
+
+        await new Promise(resolve => {
+          bufferSource.onended = () => {
+            const index = currentAudioSourcesRef.current.indexOf(bufferSource);
+            if (index > -1) {
+              currentAudioSourcesRef.current.splice(index, 1);
+            }
+            resolve(null);
+          };
+        });
+      } catch (err) {
+        console.error('[MEETING] Audio playback error:', err);
+      }
+    }
+
+    isPlayingRef.current = false;
   };
 
   const startAudioCapture = async () => {
@@ -98,7 +131,7 @@ export default function MeetingPage() {
       }
 
       sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
-      processorRef.current = audioContextRef.current.createScriptProcessor(4096, 1, 1);
+      processorRef.current = audioContextRef.current.createScriptProcessor(2048, 1, 1);
 
       processorRef.current.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
@@ -284,6 +317,7 @@ export default function MeetingPage() {
   const stopMeeting = () => {
     console.log('[MEETING] Stopping meeting');
     stopAllAudio();
+    nextPlayTimeRef.current = 0;
 
     if (wsRef.current) {
       wsRef.current.close();
