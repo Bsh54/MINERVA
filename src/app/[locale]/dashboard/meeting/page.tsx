@@ -419,41 +419,15 @@ export default function MeetingPage() {
           {/* Voice visualization */}
           <div className="flex flex-col items-center justify-center gap-6 py-8">
 
-            {/* Status indicators */}
-            {status === 'online' && isAISpeaking && (
-              <div className="flex items-center gap-2 text-accent-600">
-                {isUserSpeaking ? (
-                  <>
-                    <Mic className="h-5 w-5 animate-pulse" />
-                    <span className="text-sm font-medium">{locale === 'fr' ? 'Vous parlez...' : 'You are speaking...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Mic className="h-5 w-5" />
-                    <span className="text-sm font-medium">{locale === 'fr' ? 'À l\'écoute...' : 'Listening...'}</span>
-                  </>
-                )}
-              </div>
-            )}
-
-            {status === 'online' && !isAISpeaking && (
-              <div className="flex items-center gap-2 text-accent-600">
-                <Volume2 className="h-5 w-5 animate-pulse" />
-                <span className="text-sm font-medium">MINERVA {locale === 'fr' ? 'parle...' : 'is speaking...'}</span>
-              </div>
-            )}
-
-            {status === 'online' && !isAISpeaking && !isUserSpeaking && (
-              <div className="flex flex-col items-center gap-3">
-                {/* Mic icon with fill level */}
-                <div className="relative h-16 w-16">
-                  <Mic className="absolute inset-0 h-full w-full text-stem-300" />
-                  <div
-                    className="absolute inset-0 overflow-hidden transition-[clip-path] duration-150 ease-out"
-                    style={{ clipPath: `inset(${(1 - audioLevel / 100) * 100}% 0 0 0)` }}
-                  >
-                    <Mic className="h-full w-full text-accent-500" />
-                  </div>
+            {/* Mic icon with fill level */}
+            {status === 'online' && (
+              <div className="relative h-20 w-20">
+                <Mic className="absolute inset-0 h-full w-full text-stem-300" />
+                <div
+                  className="absolute inset-0 overflow-hidden transition-[clip-path] duration-150 ease-out"
+                  style={{ clipPath: `inset(${(1 - audioLevel / 100) * 100}% 0 0 0)` }}
+                >
+                  <Mic className="h-full w-full text-accent-500" />
                 </div>
               </div>
             )}
@@ -534,14 +508,6 @@ export default function MeetingPage() {
                 {locale === 'fr'
                   ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
                   : 'Click to start a voice conversation with your AI tutor'}
-              </p>
-            )}
-
-            {status === 'online' && !isAISpeaking && (
-              <p className="text-center text-stem-500 text-sm">
-                {locale === 'fr'
-                  ? 'Parlez naturellement — l\'IA répondra automatiquement'
-                  : 'Speak naturally — AI will respond automatically'}
               </p>
             )}
           </div>
