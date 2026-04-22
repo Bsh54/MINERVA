@@ -21,7 +21,8 @@ export default function MeetingPage() {
   const [audioLevel, setAudioLevel] = useState(0);
   const [transcript, setTranscript] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -238,6 +239,7 @@ export default function MeetingPage() {
 
             case "response.audio.delta":
               if (message.delta) {
+                setIsAISpeaking(true);
                 playAudioChunk(message.delta);
               }
               break;
@@ -274,19 +276,26 @@ export default function MeetingPage() {
               break;
 
             case "input_audio_buffer.speech_started":
-              console.log('[MEETING] Speech started - interrupting AI');
+              console.log('[MEETING] User speech started');
               stopAllAudio();
-              setIsSpeaking(true);
+              setIsUserSpeaking(true);
+              setIsAISpeaking(false);
               break;
 
             case "input_audio_buffer.speech_stopped":
-              console.log('[MEETING] Speech stopped');
-              setIsSpeaking(false);
+              console.log('[MEETING] User speech stopped');
+              setIsUserSpeaking(false);
               break;
 
             case "response.created":
               console.log('[MEETING] AI response created');
               stopAllAudio();
+              setIsAISpeaking(false);
+              break;
+
+            case "response.done":
+              console.log('[MEETING] AI response done');
+              setIsAISpeaking(false);
               break;
 
             case "error":
@@ -395,7 +404,7 @@ export default function MeetingPage() {
       <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
 
         {/* Stop AI button - appears when AI is speaking */}
-        {status === 'online' && isSpeaking && (
+        {status === 'online' && isAISpeaking && (
           <button
             onClick={stopAllAudio}
             className="absolute top-4 right-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2 z-10"
@@ -411,14 +420,30 @@ export default function MeetingPage() {
           <div className="flex flex-col items-center justify-center gap-6 py-8">
 
             {/* Status indicators */}
-            {status === 'online' && isSpeaking && (
+            {status === 'online' && isAISpeaking && (
               <div className="flex items-center gap-2 text-accent-600">
                 <Volume2 className="h-5 w-5 animate-pulse" />
                 <span className="text-sm font-medium">MINERVA {locale === 'fr' ? 'parle...' : 'is speaking...'}</span>
               </div>
             )}
 
-            {status === 'online' && !isSpeaking && (
+            {status === 'online' && !isAISpeaking && (
+              <div className="flex items-center gap-2 text-accent-600">
+                {isUserSpeaking ? (
+                  <>
+                    <Mic className="h-5 w-5 animate-pulse" />
+                    <span className="text-sm font-medium">{locale === 'fr' ? 'Vous parlez...' : 'You are speaking...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-5 w-5" />
+                    <span className="text-sm font-medium">{locale === 'fr' ? 'À l\'écoute...' : 'Listening...'}</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {status === 'online' && !isAISpeaking && !isUserSpeaking && (
               <div className="flex flex-col items-center gap-3">
                 {/* Mic icon with fill level */}
                 <div className="relative h-16 w-16">
@@ -430,9 +455,6 @@ export default function MeetingPage() {
                     <Mic className="h-full w-full text-accent-500" />
                   </div>
                 </div>
-                <span className="text-sm font-medium text-accent-600">
-                  {locale === 'fr' ? 'À l\'écoute...' : 'Listening...'}
-                </span>
               </div>
             )}
 
