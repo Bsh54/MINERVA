@@ -48,6 +48,11 @@ export default function MeetingPage() {
     nextPlayTimeRef.current = 0;
   };
 
+  const handleStopAI = () => {
+    stopAllAudio();
+    setIsAISpeaking(false);
+  };
+
   const playAudioChunk = (base64Audio: string) => {
     audioQueueRef.current.push(base64Audio);
     if (!isPlayingRef.current) {
@@ -406,7 +411,7 @@ export default function MeetingPage() {
         {/* Stop AI button - appears when AI is speaking */}
         {status === 'online' && isAISpeaking && (
           <button
-            onClick={stopAllAudio}
+            onClick={handleStopAI}
             className="absolute top-4 right-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2 z-10"
           >
             <Volume2 className="h-4 w-4" />
