@@ -277,12 +277,6 @@ export default function MeetingPage() {
               console.log('[MEETING] Speech started - interrupting AI');
               stopAllAudio();
               setIsSpeaking(true);
-              // Send interrupt signal to stop AI response
-              if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                wsRef.current.send(JSON.stringify({
-                  type: "response.cancel"
-                }));
-              }
               break;
 
             case "input_audio_buffer.speech_stopped":
@@ -398,7 +392,19 @@ export default function MeetingPage() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
+
+        {/* Stop AI button - appears when AI is speaking */}
+        {status === 'online' && isSpeaking && (
+          <button
+            onClick={stopAllAudio}
+            className="absolute top-4 right-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2 z-10"
+          >
+            <Volume2 className="h-4 w-4" />
+            {locale === 'fr' ? 'Arrêter' : 'Stop'}
+          </button>
+        )}
+
         <div className="w-full max-w-2xl">
 
           {/* Voice visualization */}
