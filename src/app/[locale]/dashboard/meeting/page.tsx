@@ -379,9 +379,9 @@ export default function MeetingPage() {
 
         {/* Instructions */}
         <div className="mt-8 text-center text-sm text-stem-500 space-y-1">
-          <p>💡 {locale === 'fr' ? 'Cliquez pour démarrer' : 'Click to start'}</p>
-          <p>🎤 {locale === 'fr' ? 'Autorisez le microphone' : 'Allow microphone access'}</p>
-          <p>🗣️ {locale === 'fr' ? 'Parlez naturellement' : 'Speak naturally'}</p>
+          <p>{locale === 'fr' ? 'Cliquez pour démarrer' : 'Click to start'}</p>
+          <p>{locale === 'fr' ? 'Autorisez le microphone' : 'Allow microphone access'}</p>
+          <p>{locale === 'fr' ? 'Parlez naturellement' : 'Speak naturally'}</p>
         </div>
       </div>
     </div>
