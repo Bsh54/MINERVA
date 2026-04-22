@@ -405,15 +405,6 @@ export default function MeetingPage() {
           <div className="flex flex-col items-center justify-center gap-6 py-8">
 
             {/* Status indicators */}
-            {status === 'connecting' && (
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-12 w-12 animate-spin text-stem-600" />
-                <span className="text-sm font-medium text-stem-600">
-                  {locale === 'fr' ? 'Connexion à l\'interview. Cela peut prendre quelques secondes.' : 'Connecting to the interview. This can take a few seconds.'}
-                </span>
-              </div>
-            )}
-
             {status === 'online' && isSpeaking && (
               <div className="flex items-center gap-2 text-accent-600">
                 <Volume2 className="h-5 w-5 animate-pulse" />
