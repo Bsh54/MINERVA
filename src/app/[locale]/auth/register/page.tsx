@@ -6,10 +6,13 @@ import { Link, useRouter } from '@/i18n/routing';
 import { signup } from '@/app/actions/auth';
 import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 
 export default function RegisterPage() {
   const t = useTranslations('Auth');
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
@@ -35,7 +38,7 @@ export default function RegisterPage() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: `${window.location.origin}/${locale}/auth/callback?next=/dashboard`,
       },
     });
   };

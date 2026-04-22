@@ -11,6 +11,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Ignorer les callbacks OAuth pour permettre l'échange du code
+  if (request.nextUrl.pathname.includes('/auth/callback')) {
+    return NextResponse.next();
+  }
+
   // Initialiser la réponse avec next-intl
   let response = intlMiddleware(request);
 

@@ -1,23 +1,27 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { login } from '@/app/actions/auth';
 import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 
 export default function LoginPage() {
   const t = useTranslations('Auth');
+  const params = useParams();
+  const locale = params.locale as string;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const supabase = createClient();
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: `${window.location.origin}/${locale}/auth/callback?next=/dashboard`,
       },
     });
   };
@@ -64,13 +68,22 @@ export default function LoginPage() {
               <label className="block text-sm font-bold text-stem-900">{t('passwordLabel')}</label>
               <a href="#" className="text-xs font-bold text-accent-500 hover:text-accent-600">{t('forgotPassword')}</a>
             </div>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-4 py-2.5 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                className="w-full px-4 py-2.5 pr-10 bg-stem-50/50 border border-stem-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 text-sm font-medium text-stem-900"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stem-400 hover:text-stem-600"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
         </div>
 
