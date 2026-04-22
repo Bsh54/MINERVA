@@ -38,11 +38,13 @@ export default function MeetingPage() {
     currentAudioSourcesRef.current.forEach(source => {
       try {
         source.stop();
+        source.disconnect();
       } catch (e) {}
     });
     currentAudioSourcesRef.current = [];
     audioQueueRef.current = [];
     isPlayingRef.current = false;
+    nextPlayTimeRef.current = 0;
   };
 
   const playAudioChunk = (base64Audio: string) => {
@@ -272,9 +274,15 @@ export default function MeetingPage() {
               break;
 
             case "input_audio_buffer.speech_started":
-              console.log('[MEETING] Speech started');
+              console.log('[MEETING] Speech started - interrupting AI');
               stopAllAudio();
               setIsSpeaking(true);
+              // Send interrupt signal to stop AI response
+              if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                wsRef.current.send(JSON.stringify({
+                  type: "response.cancel"
+                }));
+              }
               break;
 
             case "input_audio_buffer.speech_stopped":
