@@ -487,7 +487,7 @@ export default function MeetingPage() {
                 className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <Mic className="w-5 h-5" />
-                {locale === 'fr' ? 'Démarrer la conversation' : 'Start Voice Interview'}
+                {locale === 'fr' ? 'Démarrer la conversation' : 'Start Conversation'}
               </button>
             ) : status === 'connecting' ? (
               <button
@@ -503,7 +503,7 @@ export default function MeetingPage() {
                 className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <PhoneOff className="w-5 h-5" />
-                {locale === 'fr' ? 'Terminer' : 'End Interview'}
+                {locale === 'fr' ? 'Terminer' : 'End Conversation'}
               </button>
             )}
 
