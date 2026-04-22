@@ -350,10 +350,10 @@ export default function MeetingPage() {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-stem-50 via-white to-accent-50">
+    <div className="flex h-screen flex-col overflow-hidden bg-white">
 
       {/* Header */}
-      <div className="shrink-0 border-b bg-white/80 backdrop-blur-md px-4 md:px-6 py-3">
+      <div className="shrink-0 border-b bg-white px-4 md:px-6 py-3">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-semibold transition-colors duration-200">
@@ -476,7 +476,7 @@ export default function MeetingPage() {
             {status === 'offline' ? (
               <button
                 onClick={startMeeting}
-                className="group relative px-8 py-4 bg-gradient-to-r from-accent-500 to-stem-500 hover:from-accent-600 hover:to-stem-600 text-white font-bold rounded-full shadow-lg shadow-accent-500/20 transition-all duration-200 flex items-center gap-3 text-base"
+                className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <Mic className="w-5 h-5" />
                 {locale === 'fr' ? 'Démarrer la conversation' : 'Start Voice Interview'}
@@ -492,7 +492,7 @@ export default function MeetingPage() {
             ) : (
               <button
                 onClick={stopMeeting}
-                className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg shadow-red-500/20 transition-all duration-200 flex items-center gap-3 text-base"
+                className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <PhoneOff className="w-5 h-5" />
                 {locale === 'fr' ? 'Terminer' : 'End Interview'}
