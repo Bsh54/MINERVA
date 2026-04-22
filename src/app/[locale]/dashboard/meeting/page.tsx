@@ -398,9 +398,11 @@ export default function MeetingPage() {
 
             {/* Status indicators */}
             {status === 'connecting' && (
-              <div className="flex items-center gap-2 text-stem-600">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span className="text-sm font-medium">{locale === 'fr' ? 'Connexion...' : 'Connecting...'}</span>
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-12 w-12 animate-spin text-stem-600" />
+                <span className="text-sm font-medium text-stem-600">
+                  {locale === 'fr' ? 'Connexion à l\'interview. Cela peut prendre quelques secondes.' : 'Connecting to the interview. This can take a few seconds.'}
+                </span>
               </div>
             )}
 
@@ -505,14 +507,6 @@ export default function MeetingPage() {
                 {locale === 'fr'
                   ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
                   : 'Click to start a voice conversation with your AI tutor'}
-              </p>
-            )}
-
-            {status === 'connecting' && (
-              <p className="text-center text-stem-500 text-sm">
-                {locale === 'fr'
-                  ? 'Connexion à l\'interview. Cela peut prendre quelques secondes.'
-                  : 'Connecting to the interview. This can take a few seconds.'}
               </p>
             )}
 
