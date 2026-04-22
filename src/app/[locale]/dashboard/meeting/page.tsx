@@ -450,26 +450,27 @@ export default function MeetingPage() {
               </div>
             )}
 
-            {/* Avatar */}
-            {status === 'online' && (
-              <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-accent-500/30 shadow-lg">
-                <img
-                  src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=MINERVA&backgroundColor=f8fafc&scale=90"
-                  alt="MINERVA"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
+            {/* AI Name & Avatar - only when NOT connected or when idle */}
+            {status !== 'online' && (
+              <>
+                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-stem-200 shadow-lg">
+                  <img
+                    src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=MINERVA&backgroundColor=f8fafc&scale=90"
+                    alt="MINERVA"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-            {/* AI Name */}
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-stem-900 font-display mb-1">
-                MINERVA
-              </h2>
-              <p className="text-sm text-stem-600 font-medium">
-                {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
-              </p>
-            </div>
+                <div className="text-center">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-stem-900 font-display mb-1">
+                    MINERVA
+                  </h2>
+                  <p className="text-sm text-stem-600 font-medium">
+                    {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
+                  </p>
+                </div>
+              </>
+            )}
 
             {/* Control Button */}
             {status === 'offline' ? (
