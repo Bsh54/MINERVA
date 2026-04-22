@@ -288,199 +288,160 @@ export default function MeetingPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-bold mb-8 transition-colors">
-        <ChevronLeft className="w-5 h-5" />
-        {t('backHub')}
-      </Link>
+    <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 flex flex-col">
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Top Bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-6 bg-gradient-to-b from-black/50 to-transparent">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-white/80 hover:text-white font-bold transition-colors">
+          <ChevronLeft className="w-5 h-5" />
+          {t('backHub')}
+        </Link>
+      </div>
 
-        {/* Left Panel - Avatar & Controls */}
-        <div className="lg:col-span-1">
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-3xl shadow-soft border border-purple-100 sticky top-8">
+      {/* Main Avatar Area */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="relative">
 
-            {/* AI Avatar */}
-            <div className="relative mb-8">
-              <div className={`w-48 h-48 mx-auto rounded-full bg-gradient-to-br from-purple-400 via-blue-500 to-teal-400 p-1 transition-all duration-300 ${
-                status === 'online' ? 'animate-pulse shadow-2xl' : ''
-              }`}>
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center relative overflow-hidden">
-                  {/* Avatar Face */}
-                  <div className="relative">
-                    <Sparkles className={`w-20 h-20 transition-all duration-300 ${
-                      status === 'online' ? 'text-purple-500' : 'text-gray-300'
-                    }`} />
+          {/* Outer Glow Ring */}
+          <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+            status === 'online'
+              ? 'bg-gradient-to-br from-purple-500/30 via-blue-500/30 to-teal-500/30 blur-3xl scale-150 animate-pulse'
+              : 'bg-white/5 blur-2xl scale-125'
+          }`}></div>
 
-                    {/* Speaking Animation */}
-                    {status === 'online' && isSpeaking && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-24 h-24 rounded-full bg-purple-400/20 animate-ping"></div>
-                      </div>
-                    )}
-                  </div>
+          {/* Avatar Container */}
+          <div className={`relative w-80 h-80 md:w-96 md:h-96 rounded-full bg-gradient-to-br from-purple-400 via-blue-500 to-teal-400 p-2 transition-all duration-500 ${
+            status === 'online' ? 'shadow-2xl shadow-purple-500/50' : 'shadow-xl'
+          }`}>
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center relative overflow-hidden">
 
-                  {/* Audio Waves */}
-                  {status === 'online' && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-1 bg-gradient-to-t from-purple-500 to-blue-500 rounded-full transition-all duration-150"
-                          style={{
-                            height: `${Math.max(4, (audioLevel / 100) * 32 * (1 + Math.sin(Date.now() / 100 + i)))}px`
-                          }}
-                        ></div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500"></div>
               </div>
 
-              {/* Status Badge */}
-              <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold shadow-lg ${
-                status === 'offline' ? 'bg-gray-200 text-gray-600' :
-                status === 'connecting' ? 'bg-yellow-400 text-gray-900' :
-                'bg-green-500 text-white'
-              }`}>
-                {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
-                {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
-                {status === 'online' && (locale === 'fr' ? 'En ligne' : 'Online')}
+              {/* Main Avatar Icon */}
+              <div className="relative z-10">
+                <Sparkles className={`w-32 h-32 md:w-40 md:h-40 transition-all duration-500 ${
+                  status === 'online' ? 'text-purple-400' : 'text-gray-600'
+                }`} />
               </div>
-            </div>
 
-            {/* AI Name */}
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-extrabold text-stem-900 font-display mb-1">
-                MINERVA AI
-              </h2>
-              <p className="text-sm text-stem-600 font-medium">
-                {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
-              </p>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="mb-6 p-3 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium">
-                {error}
-              </div>
-            )}
-
-            {/* Controls */}
-            <div className="space-y-3">
-              {status === 'offline' ? (
-                <button
-                  onClick={startMeeting}
-                  className="w-full btn-3d bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3"
-                >
-                  <Phone className="w-5 h-5" />
-                  {locale === 'fr' ? 'Démarrer la conversation' : 'Start Conversation'}
-                </button>
-              ) : status === 'connecting' ? (
-                <button
-                  disabled
-                  className="w-full bg-gray-300 text-gray-600 font-extrabold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 cursor-not-allowed"
-                >
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {locale === 'fr' ? 'Connexion...' : 'Connecting...'}
-                </button>
-              ) : (
-                <button
-                  onClick={stopMeeting}
-                  className="w-full btn-3d bg-red-500 hover:bg-red-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3"
-                >
-                  <PhoneOff className="w-5 h-5" />
-                  {locale === 'fr' ? 'Terminer' : 'End Call'}
-                </button>
+              {/* Speaking Pulse Effect */}
+              {status === 'online' && isSpeaking && (
+                <>
+                  <div className="absolute inset-0 rounded-full bg-purple-500/20 animate-ping"></div>
+                  <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping" style={{ animationDelay: '0.2s' }}></div>
+                </>
               )}
 
-              {/* Audio Level Indicator */}
+              {/* Audio Visualization Bars */}
               {status === 'online' && (
-                <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-purple-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mic className="w-4 h-4 text-purple-600" />
-                    <span className="text-xs font-bold text-stem-900">
-                      {locale === 'fr' ? 'Votre micro' : 'Your microphone'}
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+                  {[...Array(7)].map((_, i) => (
                     <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-100 rounded-full"
-                      style={{ width: `${audioLevel}%` }}
+                      key={i}
+                      className="w-2 bg-gradient-to-t from-purple-400 via-blue-400 to-teal-400 rounded-full transition-all duration-100"
+                      style={{
+                        height: `${Math.max(8, (audioLevel / 100) * 48 * (1 + Math.sin(Date.now() / 80 + i * 0.5)))}px`,
+                        opacity: 0.8 + (audioLevel / 200)
+                      }}
                     ></div>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Tips */}
-            <div className="mt-6 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-purple-100">
-              <p className="text-xs text-stem-600 font-medium leading-relaxed">
-                {locale === 'fr'
-                  ? 'Posez vos questions STEM naturellement. L\'IA vous écoute et répond en temps réel.'
-                  : 'Ask your STEM questions naturally. The AI listens and responds in real-time.'}
-              </p>
-            </div>
+          {/* Status Badge */}
+          <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full text-sm font-bold shadow-2xl backdrop-blur-md ${
+            status === 'offline' ? 'bg-gray-800/90 text-gray-300' :
+            status === 'connecting' ? 'bg-yellow-500/90 text-gray-900' :
+            'bg-green-500/90 text-white'
+          }`}>
+            {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
+            {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
+            {status === 'online' && (locale === 'fr' ? 'En ligne' : 'Online')}
           </div>
         </div>
+      </div>
 
-        {/* Right Panel - Transcript */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-3xl shadow-soft border border-gray-100 p-8 min-h-[600px] flex flex-col">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-              <h3 className="text-2xl font-extrabold text-stem-900 font-display">
-                {locale === 'fr' ? 'Conversation' : 'Conversation'}
-              </h3>
-              {transcript.length > 0 && (
-                <button
-                  onClick={() => setTranscript([])}
-                  className="text-xs font-bold text-stem-600 hover:text-stem-900 px-3 py-1.5 bg-stem-50 rounded-lg hover:bg-stem-100 transition-colors"
-                >
-                  {locale === 'fr' ? 'Effacer' : 'Clear'}
-                </button>
-              )}
-            </div>
+      {/* AI Name */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-64 md:translate-y-72 text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-white font-display mb-2 drop-shadow-lg">
+          MINERVA AI
+        </h2>
+        <p className="text-white/70 font-medium">
+          {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
+        </p>
+      </div>
 
-            {/* Transcript Messages */}
-            <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-              {transcript.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <Volume2 className="w-10 h-10 text-purple-500" />
-                  </div>
-                  <p className="text-stem-600 font-medium max-w-md">
-                    {locale === 'fr'
-                      ? 'Démarrez la conversation pour voir la transcription apparaître ici en temps réel.'
-                      : 'Start the conversation to see the transcript appear here in real-time.'}
-                  </p>
-                </div>
-              ) : (
-                transcript.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-                        msg.role === 'user'
-                          ? 'bg-gradient-to-br from-purple-500 to-blue-500 text-white'
-                          : 'bg-stem-50 text-stem-900 border border-stem-100'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold opacity-70">
-                          {msg.role === 'user'
-                            ? (locale === 'fr' ? 'Vous' : 'You')
-                            : 'MINERVA AI'}
-                        </span>
-                      </div>
-                      <p className="text-sm leading-relaxed">{msg.text}</p>
-                    </div>
-                  </div>
-                ))
-              )}
+      {/* Bottom Controls */}
+      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/50 to-transparent">
+        <div className="max-w-2xl mx-auto">
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/90 backdrop-blur-md text-white border border-red-400 rounded-2xl text-sm font-medium text-center">
+              {error}
             </div>
+          )}
+
+          {/* Audio Level Indicator */}
+          {status === 'online' && (
+            <div className="mb-6 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+              <div className="flex items-center gap-3 mb-2">
+                <Mic className="w-5 h-5 text-white" />
+                <span className="text-sm font-bold text-white">
+                  {locale === 'fr' ? 'Votre microphone' : 'Your microphone'}
+                </span>
+              </div>
+              <div className="w-full h-2 bg-black/30 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-400 via-blue-400 to-teal-400 transition-all duration-100 rounded-full"
+                  style={{ width: `${audioLevel}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {/* Main Control Button */}
+          <div className="flex justify-center">
+            {status === 'offline' ? (
+              <button
+                onClick={startMeeting}
+                className="btn-3d bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold py-5 px-12 rounded-full shadow-2xl flex items-center justify-center gap-3 text-lg"
+              >
+                <Phone className="w-6 h-6" />
+                {locale === 'fr' ? 'Démarrer l\'appel' : 'Start Call'}
+              </button>
+            ) : status === 'connecting' ? (
+              <button
+                disabled
+                className="bg-white/20 backdrop-blur-md text-white font-extrabold py-5 px-12 rounded-full flex items-center justify-center gap-3 text-lg cursor-not-allowed"
+              >
+                <Loader2 className="w-6 h-6 animate-spin" />
+                {locale === 'fr' ? 'Connexion...' : 'Connecting...'}
+              </button>
+            ) : (
+              <button
+                onClick={stopMeeting}
+                className="btn-3d bg-red-600 hover:bg-red-700 text-white font-extrabold py-5 px-12 rounded-full shadow-2xl flex items-center justify-center gap-3 text-lg"
+              >
+                <PhoneOff className="w-6 h-6" />
+                {locale === 'fr' ? 'Raccrocher' : 'End Call'}
+              </button>
+            )}
           </div>
+
+          {/* Hint Text */}
+          {status === 'offline' && (
+            <p className="text-center text-white/60 text-sm font-medium mt-6">
+              {locale === 'fr'
+                ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
+                : 'Click to start a voice conversation with your AI tutor'}
+            </p>
+          )}
         </div>
       </div>
     </div>
