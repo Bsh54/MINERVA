@@ -84,6 +84,8 @@
     "createDesc": "Démarrer un nouveau parcours",
     "libraryTitle": "Mes Cours",
     "libraryDesc": "Continuer l'apprentissage",
+    "meetingTitle": "Rencontre IA",
+    "meetingDesc": "Discutez avec votre tuteur IA",
     "profileTitle": "Profil",
     "profileDesc": "Progrès & paramètres"
   },

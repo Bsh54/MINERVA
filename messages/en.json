@@ -84,6 +84,8 @@
     "createDesc": "Start a new learning path",
     "libraryTitle": "My Courses",
     "libraryDesc": "Continue learning",
+    "meetingTitle": "AI Meeting",
+    "meetingDesc": "Talk with your AI tutor",
     "profileTitle": "Profile",
     "profileDesc": "Progress & settings"
   },
