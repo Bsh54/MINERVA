@@ -119,7 +119,7 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     };
   }, []);
 
-  // Lip sync based on audio level
+  // Lip sync and expressions based on audio level
   useEffect(() => {
     if (!vrmRef.current?.expressionManager) return;
 
@@ -128,33 +128,63 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     console.log('[VRM] Animation update - isAISpeaking:', isAISpeaking, 'audioLevel:', audioLevel);
 
     if (isAISpeaking && audioLevel > 0.01) {
-      // Simple lip sync: alternate between visemes based on audio level
+      // AI is speaking - animate mouth with visemes
       const time = Date.now() / 80;
       const visemes = ['aa', 'ih', 'ou', 'ee', 'oh'] as VRMExpressionPresetName[];
       const visemeIndex = Math.floor(time * Math.max(audioLevel * 10, 1)) % visemes.length;
       const currentViseme = visemes[visemeIndex];
 
-      // Reset all visemes
-      visemes.forEach(v => {
-        expressionManager.setValue(v, 0);
+      // Reset all expressions
+      ['aa', 'ih', 'ou', 'ee', 'oh', 'happy', 'angry', 'sad', 'relaxed', 'surprised', 'neutral'].forEach(v => {
+        expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
 
       // Set current viseme with stronger intensity
       const intensity = Math.min(audioLevel * 3, 1);
       expressionManager.setValue(currentViseme, intensity);
 
-      console.log('[VRM] Setting viseme:', currentViseme, 'intensity:', intensity);
+      // Add slight happy expression when speaking
+      expressionManager.setValue('happy', 0.2);
+
+      console.log('[VRM] AI speaking - viseme:', currentViseme, 'intensity:', intensity);
     } else if (!isAISpeaking && audioLevel > 0.01) {
-      // User is speaking - show listening expression
-      expressionManager.setValue('happy', 0.3);
-      console.log('[VRM] User speaking - happy expression');
-    } else {
-      // Reset to neutral
-      ['aa', 'ih', 'ou', 'ee', 'oh', 'happy'].forEach(v => {
+      // User is speaking - show attentive/listening expression
+      ['aa', 'ih', 'ou', 'ee', 'oh', 'angry', 'sad', 'surprised'].forEach(v => {
         expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
+
+      expressionManager.setValue('relaxed', 0.4);
+      expressionManager.setValue('happy', 0.2);
+
+      console.log('[VRM] User speaking - attentive expression');
+    } else {
+      // Idle - neutral with slight happy expression
+      ['aa', 'ih', 'ou', 'ee', 'oh', 'angry', 'sad', 'surprised'].forEach(v => {
+        expressionManager.setValue(v as VRMExpressionPresetName, 0);
+      });
+
+      expressionManager.setValue('neutral', 0.3);
+      expressionManager.setValue('happy', 0.1);
     }
   }, [audioLevel, isAISpeaking]);
+
+  // Add blinking animation
+  useEffect(() => {
+    if (!vrmRef.current?.expressionManager) return;
+
+    const blinkInterval = setInterval(() => {
+      const expressionManager = vrmRef.current?.expressionManager;
+      if (!expressionManager) return;
+
+      // Blink animation
+      expressionManager.setValue('blink', 1);
+      setTimeout(() => {
+        expressionManager?.setValue('blink', 0);
+      }, 150);
+    }, 3000 + Math.random() * 2000); // Random blink every 3-5 seconds
+
+    return () => clearInterval(blinkInterval);
+  }, []);
 
   return (
     <div className="relative w-full h-full">
