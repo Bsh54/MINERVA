@@ -58,10 +58,11 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
-    console.log('[VRM] Loading model from /models/AvatarSample_A.vrm');
+    const vrmPath = window.location.origin + '/models/AvatarSample_A.vrm';
+    console.log('[VRM] Loading model from:', vrmPath);
 
     loader.load(
-      '/models/AvatarSample_A.vrm',
+      vrmPath,
       (gltf) => {
         const vrm = gltf.userData.vrm as VRM;
         vrmRef.current = vrm;
