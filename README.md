@@ -1,12 +1,15 @@
 # MINERVA
 
-AI-powered STEM learning platform that generates personalized courses from any text content.
+AI-powered STEM learning platform that generates personalized courses from any text content with interactive 3D avatar and voice conversations.
 
 ## Features
 
 - **AI Course Generation**: Transform any text into structured courses with modules and topics
 - **Detailed Explanations**: Each topic includes comprehensive AI-generated explanations with rich formatting
 - **Interactive Quizzes**: Multiple choice and true/false questions for every topic and module
+- **AI Meeting (Beta)**: Voice conversations with a 3D VRM avatar using OpenAI Realtime API
+- **AI Chatbot Widget**: Contextual AI assistant available throughout the platform
+- **3D Avatar**: Animated VRM avatar with lip-sync, facial expressions, and body animations
 - **Progress Tracking**: Automatic saving of your learning progress
 - **Multilingual**: Full support for English and French
 - **Modern Interface**: Clean design with Tailwind CSS
@@ -17,9 +20,11 @@ AI-powered STEM learning platform that generates personalized courses from any t
 - **Language**: TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
-- **AI**: DeepSeek API
+- **AI**: DeepSeek API + OpenAI Realtime API
+- **3D Rendering**: Three.js + @pixiv/three-vrm
 - **Styling**: Tailwind CSS 4
 - **Internationalization**: next-intl
+- **HTTP Client**: Axios
 
 ## Installation
 
@@ -44,11 +49,14 @@ DEEPSEEK_API_URL=your_deepseek_api_url
 DEEPSEEK_API_KEY=your_deepseek_api_key
 ```
 
+**Note**: The AI Meeting feature requires additional configuration via a proxy service for OpenAI Realtime API access.
+
 4. Set up the database
 
-Run SQL migrations in Supabase Dashboard:
-- `supabase/migrations/20260420_create_courses_table.sql`
-- `supabase/migrations/20260420_create_course_system_tables.sql`
+Run the SQL migration in Supabase Dashboard:
+- Navigate to SQL Editor in your Supabase project
+- Copy and execute `supabase/migrations/20260423_complete_schema.sql`
+- This will create all tables, indexes, RLS policies, and triggers
 
 5. Start the development server
 ```bash
@@ -64,14 +72,28 @@ stem-app/
 ├── src/
 │   ├── app/                    # Next.js pages (App Router)
 │   │   ├── [locale]/          # Internationalized routes
+│   │   │   ├── dashboard/     # Dashboard pages
+│   │   │   │   ├── meeting/   # AI Meeting with VRM avatar
+│   │   │   │   ├── course/    # Course viewer
+│   │   │   │   └── profile/   # User profile
 │   │   └── api/               # API routes
+│   │       ├── chat/          # Chatbot API
+│   │       └── courses/       # Course management
 │   ├── components/            # React components
+│   │   ├── chatbot/          # Chatbot widget components
+│   │   ├── course/           # Course-related components
+│   │   ├── dashboard/        # Dashboard components
+│   │   └── VRMAvatar.tsx     # 3D avatar component
 │   ├── contexts/              # Context API (global state)
+│   │   ├── ChatbotContext.tsx
+│   │   └── CourseContext.tsx
 │   ├── i18n/                  # i18n configuration
 │   └── utils/                 # Utilities
 ├── supabase/
 │   └── migrations/            # SQL migrations
-└── public/                    # Static assets
+├── public/
+│   └── models/                # VRM 3D models
+└── messages/                  # i18n translations
 ```
 
 ## Usage
@@ -81,7 +103,9 @@ stem-app/
 3. **Customize**: Select topics to include, reorganize, add custom topics
 4. **Learn**: Click on a topic to view detailed explanations
 5. **Test**: Take quizzes to validate your knowledge
-6. **Progress**: Your progress is automatically saved
+6. **AI Meeting**: Start a voice conversation with the 3D avatar tutor
+7. **Ask questions**: Use the chatbot widget for instant help
+8. **Progress**: Your progress is automatically saved
 
 ## Architecture
 
@@ -98,6 +122,28 @@ stem-app/
 - **topic_explanations**: Cache for generated explanations
 - **quizzes**: Cache for generated quizzes
 - **user_progress**: User progress (completed topics/modules, scores)
+
+All tables include:
+- Proper indexes for performance
+- Row Level Security (RLS) policies
+- Foreign key constraints with CASCADE DELETE
+- Automatic `updated_at` triggers
+
+### 3D Avatar System
+
+- **VRM Model**: Standard Japanese 3D avatar format
+- **Animations**: Idle breathing, head movements, hand gestures
+- **Lip Sync**: Real-time mouth animation based on audio level
+- **Expressions**: Happy, relaxed, surprised, blinking
+- **Three.js**: WebGL rendering with optimized performance
+
+### AI Meeting
+
+- **OpenAI Realtime API**: Low-latency voice conversations
+- **Server VAD**: Automatic speech detection
+- **Audio Processing**: PCM16 format at 24kHz
+- **Streaming**: Real-time audio playback with queue management
+- **Transcription**: Automatic conversation transcription
 
 ### Security
 
@@ -127,6 +173,9 @@ npm run lint
 - Explanations and quizzes are stored in database after first generation
 - Frontend uses `useCallback` to prevent unnecessary re-renders
 - Content is only fetched once per session
+- Database indexes on frequently queried columns
+- VRM avatar uses requestAnimationFrame for smooth 60fps animations
+- Audio streaming with queue management for seamless playback
 
 ## License
 
