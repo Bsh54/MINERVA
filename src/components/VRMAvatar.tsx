@@ -125,11 +125,13 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
 
     const expressionManager = vrmRef.current.expressionManager;
 
-    if (isAISpeaking && audioLevel > 0.02) {
+    console.log('[VRM] Animation update - isAISpeaking:', isAISpeaking, 'audioLevel:', audioLevel);
+
+    if (isAISpeaking && audioLevel > 0.01) {
       // Simple lip sync: alternate between visemes based on audio level
-      const time = Date.now() / 100;
+      const time = Date.now() / 80;
       const visemes = ['aa', 'ih', 'ou', 'ee', 'oh'] as VRMExpressionPresetName[];
-      const visemeIndex = Math.floor(time * audioLevel * 10) % visemes.length;
+      const visemeIndex = Math.floor(time * Math.max(audioLevel * 10, 1)) % visemes.length;
       const currentViseme = visemes[visemeIndex];
 
       // Reset all visemes
@@ -137,11 +139,18 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
         expressionManager.setValue(v, 0);
       });
 
-      // Set current viseme
-      expressionManager.setValue(currentViseme, Math.min(audioLevel * 2, 1));
+      // Set current viseme with stronger intensity
+      const intensity = Math.min(audioLevel * 3, 1);
+      expressionManager.setValue(currentViseme, intensity);
+
+      console.log('[VRM] Setting viseme:', currentViseme, 'intensity:', intensity);
+    } else if (!isAISpeaking && audioLevel > 0.01) {
+      // User is speaking - show listening expression
+      expressionManager.setValue('happy', 0.3);
+      console.log('[VRM] User speaking - happy expression');
     } else {
       // Reset to neutral
-      ['aa', 'ih', 'ou', 'ee', 'oh'].forEach(v => {
+      ['aa', 'ih', 'ou', 'ee', 'oh', 'happy'].forEach(v => {
         expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
     }
