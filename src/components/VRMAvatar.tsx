@@ -3,11 +3,26 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { VRM, VRMLoaderPlugin, VRMExpressionPresetName } from '@pixiv/three-vrm';
+import { VRM, VRMLoaderPlugin, VRMExpressionPresetName, VRMHumanBoneName } from '@pixiv/three-vrm';
 
 interface VRMAvatarProps {
   audioLevel: number;
   isAISpeaking: boolean;
+}
+
+// Keyframe animation helper
+interface Keyframe {
+  time: number;
+  rotation: THREE.Euler;
+}
+
+function lerpEuler(start: THREE.Euler, end: THREE.Euler, t: number): THREE.Euler {
+  return new THREE.Euler(
+    THREE.MathUtils.lerp(start.x, end.x, t),
+    THREE.MathUtils.lerp(start.y, end.y, t),
+    THREE.MathUtils.lerp(start.z, end.z, t),
+    start.order
+  );
 }
 
 export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) {
@@ -18,6 +33,11 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
   const animationFrameRef = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Animation state
+  const gestureTimeRef = useRef(0);
+  const lastGestureRef = useRef(0);
+  const idleAnimationRef = useRef(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -91,6 +111,9 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
 
       if (vrmRef.current) {
         vrmRef.current.update(deltaTime);
+
+        // Apply body animations
+        applyBodyAnimations(vrmRef.current, deltaTime);
       }
 
       renderer.render(scene, camera);
@@ -118,6 +141,86 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
       renderer.dispose();
     };
   }, []);
+
+  // Body animations function
+  const applyBodyAnimations = (vrm: VRM, deltaTime: number) => {
+    const humanoid = vrm.humanoid;
+    if (!humanoid) return;
+
+    gestureTimeRef.current += deltaTime;
+    idleAnimationRef.current += deltaTime;
+
+    // Idle breathing animation
+    const breathCycle = Math.sin(idleAnimationRef.current * 1.5) * 0.02;
+    const spine = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Spine);
+    if (spine) {
+      spine.rotation.x = breathCycle;
+    }
+
+    // Head movements when speaking
+    if (isAISpeaking) {
+      const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head);
+      if (head) {
+        // Subtle head nod while speaking
+        const nodCycle = Math.sin(gestureTimeRef.current * 2) * 0.08;
+        head.rotation.x = nodCycle;
+
+        // Slight head tilt variation
+        const tiltCycle = Math.sin(gestureTimeRef.current * 1.2) * 0.05;
+        head.rotation.z = tiltCycle;
+      }
+
+      // Occasional hand gesture
+      if (gestureTimeRef.current - lastGestureRef.current > 3) {
+        lastGestureRef.current = gestureTimeRef.current;
+        performHandGesture(vrm);
+      }
+    } else {
+      // Reset to neutral when not speaking
+      const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head);
+      if (head) {
+        head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0, deltaTime * 2);
+        head.rotation.z = THREE.MathUtils.lerp(head.rotation.z, 0, deltaTime * 2);
+      }
+    }
+  };
+
+  // Hand gesture animation
+  const performHandGesture = (vrm: VRM) => {
+    const humanoid = vrm.humanoid;
+    if (!humanoid) return;
+
+    const rightUpperArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightUpperArm);
+    const rightLowerArm = humanoid.getNormalizedBoneNode(VRMHumanBoneName.RightLowerArm);
+
+    if (rightUpperArm && rightLowerArm) {
+      // Animate arm up
+      const startRotation = rightUpperArm.rotation.clone();
+      const targetRotation = new THREE.Euler(-0.5, 0, 0.3);
+
+      let progress = 0;
+      const gestureInterval = setInterval(() => {
+        progress += 0.05;
+        if (progress >= 1) {
+          clearInterval(gestureInterval);
+          // Return to neutral
+          setTimeout(() => {
+            let returnProgress = 0;
+            const returnInterval = setInterval(() => {
+              returnProgress += 0.05;
+              if (returnProgress >= 1) {
+                clearInterval(returnInterval);
+              } else {
+                rightUpperArm.rotation.copy(lerpEuler(targetRotation, startRotation, returnProgress));
+              }
+            }, 16);
+          }, 500);
+        } else {
+          rightUpperArm.rotation.copy(lerpEuler(startRotation, targetRotation, progress));
+        }
+      }, 16);
+    }
+  };
 
   // Lip sync and expressions based on audio level
   useEffect(() => {
