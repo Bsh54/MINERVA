@@ -50,6 +50,11 @@ export default async function DashboardHub() {
         <Link href="/dashboard/meeting" className="group flex flex-col items-center justify-center p-10 bg-white rounded-3xl border border-stem-100 shadow-soft hover:shadow-float hover:-translate-y-1 hover:border-purple-300 transition-all duration-200 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 transition-transform group-hover:scale-150"></div>
 
+          {/* Beta badge */}
+          <div className="absolute top-3 right-3 px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full z-10">
+            Beta
+          </div>
+
           <div className="w-20 h-20 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10 shadow-sm border border-purple-100">
             <Video className="w-10 h-10 text-purple-600" />
           </div>
