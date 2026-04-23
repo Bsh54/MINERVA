@@ -3,6 +3,7 @@
 import { useChatbot } from '@/contexts/ChatbotContext';
 import { X, Send, Maximize2, Minimize2, Trash2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 // Simple markdown to HTML converter for chat messages
 function formatMarkdown(text: string): string {
