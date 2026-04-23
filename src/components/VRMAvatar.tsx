@@ -49,15 +49,15 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     sceneRef.current = scene;
     scene.background = new THREE.Color(0xf8fafc);
 
-    // Camera
+    // Camera - zoom closer on face
     const camera = new THREE.PerspectiveCamera(
       30,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       20
     );
-    camera.position.set(0, 1.3, 1.5);
-    camera.lookAt(0, 1.3, 0);
+    camera.position.set(0, 1.4, 0.8); // Much closer to face
+    camera.lookAt(0, 1.4, 0);
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -150,28 +150,28 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     gestureTimeRef.current += deltaTime;
     idleAnimationRef.current += deltaTime;
 
-    // Idle breathing animation
-    const breathCycle = Math.sin(idleAnimationRef.current * 1.5) * 0.02;
+    // Stronger idle breathing animation
+    const breathCycle = Math.sin(idleAnimationRef.current * 1.5) * 0.05;
     const spine = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Spine);
     if (spine) {
       spine.rotation.x = breathCycle;
     }
 
-    // Head movements when speaking
+    // MUCH STRONGER head movements when speaking
     if (isAISpeaking) {
       const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head);
       if (head) {
-        // Subtle head nod while speaking
-        const nodCycle = Math.sin(gestureTimeRef.current * 2) * 0.08;
+        // Strong head nod while speaking
+        const nodCycle = Math.sin(gestureTimeRef.current * 3) * 0.15;
         head.rotation.x = nodCycle;
 
-        // Slight head tilt variation
-        const tiltCycle = Math.sin(gestureTimeRef.current * 1.2) * 0.05;
+        // Stronger head tilt variation
+        const tiltCycle = Math.sin(gestureTimeRef.current * 2) * 0.1;
         head.rotation.z = tiltCycle;
       }
 
-      // Occasional hand gesture
-      if (gestureTimeRef.current - lastGestureRef.current > 3) {
+      // More frequent hand gestures
+      if (gestureTimeRef.current - lastGestureRef.current > 2) {
         lastGestureRef.current = gestureTimeRef.current;
         performHandGesture(vrm);
       }
@@ -179,8 +179,8 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
       // Reset to neutral when not speaking
       const head = humanoid.getNormalizedBoneNode(VRMHumanBoneName.Head);
       if (head) {
-        head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0, deltaTime * 2);
-        head.rotation.z = THREE.MathUtils.lerp(head.rotation.z, 0, deltaTime * 2);
+        head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0, deltaTime * 3);
+        head.rotation.z = THREE.MathUtils.lerp(head.rotation.z, 0, deltaTime * 3);
       }
     }
   };
@@ -231,10 +231,10 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     console.log('[VRM] Animation update - isAISpeaking:', isAISpeaking, 'audioLevel:', audioLevel);
 
     if (isAISpeaking && audioLevel > 0.01) {
-      // AI is speaking - animate mouth with visemes
-      const time = Date.now() / 80;
+      // AI is speaking - animate mouth with visemes MUCH STRONGER
+      const time = Date.now() / 60; // Faster animation
       const visemes = ['aa', 'ih', 'ou', 'ee', 'oh'] as VRMExpressionPresetName[];
-      const visemeIndex = Math.floor(time * Math.max(audioLevel * 10, 1)) % visemes.length;
+      const visemeIndex = Math.floor(time * Math.max(audioLevel * 15, 2)) % visemes.length;
       const currentViseme = visemes[visemeIndex];
 
       // Reset all expressions
@@ -242,12 +242,12 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
         expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
 
-      // Set current viseme with stronger intensity
-      const intensity = Math.min(audioLevel * 3, 1);
+      // Set current viseme with MUCH STRONGER intensity
+      const intensity = Math.min(audioLevel * 5 + 0.5, 1); // Minimum 0.5, max 1
       expressionManager.setValue(currentViseme, intensity);
 
-      // Add slight happy expression when speaking
-      expressionManager.setValue('happy', 0.2);
+      // Add stronger happy expression when speaking
+      expressionManager.setValue('happy', 0.5);
 
       console.log('[VRM] AI speaking - viseme:', currentViseme, 'intensity:', intensity);
     } else if (!isAISpeaking && audioLevel > 0.01) {
@@ -256,18 +256,18 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
         expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
 
-      expressionManager.setValue('relaxed', 0.4);
-      expressionManager.setValue('happy', 0.2);
+      expressionManager.setValue('relaxed', 0.6);
+      expressionManager.setValue('happy', 0.4);
 
       console.log('[VRM] User speaking - attentive expression');
     } else {
-      // Idle - neutral with slight happy expression
+      // Idle - neutral with happy expression
       ['aa', 'ih', 'ou', 'ee', 'oh', 'angry', 'sad', 'surprised'].forEach(v => {
         expressionManager.setValue(v as VRMExpressionPresetName, 0);
       });
 
-      expressionManager.setValue('neutral', 0.3);
-      expressionManager.setValue('happy', 0.1);
+      expressionManager.setValue('neutral', 0.5);
+      expressionManager.setValue('happy', 0.3);
     }
   }, [audioLevel, isAISpeaking]);
 
