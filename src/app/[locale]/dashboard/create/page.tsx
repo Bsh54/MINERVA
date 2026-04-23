@@ -6,6 +6,7 @@ import { Link } from '@/i18n/routing';
 import { useState } from 'react';
 import { generateCourseFromText } from '@/app/actions/ai';
 import { useParams } from 'next/navigation';
+import FileUploadZone from '@/components/FileUploadZone';
 
 interface Topic {
   id: string;
@@ -34,6 +35,9 @@ export default function CreateCoursePage() {
   const [uploadState, setUploadState] = useState<'idle' | 'loading' | 'result' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
   const [textInput, setTextInput] = useState('');
+  const [extractedText, setExtractedText] = useState('');
+  const [inputMethod, setInputMethod] = useState<'text' | 'file'>('file');
+  const [isExtractingOCR, setIsExtractingOCR] = useState(false);
   const [coursePlan, setCoursePlan] = useState<CoursePlan | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
@@ -46,7 +50,9 @@ export default function CreateCoursePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const startGeneration = async () => {
-    if (!textInput.trim() || textInput.length < 20) {
+    const finalText = inputMethod === 'file' ? extractedText : textInput;
+
+    if (!finalText.trim() || finalText.length < 20) {
       setErrorMsg(tc('errorShort'));
       return;
     }
@@ -61,7 +67,7 @@ export default function CreateCoursePage() {
     }, 400);
 
     try {
-      const res = await generateCourseFromText(textInput, locale, explanationLevel, additionalSpecs);
+      const res = await generateCourseFromText(finalText, locale, explanationLevel, additionalSpecs);
       clearInterval(interval);
 
       if (!res.success || !res.data) {
@@ -233,11 +239,13 @@ export default function CreateCoursePage() {
       };
 
       // Sauvegarder en base de données
+      const finalText = inputMethod === 'file' ? extractedText : textInput;
+
       const response = await fetch('/api/courses/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          originalText: textInput,
+          originalText: finalText,
           explanationLevel,
           additionalSpecs,
           coursePlan: finalPlan,
@@ -290,15 +298,64 @@ export default function CreateCoursePage() {
 
         {uploadState === 'idle' || uploadState === 'error' ? (
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-full mb-6">
-              <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('pasteLabel')}</label>
-              <textarea
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder={tc('pastePlaceholder')}
-                className="w-full h-48 p-5 bg-stem-50/50 border border-stem-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 font-medium text-stem-900 resize-none shadow-inner"
-              ></textarea>
+
+            {/* Toggle entre Upload et Text */}
+            <div className="w-full mb-8">
+              <div className="flex gap-4 p-2 bg-stem-100 rounded-2xl">
+                <button
+                  onClick={() => setInputMethod('file')}
+                  className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+                    inputMethod === 'file'
+                      ? 'bg-white text-stem-900 shadow-md'
+                      : 'text-stem-600 hover:text-stem-900'
+                  }`}
+                >
+                  📄 {locale === 'fr' ? 'Télécharger un fichier' : 'Upload File'}
+                </button>
+                <button
+                  onClick={() => setInputMethod('text')}
+                  className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+                    inputMethod === 'text'
+                      ? 'bg-white text-stem-900 shadow-md'
+                      : 'text-stem-600 hover:text-stem-900'
+                  }`}
+                >
+                  ✏️ {locale === 'fr' ? 'Coller du texte' : 'Paste Text'}
+                </button>
+              </div>
             </div>
+
+            {/* Zone d'upload de fichier */}
+            {inputMethod === 'file' && (
+              <div className="w-full mb-6">
+                <label className="block text-stem-900 font-bold mb-3 text-lg">
+                  {locale === 'fr' ? 'Télécharger un document ou une image' : 'Upload a document or image'}
+                </label>
+                <FileUploadZone
+                  onTextExtracted={(text) => {
+                    setExtractedText(text);
+                    setErrorMsg('');
+                  }}
+                  onExtractionStateChange={(isExtracting) => {
+                    setIsExtractingOCR(isExtracting);
+                  }}
+                  locale={locale}
+                />
+              </div>
+            )}
+
+            {/* Zone de texte manuel */}
+            {inputMethod === 'text' && (
+              <div className="w-full mb-6">
+                <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('pasteLabel')}</label>
+                <textarea
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder={tc('pastePlaceholder')}
+                  className="w-full h-48 p-5 bg-stem-50/50 border border-stem-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-stem-400/20 focus:border-stem-400 outline-none transition-all placeholder:text-stem-300 font-medium text-stem-900 resize-none shadow-inner"
+                ></textarea>
+              </div>
+            )}
 
             <div className="w-full mb-6">
               <label className="block text-stem-900 font-bold mb-3 text-lg">{tc('explanationLevelLabel')}</label>
@@ -372,10 +429,20 @@ export default function CreateCoursePage() {
 
             <button
               onClick={startGeneration}
-              className="btn-3d w-full md:w-auto bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button-teal flex items-center justify-center gap-3 text-lg transition-colors"
+              disabled={isExtractingOCR || (inputMethod === 'file' && !extractedText) || (inputMethod === 'text' && !textInput)}
+              className="btn-3d w-full md:w-auto bg-stem-600 hover:bg-stem-800 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 text-white font-extrabold py-4 px-10 rounded-2xl shadow-button-teal flex items-center justify-center gap-3 text-lg transition-colors"
             >
-              <Sparkles className="w-6 h-6 fill-white/20" />
-              {tc('generateBtn')}
+              {isExtractingOCR ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  {locale === 'fr' ? 'Extraction en cours...' : 'Extracting...'}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-6 h-6 fill-white/20" />
+                  {tc('generateBtn')}
+                </>
+              )}
             </button>
 
             <p className="mt-6 text-sm font-medium text-stem-400">
