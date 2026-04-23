@@ -58,7 +58,8 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
-    const vrmPath = window.location.origin + '/models/AvatarSample_A.vrm';
+    // Use absolute path without locale prefix
+    const vrmPath = `${window.location.protocol}//${window.location.host}/models/AvatarSample_A.vrm`;
     console.log('[VRM] Loading model from:', vrmPath);
 
     loader.load(
