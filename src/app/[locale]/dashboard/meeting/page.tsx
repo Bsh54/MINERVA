@@ -374,28 +374,22 @@ export default function MeetingPage() {
       {/* Header */}
       <div className="shrink-0 border-b bg-white px-4 md:px-6 py-3">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-semibold transition-colors duration-200">
-              <ChevronLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">{t('backHub')}</span>
-            </Link>
-            <div className="hidden md:block h-5 w-px bg-stem-200"></div>
-            <h1 className="hidden md:block text-lg font-bold text-stem-900">MINERVA Voice</h1>
-          </div>
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-stem-600 hover:text-stem-900 font-semibold transition-colors duration-200">
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden sm:inline">{t('backHub')}</span>
+          </Link>
 
-          <div className="flex items-center gap-3">
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              status === 'online'
-                ? 'bg-green-50 border-green-200 text-green-700'
-                : status === 'connecting'
-                ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
-                : 'bg-stem-100 border-stem-200 text-stem-600'
-            }`}>
-              {status === 'online' && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
-              {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
-              {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
-              {status === 'online' && (locale === 'fr' ? 'Connecté' : 'Connected')}
-            </div>
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+            status === 'online'
+              ? 'bg-green-50 border-green-200 text-green-700'
+              : status === 'connecting'
+              ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+              : 'bg-stem-100 border-stem-200 text-stem-600'
+          }`}>
+            {status === 'online' && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
+            {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
+            {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
+            {status === 'online' && (locale === 'fr' ? 'Connecté' : 'Connected')}
           </div>
         </div>
       </div>
@@ -422,69 +416,15 @@ export default function MeetingPage() {
           </button>
         )}
 
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-4xl flex flex-col items-center gap-6">
 
-          {/* Voice visualization */}
-          <div className="flex flex-col items-center justify-center gap-6 py-8">
+          {/* VRM Avatar - always visible */}
+          <div className="w-full h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-stem-200">
+            <VRMAvatar audioLevel={audioLevel} isAISpeaking={isAISpeaking} />
+          </div>
 
-            {/* VRM Avatar - only when online */}
-            {status === 'online' && (
-              <div className="w-full max-w-md h-96 rounded-2xl overflow-hidden bg-white shadow-lg border border-stem-100">
-                <VRMAvatar audioLevel={audioLevel} isAISpeaking={isAISpeaking} />
-              </div>
-            )}
-
-            {/* Mic icon with fill level - only when offline */}
-            {status === 'offline' && (
-              <div className="relative h-20 w-20">
-                <Mic className="absolute inset-0 h-full w-full text-stem-300" />
-              </div>
-            )}
-
-            {/* Audio waveform */}
-            {status === 'online' && (
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const level = isAISpeaking ? 0.5 : audioLevel / 100;
-                  const barVariance = Math.sin((i + Date.now() / 200) * 0.7) * 0.3 + 0.7;
-                  return (
-                    <div
-                      key={i}
-                      className={`w-1 rounded-full transition-all duration-150 ${
-                        level > 0.02 ? 'bg-accent-500' : 'bg-stem-200'
-                      }`}
-                      style={{
-                        height: `${8 + level * barVariance * 32}px`,
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            )}
-
-            {/* AI Name & Avatar - only when NOT connected or when idle */}
-            {status !== 'online' && (
-              <>
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-stem-200 shadow-lg">
-                  <img
-                    src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=MINERVA&backgroundColor=f8fafc&scale=90"
-                    alt="MINERVA"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="text-center">
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-stem-900 font-display mb-1">
-                    MINERVA
-                  </h2>
-                  <p className="text-sm text-stem-600 font-medium">
-                    {locale === 'fr' ? 'Votre tuteur STEM personnel' : 'Your personal STEM tutor'}
-                  </p>
-                </div>
-              </>
-            )}
-
-            {/* Control Button */}
+          {/* Control Buttons */}
+          <div className="flex gap-4">
             {status === 'offline' ? (
               <button
                 onClick={startMeeting}
@@ -509,15 +449,6 @@ export default function MeetingPage() {
                 <PhoneOff className="w-5 h-5" />
                 {locale === 'fr' ? 'Terminer' : 'End Conversation'}
               </button>
-            )}
-
-            {/* Hint text */}
-            {status === 'offline' && (
-              <p className="text-center text-stem-500 text-sm font-medium max-w-md">
-                {locale === 'fr'
-                  ? 'Cliquez pour commencer une conversation vocale avec votre tuteur IA'
-                  : 'Click to start a voice conversation with your AI tutor'}
-              </p>
             )}
           </div>
 

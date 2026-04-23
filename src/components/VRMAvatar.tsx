@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRM, VRMLoaderPlugin, VRMExpressionPresetName } from '@pixiv/three-vrm';
@@ -16,14 +16,18 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    console.log('[VRM] Initializing scene...');
+
     // Scene setup
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0xf8fafc);
 
     // Camera
     const camera = new THREE.PerspectiveCamera(
@@ -36,23 +40,25 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     camera.lookAt(0, 1.3, 0);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     rendererRef.current = renderer;
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
 
     // Lights
-    const light = new THREE.DirectionalLight(0xffffff, 1);
+    const light = new THREE.DirectionalLight(0xffffff, 1.5);
     light.position.set(1, 1, 1).normalize();
     scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
     // Load VRM
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
+
+    console.log('[VRM] Loading model from /models/AvatarSample_A.vrm');
 
     loader.load(
       '/models/AvatarSample_A.vrm',
@@ -61,14 +67,18 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
         vrmRef.current = vrm;
         scene.add(vrm.scene);
 
-        console.log('[VRM] Model loaded successfully');
-        console.log('[VRM] Available expressions:', vrm.expressionManager?.expressionMap);
+        console.log('[VRM] Model loaded successfully!');
+        console.log('[VRM] Available expressions:', Object.keys(vrm.expressionManager?.expressionMap || {}));
+        setIsLoading(false);
       },
       (progress) => {
-        console.log('[VRM] Loading:', (progress.loaded / progress.total) * 100, '%');
+        const percent = (progress.loaded / progress.total) * 100;
+        console.log('[VRM] Loading progress:', percent.toFixed(1), '%');
       },
       (error) => {
         console.error('[VRM] Error loading model:', error);
+        setLoadError('Failed to load avatar');
+        setIsLoading(false);
       }
     );
 
@@ -101,7 +111,7 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      if (rendererRef.current && containerRef.current) {
+      if (rendererRef.current && containerRef.current && containerRef.current.contains(rendererRef.current.domElement)) {
         containerRef.current.removeChild(rendererRef.current.domElement);
       }
       renderer.dispose();
@@ -137,10 +147,23 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
   }, [audioLevel, isAISpeaking]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-full"
-      style={{ minHeight: '400px' }}
-    />
+    <div className="relative w-full h-full">
+      <div ref={containerRef} className="w-full h-full" />
+
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-stem-50">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-accent-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p className="text-sm text-stem-600 font-medium">Loading avatar...</p>
+          </div>
+        </div>
+      )}
+
+      {loadError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-red-50">
+          <p className="text-sm text-red-600 font-medium">{loadError}</p>
+        </div>
+      )}
+    </div>
   );
 }
