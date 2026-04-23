@@ -51,7 +51,7 @@ export default async function DashboardHub() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 transition-transform group-hover:scale-150"></div>
 
           {/* Beta badge */}
-          <div className="absolute top-3 right-3 px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full z-10">
+          <div className="absolute top-3 right-3 px-3 py-1.5 bg-purple-100 text-purple-700 text-sm font-bold rounded-full z-10">
             Beta
           </div>
 
