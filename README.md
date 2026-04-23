@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="logo.png" alt="MINERVA Logo" width="200"/>
+</div>
+
 # MINERVA
 
 AI-powered STEM learning platform that generates personalized courses from any text content with interactive 3D avatar and voice conversations.
