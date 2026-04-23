@@ -54,12 +54,11 @@ export default function VRMAvatar({ audioLevel, isAISpeaking }: VRMAvatarProps) 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
-    // Load VRM
+    // Load VRM - use relative path that works with i18n routing
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
-    // Use absolute path without locale prefix
-    const vrmPath = `${window.location.protocol}//${window.location.host}/models/AvatarSample_A.vrm`;
+    const vrmPath = '/models/AvatarSample_A.vrm';
     console.log('[VRM] Loading model from:', vrmPath);
 
     loader.load(
