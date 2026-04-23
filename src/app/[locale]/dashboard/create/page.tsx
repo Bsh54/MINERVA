@@ -29,6 +29,7 @@ interface CoursePlan {
 export default function CreateCoursePage() {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('CreateCourse');
+  const tFile = useTranslations('FileUpload');
   const params = useParams();
   const locale = params.locale as string;
 
@@ -310,7 +311,7 @@ export default function CreateCoursePage() {
                       : 'text-stem-600 hover:text-stem-900'
                   }`}
                 >
-                  📄 {locale === 'fr' ? 'Télécharger un fichier' : 'Upload File'}
+                  📄 {tFile('uploadFile')}
                 </button>
                 <button
                   onClick={() => setInputMethod('text')}
@@ -320,7 +321,7 @@ export default function CreateCoursePage() {
                       : 'text-stem-600 hover:text-stem-900'
                   }`}
                 >
-                  ✏️ {locale === 'fr' ? 'Coller du texte' : 'Paste Text'}
+                  ✏️ {tFile('pasteText')}
                 </button>
               </div>
             </div>
@@ -329,7 +330,7 @@ export default function CreateCoursePage() {
             {inputMethod === 'file' && (
               <div className="w-full mb-6">
                 <label className="block text-stem-900 font-bold mb-3 text-lg">
-                  {locale === 'fr' ? 'Télécharger un document ou une image' : 'Upload a document or image'}
+                  {tFile('uploadDocument')}
                 </label>
                 <FileUploadZone
                   onTextExtracted={(text) => {
@@ -435,7 +436,7 @@ export default function CreateCoursePage() {
               {isExtractingOCR ? (
                 <>
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  {locale === 'fr' ? 'Extraction en cours...' : 'Extracting...'}
+                  {tFile('extractingButton')}
                 </>
               ) : (
                 <>

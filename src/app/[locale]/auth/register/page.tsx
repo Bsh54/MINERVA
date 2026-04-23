@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation';
 
 export default function RegisterPage() {
   const t = useTranslations('Auth');
+  const tReg = useTranslations('Register');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
@@ -184,7 +185,7 @@ export default function RegisterPage() {
           className="w-full btn-3d bg-stem-600 hover:bg-stem-800 disabled:bg-stem-300 disabled:cursor-not-allowed text-white font-extrabold py-3 px-4 rounded-xl shadow-button-teal mt-4 flex items-center justify-center gap-2 text-base"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-          S'inscrire
+          {tReg('signUpButton')}
         </button>
 
         <div className="flex items-center my-4">

@@ -124,6 +124,7 @@ function formatMarkdown(text: string): string {
 
 export default function TopicPage() {
   const t = useTranslations('Dashboard');
+  const tTopic = useTranslations('TopicPage');
   const router = useRouter();
   const params = useParams();
   const topicId = params.topicId as string;
@@ -172,7 +173,7 @@ export default function TopicPage() {
 
   const handleDownloadPDF = () => {
     if (!explanation || !pdfMake) {
-      console.error('PDF library not loaded yet');
+      console.error(tTopic('pdfError'));
       return;
     }
 
@@ -326,7 +327,7 @@ export default function TopicPage() {
       const filename = `${topicTitle.replace(/[^a-z0-9]/gi, '_')}.pdf`;
       pdfMake.createPdf(docDefinition).download(filename);
     } catch (error) {
-      console.error('Erreur génération PDF:', error);
+      console.error(tTopic('pdfGenerationError'), error);
     } finally {
       setIsDownloading(false);
     }
@@ -416,12 +417,12 @@ export default function TopicPage() {
               {isDownloading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Génération...
+                  {tTopic('generating')}
                 </>
               ) : (
                 <>
                   <Download className="w-5 h-5" />
-                  Télécharger PDF
+                  {tTopic('downloadPdf')}
                 </>
               )}
             </button>

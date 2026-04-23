@@ -7,8 +7,9 @@ export default async function DashboardHub() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const t = await getTranslations('Hub');
-  
-  const firstName = user?.email?.split('@')[0] || 'Utilisateur';
+  const tCommon = await getTranslations('Common');
+
+  const firstName = user?.email?.split('@')[0] || tCommon('defaultUser');
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 md:py-24 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -52,7 +53,7 @@ export default async function DashboardHub() {
 
           {/* Beta badge */}
           <div className="absolute top-3 right-3 px-3 py-1.5 bg-purple-100 text-purple-700 text-sm font-bold rounded-full z-10">
-            Beta
+            {tCommon('beta')}
           </div>
 
           <div className="w-20 h-20 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10 shadow-sm border border-purple-100">

@@ -12,6 +12,7 @@ interface FileUploadZoneProps {
 
 export default function FileUploadZone({ onTextExtracted, onExtractionStateChange, locale }: FileUploadZoneProps) {
   const t = useTranslations('Dashboard');
+  const tFile = useTranslations('FileUpload');
   const [file, setFile] = useState<File | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,20 +47,14 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
     // Check file size
     const fileSizeMB = selectedFile.size / (1024 * 1024);
     if (fileSizeMB > maxSizeMB) {
-      setError(locale === 'fr'
-        ? `Le fichier est trop volumineux (${fileSizeMB.toFixed(1)} MB). Maximum: ${maxSizeMB} MB`
-        : `File too large (${fileSizeMB.toFixed(1)} MB). Maximum: ${maxSizeMB} MB`
-      );
+      setError(tFile('fileTooLarge', { size: fileSizeMB.toFixed(1), max: maxSizeMB }));
       return;
     }
 
     // Check file type
     const extension = '.' + selectedFile.name.split('.').pop()?.toLowerCase();
     if (!acceptedFormats.includes(extension)) {
-      setError(locale === 'fr'
-        ? 'Format de fichier non supporté'
-        : 'Unsupported file format'
-      );
+      setError(tFile('unsupportedFormat'));
       return;
     }
 
@@ -92,10 +87,7 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
 
     } catch (err: any) {
       console.error('OCR Error:', err);
-      setError(locale === 'fr'
-        ? `Erreur lors de l'extraction: ${err.message}`
-        : `Extraction error: ${err.message}`
-      );
+      setError(tFile('extractionError', { message: err.message }));
     } finally {
       setIsExtracting(false);
       onExtractionStateChange(false);
@@ -127,13 +119,10 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
           <Loader2 className="w-16 h-16 animate-spin text-accent-500" />
           <div className="text-center">
             <p className="text-lg font-bold text-stem-900 mb-2">
-              {locale === 'fr' ? 'Extraction du texte en cours...' : 'Extracting text...'}
+              {tFile('extracting')}
             </p>
             <p className="text-sm text-stem-600">
-              {locale === 'fr'
-                ? 'Cela peut prendre 1-3 minutes pour les gros fichiers'
-                : 'This may take 1-3 minutes for large files'
-              }
+              {tFile('extractionTime')}
             </p>
           </div>
         </div>
@@ -151,7 +140,7 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
               <div className="flex items-center gap-2 mb-1">
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <p className="font-bold text-green-900">
-                  {locale === 'fr' ? 'Texte extrait avec succès' : 'Text extracted successfully'}
+                  {tFile('extractionSuccess')}
                 </p>
               </div>
               <p className="text-sm text-green-700">{file.name}</p>
@@ -193,10 +182,10 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
         <label htmlFor="file-upload" className="cursor-pointer">
           <Upload className="w-16 h-16 mx-auto mb-4 text-stem-400" />
           <p className="text-lg font-bold text-stem-900 mb-2">
-            {locale === 'fr' ? 'Télécharger un document ou une image' : 'Upload a document or image'}
+            {tFile('uploadLabel')}
           </p>
           <p className="text-sm text-stem-600 mb-4">
-            {locale === 'fr' ? 'Glissez-déposez ou cliquez pour sélectionner' : 'Drag & drop or click to select'}
+            {tFile('uploadInstruction')}
           </p>
           <div className="flex flex-wrap justify-center gap-2 text-xs text-stem-500">
             <span className="px-3 py-1 bg-stem-100 rounded-full">PDF</span>
@@ -207,7 +196,7 @@ export default function FileUploadZone({ onTextExtracted, onExtractionStateChang
             <span className="px-3 py-1 bg-stem-100 rounded-full">WEBP</span>
           </div>
           <p className="text-xs text-stem-500 mt-3">
-            {locale === 'fr' ? `Maximum: ${maxSizeMB} MB` : `Maximum: ${maxSizeMB} MB`}
+            {tFile('maxSize', { max: maxSizeMB })}
           </p>
         </label>
       </div>

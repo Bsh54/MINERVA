@@ -17,6 +17,7 @@ interface Message {
 
 export default function MeetingPage() {
   const t = useTranslations('Dashboard');
+  const tMeeting = useTranslations('Meeting');
   const params = useParams();
   const locale = params.locale as string;
 
@@ -172,7 +173,7 @@ export default function MeetingPage() {
 
     } catch (err: any) {
       console.error('[MEETING] Microphone error:', err);
-      setError(`Impossible d'accéder au microphone: ${err.message}`);
+      setError(tMeeting('microphoneError', { message: err.message }));
     }
   };
 
@@ -189,14 +190,14 @@ export default function MeetingPage() {
       console.log('[MEETING] Response status:', response.status);
 
       if (!response.ok) {
-        throw new Error(`Erreur API: ${response.status}`);
+        throw new Error(tMeeting('apiError', { status: response.status }));
       }
 
       const { wsUrl, apiKey } = await response.json();
       console.log('[MEETING] Config received:', { wsUrl: wsUrl?.substring(0, 50), hasApiKey: !!apiKey });
 
       if (!wsUrl || !apiKey) {
-        throw new Error('Configuration WebSocket manquante');
+        throw new Error(tMeeting('configMissing'));
       }
 
       const wsUrlWithKey = `${wsUrl}&api-key=${encodeURIComponent(apiKey)}`;
@@ -210,9 +211,7 @@ export default function MeetingPage() {
           session: {
             modalities: ["text", "audio"],
             voice: "alloy",
-            instructions: locale === 'fr'
-              ? "Tu es MINERVA, un tuteur STEM amical et pédagogue. Aide les étudiants à comprendre les concepts scientifiques de manière claire et concise. Réponds en français de façon naturelle et encourageante."
-              : "You are MINERVA, a friendly and pedagogical STEM tutor. Help students understand scientific concepts clearly and concisely. Respond in English naturally and encouragingly.",
+            instructions: tMeeting('aiInstructions'),
             input_audio_format: "pcm16",
             output_audio_format: "pcm16",
             input_audio_transcription: {
@@ -308,7 +307,7 @@ export default function MeetingPage() {
 
             case "error":
               console.error('[MEETING] Error from server:', message.error);
-              setError(message.error?.message || 'Erreur inconnue');
+              setError(message.error?.message || tMeeting('unknownError'));
               break;
           }
         } catch (e) {
@@ -318,7 +317,7 @@ export default function MeetingPage() {
 
       wsRef.current.onerror = (err) => {
         console.error('[MEETING] WebSocket error:', err);
-        setError('Erreur de connexion WebSocket');
+        setError(tMeeting('websocketError'));
       };
 
       wsRef.current.onclose = () => {
@@ -387,9 +386,9 @@ export default function MeetingPage() {
               : 'bg-stem-100 border-stem-200 text-stem-600'
           }`}>
             {status === 'online' && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
-            {status === 'offline' && (locale === 'fr' ? 'Hors ligne' : 'Offline')}
-            {status === 'connecting' && (locale === 'fr' ? 'Connexion...' : 'Connecting...')}
-            {status === 'online' && (locale === 'fr' ? 'Connecté' : 'Connected')}
+            {status === 'offline' && tMeeting('offline')}
+            {status === 'connecting' && tMeeting('connecting')}
+            {status === 'online' && tMeeting('connected')}
           </div>
         </div>
       </div>
@@ -412,7 +411,7 @@ export default function MeetingPage() {
             className="absolute top-4 right-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2 z-10"
           >
             <Volume2 className="h-4 w-4" />
-            {locale === 'fr' ? 'Arrêter' : 'Stop'}
+            {tMeeting('stop')}
           </button>
         )}
 
@@ -431,7 +430,7 @@ export default function MeetingPage() {
                 className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <Mic className="w-5 h-5" />
-                {locale === 'fr' ? 'Démarrer la conversation' : 'Start Conversation'}
+                {tMeeting('startConversation')}
               </button>
             ) : status === 'connecting' ? (
               <button
@@ -439,7 +438,7 @@ export default function MeetingPage() {
                 className="px-8 py-4 bg-stem-200 text-stem-500 font-bold rounded-full flex items-center gap-3 text-base cursor-not-allowed"
               >
                 <Loader2 className="w-5 h-5 animate-spin" />
-                {locale === 'fr' ? 'Connexion...' : 'Connecting...'}
+                {tMeeting('connecting')}
               </button>
             ) : (
               <button
@@ -447,7 +446,7 @@ export default function MeetingPage() {
                 className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition-all duration-200 flex items-center gap-3 text-base"
               >
                 <PhoneOff className="w-5 h-5" />
-                {locale === 'fr' ? 'Terminer' : 'End Conversation'}
+                {tMeeting('endConversation')}
               </button>
             )}
           </div>

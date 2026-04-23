@@ -21,6 +21,7 @@ interface QuizModalProps {
 
 export default function QuizModal({ targetId, targetType, title, onClose }: QuizModalProps) {
   const { course, saveQuizScore } = useCourse();
+  const tQuiz = useTranslations('Quiz');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -46,7 +47,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
         setQuestions(data.questions);
       }
     } catch (error) {
-      console.error('Erreur chargement quiz:', error);
+      console.error(tQuiz('loadingError'), error);
     } finally {
       setLoading(false);
     }
@@ -87,7 +88,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-12">
           <Loader2 className="w-12 h-12 text-accent-500 animate-spin mx-auto mb-4" />
-          <p className="text-stem-600 font-medium">Génération du quiz...</p>
+          <p className="text-stem-600 font-medium">{tQuiz('generating')}</p>
         </div>
       </div>
     );
@@ -108,17 +109,17 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
           </div>
 
           <h3 className="text-3xl font-extrabold text-stem-900 mb-2">
-            {score >= 70 ? 'Bravo !' : 'Continuez !'}
+            {score >= 70 ? tQuiz('congratulations') : tQuiz('keepGoing')}
           </h3>
           <p className="text-stem-600 mb-6">
-            Vous avez obtenu <strong>{Math.round(score)}%</strong>
+            {tQuiz('yourScore')} <strong>{Math.round(score)}%</strong>
           </p>
 
           <button
             onClick={onClose}
             className="btn-3d bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-3 px-8 rounded-xl shadow-button-teal transition-all w-full"
           >
-            Fermer
+            {tQuiz('close')}
           </button>
         </div>
       </div>
@@ -136,7 +137,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
           <div>
             <h2 className="text-2xl font-extrabold text-stem-900 font-display">{title}</h2>
             <p className="text-sm text-stem-500 mt-1">
-              Question {currentQuestion + 1} / {questions.length}
+              {tQuiz('questionProgress', { current: currentQuestion + 1, total: questions.length })}
             </p>
           </div>
           <button
@@ -187,7 +188,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
                     : 'border-stem-200 hover:border-stem-400 bg-white'
                 }`}
               >
-                <span className="font-bold text-stem-900">✓ Vrai</span>
+                <span className="font-bold text-stem-900">{tQuiz('trueOption')}</span>
               </button>
               <button
                 onClick={() => handleAnswer(question.id, false)}
@@ -197,7 +198,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
                     : 'border-stem-200 hover:border-stem-400 bg-white'
                 }`}
               >
-                <span className="font-bold text-stem-900">✗ Faux</span>
+                <span className="font-bold text-stem-900">{tQuiz('falseOption')}</span>
               </button>
             </div>
           )}
@@ -210,7 +211,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
             disabled={currentQuestion === 0}
             className="px-6 py-3 rounded-xl font-bold border-2 border-stem-200 text-stem-600 hover:bg-stem-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            Précédent
+            {tQuiz('previous')}
           </button>
 
           {currentQuestion < questions.length - 1 ? (
@@ -219,7 +220,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
               disabled={!isAnswered}
               className="btn-3d bg-stem-600 hover:bg-stem-800 disabled:bg-gray-300 text-white font-extrabold py-3 px-8 rounded-xl shadow-button-teal transition-all"
             >
-              Suivant
+              {tQuiz('next')}
             </button>
           ) : (
             <button
@@ -227,7 +228,7 @@ export default function QuizModal({ targetId, targetType, title, onClose }: Quiz
               disabled={Object.keys(answers).length !== questions.length}
               className="btn-3d bg-accent-500 hover:bg-accent-600 disabled:bg-gray-300 text-white font-extrabold py-3 px-8 rounded-xl shadow-button transition-all"
             >
-              Terminer
+              {tQuiz('finish')}
             </button>
           )}
         </div>

@@ -7,6 +7,7 @@ export default async function CoursesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const t = await getTranslations('Dashboard');
+  const tCourses = await getTranslations('Courses');
 
   // Charger les cours de l'utilisateur
   const { data: courses, error } = await supabase
@@ -51,18 +52,18 @@ export default async function CoursesPage() {
 
       <header className="mb-12">
         <h1 className="text-4xl font-extrabold text-stem-900 font-display mb-3">{t('myCourses')}</h1>
-        <p className="text-stem-600 text-lg font-medium">Reprenez votre apprentissage là où vous l'avez laissé.</p>
+        <p className="text-stem-600 text-lg font-medium">{tCourses('pageDescription')}</p>
       </header>
 
       {coursesWithProgress.length === 0 ? (
         <div className="text-center py-16">
           <BookOpen className="w-16 h-16 text-stem-300 mx-auto mb-4" />
-          <p className="text-stem-500 text-lg mb-6">Vous n'avez pas encore de cours.</p>
+          <p className="text-stem-500 text-lg mb-6">{tCourses('noCourses')}</p>
           <Link
             href="/dashboard/create"
             className="btn-3d bg-stem-600 hover:bg-stem-800 text-white font-extrabold py-3 px-8 rounded-xl shadow-button-teal inline-flex items-center gap-2"
           >
-            Créer mon premier cours
+            {tCourses('createFirst')}
           </Link>
         </div>
       ) : (
@@ -118,10 +119,10 @@ export default async function CoursesPage() {
                   <p className={`text-sm font-bold uppercase tracking-wide ${
                     isComplete ? 'text-green-600' : 'text-stem-600'
                   }`}>
-                    {isComplete ? '✨ Terminé' : `${Math.round(course.progressPercent)}% complété`}
+                    {isComplete ? tCourses('completed') : tCourses('percentCompleted', { percent: Math.round(course.progressPercent) })}
                   </p>
                   <span className="text-accent-500 text-xs font-bold">
-                    {course.completedCount}/{course.totalTopics} topics
+                    {tCourses('topicsCount', { completed: course.completedCount, total: course.totalTopics })}
                   </span>
                 </div>
               </Link>

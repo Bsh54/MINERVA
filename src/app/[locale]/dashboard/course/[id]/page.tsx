@@ -11,6 +11,7 @@ import QuizModal from '@/components/course/QuizModal';
 
 export default function CoursePage() {
   const t = useTranslations('Dashboard');
+  const tCourse = useTranslations('CoursePage');
   const { course, progress } = useCourse();
   const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string } | null>(null);
   const [selectedQuiz, setSelectedQuiz] = useState<{ id: string; type: 'topic' | 'module'; title: string } | null>(null);
@@ -74,7 +75,7 @@ export default function CoursePage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
               <BookOpen className="w-6 h-6" />
-              <span className="text-sm font-bold uppercase tracking-wider opacity-90">Cours</span>
+              <span className="text-sm font-bold uppercase tracking-wider opacity-90">{tCourse('courseLabel')}</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold mb-3 font-display">
               {course.coursePlan.courseTitle}
@@ -98,7 +99,7 @@ export default function CoursePage() {
           />
         </div>
         <div className="flex items-center justify-between mt-3 text-sm font-bold">
-          <span>{completedTopicsCount} / {totalTopics} topics complétés</span>
+          <span>{tCourse('topicsCompleted', { completed: completedTopicsCount, total: totalTopics })}</span>
           <span>{Math.round(progressPercent)}%</span>
         </div>
       </div>

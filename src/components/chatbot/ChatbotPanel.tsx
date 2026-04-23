@@ -53,6 +53,7 @@ function formatMarkdown(text: string): string {
 
 export default function ChatbotPanel() {
   const { messages, isOpen, displayMode, isLoading, sendMessage, toggleOpen, setDisplayMode, clearHistory } = useChatbot();
+  const tChat = useTranslations('Chatbot');
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -94,8 +95,8 @@ export default function ChatbotPanel() {
             <span className="text-white font-bold text-sm">AI</span>
           </div>
           <div>
-            <h3 className="font-bold text-white">Assistant MINERVA</h3>
-            <p className="text-xs text-white/80">Posez vos questions</p>
+            <h3 className="font-bold text-white">{tChat('title')}</h3>
+            <p className="text-xs text-white/80">{tChat('subtitle')}</p>
           </div>
         </div>
 
@@ -103,7 +104,7 @@ export default function ChatbotPanel() {
           <button
             onClick={clearHistory}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title="Effacer l'historique"
+            title={tChat('clearHistory')}
           >
             <Trash2 className="w-4 h-4 text-white" />
           </button>
@@ -112,7 +113,7 @@ export default function ChatbotPanel() {
           <button
             onClick={() => setDisplayMode(isResizable ? 'panel' : 'resizable')}
             className="hidden md:block p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title={isResizable ? 'Mode panneau' : 'Mode redimensionnable'}
+            title={isResizable ? tChat('panelMode') : tChat('resizableMode')}
           >
             {isResizable ? (
               <Minimize2 className="w-4 h-4 text-white" />
@@ -134,8 +135,8 @@ export default function ChatbotPanel() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-stem-400 py-12">
-            <p className="font-medium mb-2">Bonjour ! 👋</p>
-            <p className="text-sm">Comment puis-je vous aider aujourd'hui ?</p>
+            <p className="font-medium mb-2">{tChat('welcome')}</p>
+            <p className="text-sm">{tChat('welcomeDesc')}</p>
           </div>
         )}
 
@@ -182,7 +183,7 @@ export default function ChatbotPanel() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Tapez votre message..."
+            placeholder={tChat('inputPlaceholder')}
             disabled={isLoading}
             className="flex-1 px-4 py-3 border border-stem-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stem-500 disabled:opacity-50 disabled:cursor-not-allowed"
           />

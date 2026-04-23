@@ -182,5 +182,86 @@
     "selectionRequired": "Sélection requise",
     "saving": "Enregistrement...",
     "selected": "sélectionnés"
+  },
+  "FileUpload": {
+    "fileTooLarge": "Le fichier est trop volumineux ({size} MB). Maximum: {max} MB",
+    "unsupportedFormat": "Format de fichier non supporté",
+    "extractionError": "Erreur lors de l'extraction: {message}",
+    "extracting": "Extraction du texte en cours...",
+    "extractionTime": "Cela peut prendre 1-3 minutes pour les gros fichiers",
+    "extractionSuccess": "Texte extrait avec succès",
+    "uploadLabel": "Télécharger un document ou une image",
+    "uploadInstruction": "Glissez-déposez ou cliquez pour sélectionner",
+    "maxSize": "Maximum: {max} MB",
+    "uploadFile": "Télécharger un fichier",
+    "pasteText": "Coller du texte",
+    "uploadDocument": "Télécharger un document ou une image",
+    "extractingButton": "Extraction en cours..."
+  },
+  "Chatbot": {
+    "title": "Assistant MINERVA",
+    "subtitle": "Posez vos questions",
+    "clearHistory": "Effacer l'historique",
+    "panelMode": "Mode panneau",
+    "resizableMode": "Mode redimensionnable",
+    "welcome": "Bonjour ! 👋",
+    "welcomeDesc": "Comment puis-je vous aider aujourd'hui ?",
+    "inputPlaceholder": "Tapez votre message...",
+    "openChatbot": "Ouvrir le chatbot"
+  },
+  "Quiz": {
+    "generating": "Génération du quiz...",
+    "congratulations": "Bravo !",
+    "keepGoing": "Continuez !",
+    "yourScore": "Vous avez obtenu",
+    "close": "Fermer",
+    "questionProgress": "Question {current} / {total}",
+    "trueOption": "✓ Vrai",
+    "falseOption": "✗ Faux",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "loadingError": "Erreur chargement quiz:"
+  },
+  "Courses": {
+    "pageDescription": "Reprenez votre apprentissage là où vous l'avez laissé.",
+    "noCourses": "Vous n'avez pas encore de cours.",
+    "createFirst": "Créer mon premier cours",
+    "completed": "✨ Terminé",
+    "percentCompleted": "{percent}% complété",
+    "topicsCount": "{completed}/{total} topics"
+  },
+  "Meeting": {
+    "microphoneError": "Impossible d'accéder au microphone: {message}",
+    "apiError": "Erreur API: {status}",
+    "configMissing": "Configuration WebSocket manquante",
+    "unknownError": "Erreur inconnue",
+    "websocketError": "Erreur de connexion WebSocket",
+    "offline": "Hors ligne",
+    "connecting": "Connexion...",
+    "connected": "Connecté",
+    "stop": "Arrêter",
+    "startConversation": "Démarrer la conversation",
+    "endConversation": "Terminer",
+    "aiInstructions": "Tu es MINERVA, un tuteur STEM amical et pédagogue. Aide les étudiants à comprendre les concepts scientifiques de manière claire et concise. Réponds en français de façon naturelle et encourageante."
+  },
+  "CoursePage": {
+    "courseLabel": "Cours",
+    "topicsCompleted": "{completed} / {total} topics complétés"
+  },
+  "TopicPage": {
+    "pdfError": "PDF library not loaded yet",
+    "pdfGenerationError": "Erreur génération PDF:",
+    "generating": "Génération...",
+    "downloadPdf": "Télécharger PDF"
+  },
+  "Register": {
+    "signUpButton": "S'inscrire"
+  },
+  "Common": {
+    "defaultUser": "Utilisateur",
+    "beta": "Beta",
+    "userAlt": "User",
+    "course": "Cours"
   }
 }
