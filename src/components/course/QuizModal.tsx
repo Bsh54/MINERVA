@@ -3,6 +3,7 @@
 import { X, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCourse } from '@/contexts/CourseContext';
+import { useTranslations } from 'next-intl';
 
 interface Question {
   id: string;
