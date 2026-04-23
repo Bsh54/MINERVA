@@ -5,6 +5,9 @@ import { ChevronLeft, Mic, Loader2, PhoneOff, Volume2, AlertCircle } from 'lucid
 import { Link } from '@/i18n/routing';
 import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const VRMAvatar = dynamic(() => import('@/components/VRMAvatar'), { ssr: false });
 
 interface Message {
   role: 'user' | 'assistant';
@@ -424,16 +427,17 @@ export default function MeetingPage() {
           {/* Voice visualization */}
           <div className="flex flex-col items-center justify-center gap-6 py-8">
 
-            {/* Mic icon with fill level */}
+            {/* VRM Avatar - only when online */}
             {status === 'online' && (
+              <div className="w-full max-w-md h-96 rounded-2xl overflow-hidden bg-white shadow-lg border border-stem-100">
+                <VRMAvatar audioLevel={audioLevel} isAISpeaking={isAISpeaking} />
+              </div>
+            )}
+
+            {/* Mic icon with fill level - only when offline */}
+            {status === 'offline' && (
               <div className="relative h-20 w-20">
                 <Mic className="absolute inset-0 h-full w-full text-stem-300" />
-                <div
-                  className="absolute inset-0 overflow-hidden transition-[clip-path] duration-150 ease-out"
-                  style={{ clipPath: `inset(${(1 - audioLevel / 100) * 100}% 0 0 0)` }}
-                >
-                  <Mic className="h-full w-full text-accent-500" />
-                </div>
               </div>
             )}
 
