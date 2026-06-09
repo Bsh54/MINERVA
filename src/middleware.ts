@@ -38,8 +38,9 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Vérification de la session
-  const { data: { user } } = await supabase.auth.getUser()
+  // Lecture locale du cookie de session (pas d'appel réseau → pas de timeout)
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   // Protection des routes /dashboard
   const isDashboard = request.nextUrl.pathname.includes('/dashboard');
