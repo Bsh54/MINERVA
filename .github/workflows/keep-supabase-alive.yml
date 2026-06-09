@@ -17,17 +17,16 @@ jobs:
 
           HTTP_CODE=$(curl -s -o /tmp/supabase_response.txt -w "%{http_code}" \
             --max-time 30 \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            "https://prywwsueggmolcfhrvll.supabase.co/rest/v1/" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
 
           echo "HTTP Status: $HTTP_CODE"
-          echo "Response body: $(cat /tmp/supabase_response.txt)"
+          echo "Response: $(cat /tmp/supabase_response.txt)"
 
-          # Any HTTP response means Supabase is awake (even 4xx)
-          if [ -n "$HTTP_CODE" ] && [ "$HTTP_CODE" -ge 200 ] 2>/dev/null; then
+          if [ "$HTTP_CODE" -ge 200 ] 2>/dev/null; then
             echo "Supabase is alive (status $HTTP_CODE)"
           else
-            echo "Could not reach Supabase (status: $HTTP_CODE)"
+            echo "Unreachable (status: $HTTP_CODE)"
             exit 1
           fi
