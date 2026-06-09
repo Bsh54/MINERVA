@@ -64,7 +64,7 @@ Adapt the number of modules and topics to the RICHNESS and COMPLEXITY of the pro
       : `${DEEPSEEK_API_URL}/chat/completions`;
 
     const response = await axios.post(apiUrl, {
-      model: 'deepseek-chat',
+      model: 'gpt-5.4-nano',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Text to analyze and transform into detailed plan:\n"${text}"\n\nGenerate the JSON now:` }

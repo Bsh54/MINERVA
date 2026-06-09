@@ -134,7 +134,7 @@ Format:
       : `${DEEPSEEK_API_URL}/chat/completions`;
 
     const response = await axios.post(apiUrl, {
-      model: 'deepseek-chat',
+      model: 'gpt-5.4-nano',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Course: ${coursePlan.courseTitle}\n${context}\n\nOriginal content:\n${course.original_text}\n\nGenerate quiz questions:` }

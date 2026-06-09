@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'gpt-5.4-nano',
         messages: [
           {
             role: 'system',

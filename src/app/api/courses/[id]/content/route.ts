@@ -160,7 +160,7 @@ Remember: DOUBLE line breaks everywhere, generous use of **bold**, clear structu
       : `${DEEPSEEK_API_URL}/chat/completions`;
 
     const response = await axios.post(apiUrl, {
-      model: 'deepseek-chat',
+      model: 'gpt-5.4-nano',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Course: ${coursePlan.courseTitle}\nModule: ${moduleTitle}\nTopic: ${topicTitle}\n\nOriginal context:\n${course.original_text}\n\nGenerate an engaging, well-formatted explanation for this topic:` }
