@@ -5,10 +5,10 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 // Check session purely from cookie — zero network calls, no timeout risk
+// Supabase SSR stores session as sb-<ref>-auth-token or sb-<ref>-auth-token.0 (chunked)
 function hasSession(request: NextRequest): boolean {
-  const cookies = request.cookies.getAll();
-  return cookies.some(
-    (c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token') && c.value.length > 0
+  return request.cookies.getAll().some(
+    (c) => c.name.startsWith('sb-') && c.name.includes('-auth-token') && c.value.length > 0
   );
 }
 
