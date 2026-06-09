@@ -1,67 +1,46 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
+// Check session purely from cookie — zero network calls, no timeout risk
+function hasSession(request: NextRequest): boolean {
+  const cookies = request.cookies.getAll();
+  return cookies.some(
+    (c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token') && c.value.length > 0
+  );
+}
+
 export async function middleware(request: NextRequest) {
-  // Ignorer les requêtes d'API pour éviter les redirections de locale qui causent des erreurs HTML/JSON
   if (request.nextUrl.pathname.startsWith('/api')) {
     return NextResponse.next();
   }
 
-  // Ignorer les callbacks OAuth pour permettre l'échange du code
   if (request.nextUrl.pathname.includes('/auth/callback')) {
     return NextResponse.next();
   }
 
-  // Initialiser la réponse avec next-intl
-  let response = intlMiddleware(request);
+  const response = intlMiddleware(request);
+  const loggedIn = hasSession(request);
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = intlMiddleware(request)
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  // Lecture locale du cookie de session (pas d'appel réseau → pas de timeout)
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user ?? null
-
-  // Protection des routes /dashboard
   const isDashboard = request.nextUrl.pathname.includes('/dashboard');
-  if (isDashboard && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+  if (isDashboard && !loggedIn) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/login';
+    return NextResponse.redirect(url);
   }
 
-  // Protection des routes /auth (Si déjà connecté, on redirige vers dashboard)
   const isAuthPage = request.nextUrl.pathname.includes('/auth');
-  if (isAuthPage && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  if (isAuthPage && loggedIn) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
   }
 
   return response;
 }
 
 export const config = {
-  // Exclure expressément /api
-  matcher: ['/', '/(fr|en)/:path*', '/((?!api|_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
+  matcher: ['/', '/(fr|en)/:path*', '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
 };
