@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Secrets — ne jamais committer
+API_CREDENTIALS.txt
+*.env
+.env*
